@@ -1,0 +1,13 @@
+#node-config
+
+install:
+  auto: true
+  device: /dev/vda
+
+stages:
+   initramfs:
+     - name: "Set user and password"
+       users:
+        c3os:
+          passwd: "c3os"
+       hostname: c3os-{{ trunc 4 .Random }}

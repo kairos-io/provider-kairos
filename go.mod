@@ -2,13 +2,10 @@ module github.com/c3os-io/provider-c3os
 
 go 1.18
 
-replace github.com/c3os-io/c3os => /home/mudler/_git/c3os
-
-replace github.com/c3os-io/c3os/sdk => /home/mudler/_git/c3os/sdk
+replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
 require (
-	github.com/c3os-io/c3os v0.0.0-00010101000000-000000000000
-	github.com/c3os-io/c3os/sdk v0.0.0-20220810165607-7d6553114e1d
+	github.com/c3os-io/c3os v1.24.3-56.0.20220812161215-f983eeb2bf4f
 	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/ipfs/go-log v1.0.5
@@ -34,6 +31,7 @@ require (
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bramvdbogaerde/go-scp v1.2.0 // indirect
 	github.com/btcsuite/btcd v0.22.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect

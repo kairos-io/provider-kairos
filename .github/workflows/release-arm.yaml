@@ -1,0 +1,95 @@
+---
+name: 'Build arm images'
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # OIDC support
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - flavor: "opensuse-arm-rpi"
+            model: rpi64
+          - flavor: "alpine-arm-rpi"
+            model: rpi64
+    steps:
+      - name: Release space from worker
+        run: |
+          sudo rm -rf /usr/local/lib/android # will release about 10 GB if you don't need Android
+          sudo rm -rf /usr/share/dotnet # will release about 20GB if you don't need .NET
+      - uses: actions/checkout@v2
+      - run: |
+          git fetch --prune --unshallow
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: Build  🔧
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+          MODEL: ${{ matrix.model }}
+        run: |
+          export TAG=${GITHUB_REF##*/}
+          ./earthly.sh +all-arm --IMAGE_NAME=c3os-$FLAVOR-$TAG.img --IMAGE=quay.io/c3os/c3os-$FLAVOR:$TAG --MODEL=$MODEL --FLAVOR=$FLAVOR
+          docker push quay.io/c3os/c3os-$FLAVOR:$TAG
+      - name: Push  🔧
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+          IMAGE: quay.io/c3os/c3os:${{ matrix.flavor }}-latest
+          MODEL: ${{ matrix.model }}
+        run: |
+          export TAG=${GITHUB_REF##*/}
+          export IMAGE_NAME=c3os-$FLAVOR-$TAG.img
+          export IMAGE=quay.io/c3os/c3os-$FLAVOR:$TAG
+          docker push quay.io/c3os/c3os-$FLAVOR:$TAG
+      - name: Sign image
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: | 
+          TAG=${GITHUB_REF##*/}
+          cosign sign quay.io/c3os/c3os-${{ matrix.flavor }}:$TAG
+      - name: Export version
+        run: |
+             TAG=${GITHUB_REF##*/}
+             echo "VERSION=$TAG" >> $GITHUB_ENV
+      - name: Upload Image
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          sudo tar cvf build.tar build
+          sudo luet util pack quay.io/c3os/c3os-${{ matrix.flavor }}:$VERSION.img build.tar image.tar
+          sudo -E docker load -i image.tar
+          sudo -E docker push quay.io/c3os/c3os-${{ matrix.flavor }}:$VERSION.img
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.flavor }}-image
+          path: build
+          if-no-files-found: error
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/*

@@ -1,0 +1,146 @@
+name: Release
+
+on: 
+ push:
+   tags:
+     - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # OIDC support
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+       include:
+         - flavor: "opensuse"
+#        - flavor: "ubuntu"
+#         - flavor: "fedora"
+         - flavor: "alpine"
+       #  - flavor: "tumbleweed"
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          git fetch --prune --unshallow
+      - name: setup-docker
+        uses: docker-practice/actions-setup-docker@master
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+      - name: Release space from worker
+        run: |
+          sudo rm -rf /usr/local/lib/android # will release about 10 GB if you don't need Android
+          sudo rm -rf /usr/share/dotnet # will release about 20GB if you don't need .NET
+      - name: Login to Quay Registry
+        run: echo ${{ secrets.QUAY_PASSWORD }} | docker login -u ${{ secrets.QUAY_USERNAME }} --password-stdin quay.io
+      - name: Build  🔧
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+        run: |
+          export TAG=${GITHUB_REF##*/}
+          ./earthly.sh +all --IMAGE=quay.io/c3os/c3os-$FLAVOR:$TAG --FLAVOR=$FLAVOR --ISO_NAME=c3os-$FLAVOR-$TAG
+          sudo mv build release
+      - name: Push to quay
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: | 
+          TAG=${GITHUB_REF##*/}
+          docker push quay.io/c3os/c3os-${{ matrix.flavor }}:$TAG
+          cosign sign quay.io/c3os/c3os-${{ matrix.flavor }}:$TAG
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            release/*
+      - run: |
+          sudo mv release/*.iso ./
+          sudo mv release/*.sha256 ./
+      - uses: actions/upload-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.iso.zip
+          path: |
+            *.iso
+            *.sha256
+          if-no-files-found: error
+
+
+  build-vm-images:
+    needs: build
+    runs-on: macos-12
+    strategy:
+      fail-fast: false
+      matrix:
+       include:
+         - flavor: "opensuse"
+         - flavor: "alpine"
+        # - flavor: "tumbleweed"
+#         - flavor: "ubuntu"
+#         - flavor: "fedora"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          brew install hudochenkov/sshpass/sshpass
+          brew install qemu
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.iso.zip
+      - run: |
+              ls -liah
+              iso=$(ls *.iso)
+              bash scripts/build_vm.sh $iso
+      - uses: actions/upload-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.qcow2.tar.xz
+          path: |
+            *.qcow2.tar.xz
+      - uses: actions/upload-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.ova
+          path: |
+            *.ova
+          if-no-files-found: error
+
+  release-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: build-vm-images
+    strategy:
+      fail-fast: false
+      matrix:
+       include:
+         - flavor: "opensuse"
+         - flavor: "alpine"
+      #   - flavor: "tumbleweed"
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.qcow2.tar.xz
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: c3os-${{ matrix.flavor }}.ova
+      - run: |
+              mkdir release
+              mv *.qcow2.tar.xz release/
+              mv *.ova release/
+      - uses: web3-storage/add-to-web3@v2
+        id: web3
+        with:
+          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          path_to_add: 'release'
+      - run: |
+          mkdir dist
+          echo ${{ steps.web3.outputs.url }} > dist/c3os-${{ matrix.flavor }}.qcow2.url.txt
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/*
