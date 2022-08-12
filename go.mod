@@ -3,18 +3,23 @@ module github.com/c3os-io/provider-c3os
 go 1.18
 
 replace github.com/c3os-io/c3os => /home/mudler/_git/c3os
+
 replace github.com/c3os-io/c3os/sdk => /home/mudler/_git/c3os/sdk
 
 require (
 	github.com/c3os-io/c3os v0.0.0-00010101000000-000000000000
 	github.com/c3os-io/c3os/sdk v0.0.0-20220810165607-7d6553114e1d
+	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
+	github.com/gliderlabs/ssh v0.2.2
 	github.com/ipfs/go-log v1.0.5
 	github.com/mudler/edgevpn v0.15.3
 	github.com/mudler/go-nodepair v0.0.0-20220507212557-7d47aa3cc1f1
 	github.com/mudler/go-pluggable v0.0.0-20220716112424-189d463e3ff3
+	github.com/mudler/go-processmanager v0.0.0-20211226182900-899fbb0b97f6
 	github.com/mudler/yip v0.0.0-20220725150231-976737b2353c
 	github.com/onsi/ginkgo/v2 v2.1.3
 	github.com/onsi/gomega v1.19.0
+	github.com/pterm/pterm v0.12.41
 	github.com/urfave/cli v1.22.9
 	go.uber.org/zap v1.21.0
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
@@ -23,6 +28,7 @@ require (
 )
 
 require (
+	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 // indirect
 	github.com/atomicgo/cursor v0.0.1 // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
@@ -124,7 +130,6 @@ require (
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mudler/go-isterminal v0.0.0-20211031135732-5e4e06fc5a58 // indirect
-	github.com/mudler/go-processmanager v0.0.0-20211226182900-899fbb0b97f6 // indirect
 	github.com/multiformats/go-base32 v0.0.4 // indirect
 	github.com/multiformats/go-base36 v0.1.0 // indirect
 	github.com/multiformats/go-multiaddr v0.5.0 // indirect
@@ -148,7 +153,6 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/pterm/pterm v0.12.41 // indirect
 	github.com/qeesung/image2ascii v1.0.1 // indirect
 	github.com/raulk/clock v1.1.0 // indirect
 	github.com/raulk/go-watchdog v1.2.0 // indirect

@@ -30,6 +30,8 @@ var networkAPI = []cli.Flag{
 	},
 }
 
+const recoveryAddr = "127.0.0.1:2222"
+
 func Start() error {
 	app := &cli.App{
 		Name:    "c3os",
@@ -50,8 +52,38 @@ For all the example cases, see: https://docs.c3os.io .
 `,
 		UsageText: ``,
 		Copyright: "Ettore Di Giacinto",
-
 		Commands: []cli.Command{
+			{
+				Name:      "recovery-ssh-server",
+				UsageText: "recovery-ssh-server",
+				Usage:     "Starts SSH recovery service",
+				Description: `
+				Spawn up a simple standalone ssh server over p2p
+		`,
+				ArgsUsage: "Spawn up a simple standalone ssh server over p2p",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:   "token",
+						EnvVar: "TOKEN",
+					},
+					&cli.StringFlag{
+						Name:   "service",
+						EnvVar: "SERVICE",
+					},
+					&cli.StringFlag{
+						Name:   "password",
+						EnvVar: "PASSWORD",
+					},
+					&cli.StringFlag{
+						Name:   "listen",
+						EnvVar: "LISTEN",
+						Value:  recoveryAddr,
+					},
+				},
+				Action: func(c *cli.Context) error {
+					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
+				},
+			},
 			{
 				Name:      "register",
 				UsageText: "register --reboot --device /dev/sda /image/snapshot.png",

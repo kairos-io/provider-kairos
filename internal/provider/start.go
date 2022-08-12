@@ -21,6 +21,8 @@ func Start() error {
 	// Expected output: string
 	factory.Add(bus.EventChallenge, Challenge)
 
-	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
+	factory.Add(bus.EventRecovery, Recovery)
+	factory.Add(bus.EventRecoveryStop, RecoveryStop)
 
+	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
 }
