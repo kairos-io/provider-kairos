@@ -7,9 +7,9 @@ import (
 	"os"
 
 	config "github.com/c3os-io/c3os/pkg/config"
-	machine "github.com/c3os-io/c3os/pkg/machine"
 	"github.com/c3os-io/provider-c3os/internal/provider"
 	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	"github.com/c3os-io/provider-c3os/internal/services"
 	"gopkg.in/yaml.v3"
 )
 
@@ -29,13 +29,13 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 		return err
 	}
 
-	err = provider.SetupVPN(machine.EdgeVPNDefaultInstance, apiAddress, rootDir, false, providerCfg)
+	err = provider.SetupVPN(services.EdgeVPNDefaultInstance, apiAddress, rootDir, false, providerCfg)
 	if err != nil {
 		return err
 	}
 
 	if restart {
-		svc, err := machine.EdgeVPN(machine.EdgeVPNDefaultInstance, rootDir)
+		svc, err := services.EdgeVPN(services.EdgeVPNDefaultInstance, rootDir)
 		if err != nil {
 			return err
 		}

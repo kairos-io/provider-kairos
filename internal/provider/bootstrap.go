@@ -19,6 +19,7 @@ import (
 	sdk "github.com/c3os-io/c3os/sdk/bus"
 	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
 	"github.com/c3os-io/provider-c3os/internal/role"
+	"github.com/c3os-io/provider-c3os/internal/services"
 
 	"github.com/c3os-io/c3os/pkg/config"
 	"github.com/mudler/edgevpn/api/client/service"
@@ -84,7 +85,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// full automated setup. Otherwise, they must be explicitly enabled.
 	if providerConfig.K3s.Enabled || providerConfig.K3sAgent.Enabled {
 		err := oneTimeBootstrap(log, providerConfig, func() error {
-			return SetupVPN(machine.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig)
+			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig)
 		})
 		if err != nil {
 			return ErrorEvent("Failed setup: %s", err.Error())
@@ -95,7 +96,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	logger.Info("Configuring VPN")
-	if err := SetupVPN(machine.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
+	if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
 		return ErrorEvent("Failed setup VPN: %s", err.Error())
 	}
 

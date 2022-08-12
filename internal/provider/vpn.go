@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/c3os-io/c3os/pkg/config"
-	"github.com/c3os-io/c3os/pkg/machine"
 	"github.com/c3os-io/c3os/pkg/machine/systemd"
 	"github.com/c3os-io/c3os/pkg/utils"
 	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	"github.com/c3os-io/provider-c3os/internal/services"
 
 	yip "github.com/mudler/yip/pkg/schema"
 )
@@ -21,7 +21,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 		return fmt.Errorf("no network token defined")
 	}
 
-	svc, err := machine.EdgeVPN(instance, rootDir)
+	svc, err := services.EdgeVPN(instance, rootDir)
 	if err != nil {
 		return fmt.Errorf("could not create svc: %w", err)
 	}
