@@ -6,7 +6,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/c3os-io/c3os/pkg/config"
 	"github.com/c3os-io/c3os/pkg/utils"
 	"github.com/ipfs/go-log"
 	"github.com/mudler/edgevpn/api"
@@ -52,7 +51,7 @@ func bridge(c *cli.Context) error {
 
 	ctx := context.Background()
 
-	nc := config.Network(token, c.String("address"), c.String("log-level"), "c3os0")
+	nc := networkConfig(token, c.String("address"), c.String("log-level"), "c3os0")
 
 	lvl, err := log.LevelFromString(nc.LogLevel)
 	if err != nil {

@@ -23,6 +23,7 @@ func Start() error {
 
 	factory.Add(bus.EventRecovery, Recovery)
 	factory.Add(bus.EventRecoveryStop, RecoveryStop)
+	factory.Add(bus.EventInteractiveInstall, InteractiveInstall)
 
 	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
 }

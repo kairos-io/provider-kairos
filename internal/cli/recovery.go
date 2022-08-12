@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"runtime"
 	"time"
 
-	config "github.com/c3os-io/c3os/pkg/config"
+	edgevpnConfig "github.com/mudler/edgevpn/pkg/config"
+
 	"github.com/ipfs/go-log"
 
 	"github.com/creack/pty"
@@ -18,9 +20,51 @@ import (
 	"github.com/pterm/pterm"
 )
 
+func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
+	return &edgevpnConfig.Config{
+		NetworkToken:   token,
+		Address:        address,
+		Libp2pLogLevel: "error",
+		FrameTimeout:   "30s",
+		BootstrapIface: true,
+		LogLevel:       loglevel,
+		LowProfile:     true,
+		VPNLowProfile:  true,
+		Interface:      i,
+		Concurrency:    runtime.NumCPU(),
+		PacketMTU:      1420,
+		InterfaceMTU:   1200,
+		Ledger: edgevpnConfig.Ledger{
+			AnnounceInterval: time.Duration(30) * time.Second,
+			SyncInterval:     time.Duration(30) * time.Second,
+		},
+		NAT: edgevpnConfig.NAT{
+			Service:           true,
+			Map:               true,
+			RateLimit:         true,
+			RateLimitGlobal:   10,
+			RateLimitPeer:     10,
+			RateLimitInterval: time.Duration(10) * time.Second,
+		},
+		Discovery: edgevpnConfig.Discovery{
+			DHT:      true,
+			MDNS:     true,
+			Interval: time.Duration(120) * time.Second,
+		},
+		Connection: edgevpnConfig.Connection{
+			RelayV1: true,
+
+			AutoRelay:      true,
+			MaxConnections: 100,
+			MaxStreams:     100,
+			HolePunch:      true,
+		},
+	}
+}
+
 func startRecoveryService(ctx context.Context, token, name, address, loglevel string) error {
 
-	nc := config.Network(token, "", loglevel, "c3osrecovery0")
+	nc := networkConfig(token, "", loglevel, "c3osrecovery0")
 
 	lvl, err := log.LevelFromString(loglevel)
 	if err != nil {
