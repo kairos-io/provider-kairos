@@ -117,6 +117,7 @@ docker:
         && rm -rf installer.sh
 
     COPY +build-c3os-agent-provider/agent-provider-c3os /system/providers/agent-provider-c3os
+    RUN ln -s /system/providers/agent-provider-c3os /usr/bin/c3os
 
     ARG C3OS_VERSION
     IF [ "$C3OS_VERSION" = "" ]
