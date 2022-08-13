@@ -109,10 +109,10 @@ jobs:
         with:
           name: c3os-${{ matrix.flavor }}.iso.zip
       - run: |
-              ./earthly.sh +get-c3os-scripts
+              git clone https://github.com/c3os-io/c3os
               ls -liah
               iso=$(ls *.iso)
-              bash scripts/build_vm.sh $iso
+              bash c3os/scripts/build_vm.sh $iso
       - uses: actions/upload-artifact@v2
         with:
           name: c3os-${{ matrix.flavor }}.qcow2.tar.xz
@@ -137,15 +137,7 @@ jobs:
             go-version: '^1.16'
       - name: Prepare config
         run: |
-              ./earthly.sh +test-create-config
-              cat tests/assets/config.yaml >> config.yaml
-      - name: Enable dns
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -i '.c3os.dns = true' 'config.yaml'
-      - name: Show config
-        run: |
-              cat config.yaml
+              ./earthly.sh +test-create-config --WITH_DNS=true
       - uses: actions/upload-artifact@v2
         with:
           name: config.yaml
@@ -264,15 +256,7 @@ jobs:
             go-version: '^1.16'
       - name: Prepare config
         run: |
-              ./earthly.sh +test-create-config
-              cat tests/assets/config.yaml >> config.yaml
-      - name: Enable dns
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -i '.c3os.dns = true' 'config.yaml'
-      - name: Show config
-        run: |
-              cat config.yaml
+              ./earthly.sh +test-create-config --WITH_DNS=true
       - uses: actions/upload-artifact@v2
         with:
           name: config.yaml
@@ -364,8 +348,8 @@ jobs:
       with:
           go-version: '^1.16'
     - run: |
-             ./earthly.sh +build-c3os-cli
-             sudo cp -rfv build/c3os /usr/bin/c3os
+             ./earthly.sh +build-c3os-agent-provider
+             sudo cp -rfv build/agent-provider-c3os /usr/bin/c3os
              export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
              export FLAVOR=${{ matrix.flavor }} 
              ./.github/run_test.sh "qrcode-register"

@@ -329,6 +329,13 @@ run-qemu-tests:
 
 test-create-config:
     FROM alpine
+    ARG WITH_DNS
     COPY +build-c3os-agent-provider/agent-provider-c3os agent-provider-c3os
+    COPY . .
     RUN ./agent-provider-c3os create-config > config.yaml
+    RUN cat tests/assets/config.yaml >> config.yaml 
+    IF [ "$WITH_DNS" == "true" ]
+        RUN apk add yq
+        RUN yq -i '.c3os.dns = true' 'config.yaml'
+    END
     SAVE ARTIFACT config.yaml AS LOCAL config.yaml

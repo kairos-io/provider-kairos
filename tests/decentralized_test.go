@@ -144,7 +144,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 
 		It("propagate kubeconfig", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("c3os-agent get-kubeconfig")
+				out, _ := machine.SSHCommand("c3os get-kubeconfig")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
@@ -159,7 +159,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 			uuid, _ := machine.SSHCommand("c3os-agent uuid")
 			Expect(uuid).ToNot(Equal(""))
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("c3os-agent role list")
+				out, _ := machine.SSHCommand("c3os role list")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring(uuid),
