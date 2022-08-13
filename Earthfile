@@ -152,16 +152,29 @@ elemental:
     FROM ${ELEMENTAL_IMAGE}
     SAVE ARTIFACT /usr/bin/elemental elemental
 
+c3os:
+   ARG C3OS_VERSION=master
+   FROM alpine
+   RUN apk add git
+   WORKDIR /c3os
+   RUN git clone https://github.com/c3os-io/c3os /c3os && cd /c3os && git checkout "$C3OS_VERSION"
+   SAVE ARTIFACT /c3os/
+
 iso:
     ARG ELEMENTAL_IMAGE
     ARG ISO_NAME=${OS_ID}
     ARG IMG=docker:$IMAGE
     ARG overlay=overlay/files-iso
+
     ARG TOOLKIT_REPOSITORY=quay.io/costoolkit/releases-teal
     FROM $ELEMENTAL_IMAGE
     RUN zypper in -y jq docker
     WORKDIR /build
+
     COPY . ./
+    RUN mkdir -p overlay/files-iso
+    COPY +c3os/c3os/overlay/files-iso/ ./overlay/files-iso/
+
     WITH DOCKER --allow-privileged --load $IMAGE=(+docker)
         RUN elemental --repo $TOOLKIT_REPOSITORY --name $ISO_NAME --debug build-iso --date=false --local --overlay-iso /build/${overlay} $IMAGE --output /build/
     END
@@ -178,7 +191,10 @@ netboot:
    COPY +iso/c3os.iso c3os.iso
    COPY . .
    RUN zypper in -y cdrtools
-   RUN /build/scripts/netboot.sh c3os.iso $ISO_NAME $VERSION
+
+   COPY +c3os/c3os/scripts/netboot.sh ./
+   RUN sh netboot.sh c3os.iso $ISO_NAME $VERSION
+
    SAVE ARTIFACT /build/$ISO_NAME.squashfs squashfs AS LOCAL build/$ISO_NAME.squashfs
    SAVE ARTIFACT /build/$ISO_NAME-kernel kernel AS LOCAL build/$ISO_NAME-kernel
    SAVE ARTIFACT /build/$ISO_NAME-initrd initrd AS LOCAL build/$ISO_NAME-initrd
