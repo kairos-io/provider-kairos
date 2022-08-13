@@ -160,6 +160,12 @@ c3os:
    RUN git clone https://github.com/c3os-io/c3os /c3os && cd /c3os && git checkout "$C3OS_VERSION"
    SAVE ARTIFACT /c3os/
 
+get-c3os-scripts:
+    FROM alpine
+    WORKDIR /build
+    COPY +c3os/c3os/ ./
+    SAVE ARTIFACT /build/scripts AS LOCAL scripts
+
 iso:
     ARG ELEMENTAL_IMAGE
     ARG ISO_NAME=${OS_ID}
@@ -320,3 +326,9 @@ run-qemu-tests:
     ENV CLOUD_INIT=$CLOUD_CONFIG
 
     RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/
+
+test-create-config:
+    FROM alpine
+    COPY +build-c3os-agent-provider/agent-provider-c3os agent-provider-c3os
+    RUN ./agent-provider-c3os create-config > config.yaml
+    SAVE ARTIFACT config.yaml AS LOCAL config.yaml
