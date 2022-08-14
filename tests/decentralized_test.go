@@ -202,7 +202,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 		It("upgrades to a specific version", func() {
 			version, _ := machine.SSHCommand("source /etc/os-release; echo $VERSION")
 
-			out, _ := machine.SSHCommand("sudo c3os-agent upgrade v1.21.4-32")
+			out, _ := machine.SSHCommand("sudo c3os-agent upgrade --image quay.io/c3os/c3os:opensuse-v1.21.4-32")
 			Expect(out).To(ContainSubstring("Upgrade completed"))
 
 			machine.SSHCommand("sudo sync")
