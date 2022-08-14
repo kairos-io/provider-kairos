@@ -115,6 +115,7 @@ func gatherLogs() {
 		[]string{
 			"/var/log/edgevpn.log",
 			"/var/log/c3os-agent.log",
+			"/var/log/c3os/agent.log",
 			"/run/pods.json",
 			"/run/disk",
 			"/run/mounts",
