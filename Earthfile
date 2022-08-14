@@ -116,6 +116,11 @@ docker:
         && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" bash installer.sh agent \
         && rm -rf installer.sh
 
+    # Drop env files from k3s as we will generate them
+    IF [ -e "/etc/rancher/k3s/k3s.env" ]
+        RUN rm -rf /etc/rancher/k3s/k3s.env /etc/rancher/k3s/k3s-agent.env && touch /etc/rancher/k3s/.keep
+    END
+
     COPY +build-c3os-agent-provider/agent-provider-c3os /system/providers/agent-provider-c3os
     RUN ln -s /system/providers/agent-provider-c3os /usr/bin/c3os
 
