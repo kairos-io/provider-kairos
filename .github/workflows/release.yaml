@@ -15,8 +15,8 @@ jobs:
         git fetch --prune --unshallow
     - id: set-matrix
       run: |
-      MATRIX="$(cat releases.json)"
-      echo "::set-output name=matrix::{\"include\":$MATRIX}"
+           MATRIX="$(cat releases.json)"
+           echo "::set-output name=matrix::{\"include\":$MATRIX}"
 
   build:
     runs-on: ubuntu-latest
