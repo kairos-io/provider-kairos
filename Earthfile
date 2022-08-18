@@ -5,16 +5,28 @@ IMPORT github.com/c3os-io/c3os
 FROM alpine
 ARG VARIANT=c3os # core, lite, framework
 ARG FLAVOR=opensuse
-ARG IMAGE=quay.io/c3os/${VARIANT}-${FLAVOR}:latest
-ARG BASE_IMAGE=quay.io/c3os/core-${FLAVOR}:latest
-ARG ISO_NAME=c3os-${VARIANT}-${FLAVOR}
-ARG LUET_VERSION=0.32.4
-ARG OS_ID=c3os
 
-ARG CGO_ENABLED=0
+## Versioning
+ARG K3S_VERSION
+RUN apk add git
+COPY . ./
+RUN echo $(git describe --exact-match --tags || echo "v0.0.0-$(git log --oneline -n 1 | cut -d" " -f1)") > VERSION
+ARG CORE_VERSION=$(cat CORE_VERSION || echo "latest")
+ARG VERSION=$(cat VERSION)
+RUN echo "version ${VERSION}"
+ARG TAG=$VERSION
+ARG IMAGE=quay.io/c3os/${VARIANT}-${FLAVOR}:$TAG
+ARG BASE_IMAGE=quay.io/c3os/core-${FLAVOR}:${CORE_VERSION}
+ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
+
+## External deps pinned versions
+ARG LUET_VERSION=0.32.4
 ARG ELEMENTAL_IMAGE=quay.io/costoolkit/elemental-cli:v0.0.15-8a78e6b
 ARG GOLINT_VERSION=1.47.3
 ARG GO_VERSION=1.18
+
+ARG OS_ID=c3os
+ARG CGO_ENABLED=0
 
 all:
   BUILD +docker
@@ -61,16 +73,6 @@ BUILD_GOLANG:
     RUN go build -ldflags "-s -w" -o ${BIN} ${SRC} && upx ${BIN}
     SAVE ARTIFACT ${BIN} ${BIN} AS LOCAL build/${BIN}
 
-version:
-    FROM alpine
-    RUN apk add git
-
-    COPY . ./
-
-    RUN echo $(git describe --exact-match --tags || echo "v0.0.0-$(git log --oneline -n 1 | cut -d" " -f1)") > VERSION
-
-    SAVE ARTIFACT VERSION VERSION
-
 build-c3os-agent-provider:
     FROM +go-deps
     DO +BUILD_GOLANG --BIN=agent-provider-c3os --SRC=./ --CGO_ENABLED=$CGO_ENABLED
@@ -101,7 +103,6 @@ lint:
 docker:
     ARG FLAVOR
     ARG VARIANT
-    ARG K3S_VERSION
 
     FROM $BASE_IMAGE
 
@@ -126,26 +127,17 @@ docker:
 
     ARG C3OS_VERSION
     IF [ "$C3OS_VERSION" = "" ]
-        COPY +version/VERSION ./
-        ARG VERSION=$(cat VERSION)
-        RUN echo "version ${VERSION}"
-        IF [ "$VARIANT" = "" ]
-            ARG OS_VERSION=c3OS-${VERSION}
-        ELSE
-            ARG OS_VERSION=c3OS-${VARIANT}-${VERSION}
-        END
-        
-        RUN rm VERSION
+        ARG OS_VERSION=${VERSION}
     ELSE 
-        ARG OS_VERSION=c3OS-${VARIANT}-${C3OS_VERSION}
+        ARG OS_VERSION=${C3OS_VERSION}
     END
     
     ARG OS_ID
     ARG OS_NAME=${OS_ID}-${FLAVOR}
     ARG OS_REPO=quay.io/c3os/${VARIANT}-${FLAVOR}
-    ARG OS_LABEL=${FLAVOR}-latest
+    ARG OS_LABEL=latest
 
-    DO c3os+OSRELEASE --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}
+    DO c3os+OSRELEASE --BUG_REPORT_URL="https://github.com/c3os-io/c3os/issues/new/choose" --HOME_URL="https://github.com/c3os-io/provider-c3os" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="c3os-io/provider-c3os"
 
     SAVE IMAGE $IMAGE
 
@@ -174,7 +166,7 @@ get-c3os-scripts:
 
 iso:
     ARG ELEMENTAL_IMAGE
-    ARG ISO_NAME=${OS_ID}
+    ARG ISO_NAME
     ARG IMG=docker:$IMAGE
     ARG overlay=overlay/files-iso
 
@@ -198,7 +190,7 @@ iso:
 netboot:
    FROM opensuse/leap
    ARG VERSION
-   ARG ISO_NAME=${OS_ID}
+   ARG ISO_NAME
    WORKDIR /build
    COPY +iso/c3os.iso c3os.iso
    COPY . .
