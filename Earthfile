@@ -14,7 +14,8 @@ RUN echo $(git describe --exact-match --tags || echo "v0.0.0-$(git log --oneline
 ARG CORE_VERSION=$(cat CORE_VERSION || echo "latest")
 ARG VERSION=$(cat VERSION)
 RUN echo "version ${VERSION}"
-ARG TAG=$VERSION
+ARG K3S_VERSION_TAG=$(echo $K3S_VERSION | sed s/+/-/)
+ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
 ARG IMAGE=quay.io/c3os/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/c3os/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
@@ -28,15 +29,24 @@ ARG GO_VERSION=1.18
 ARG OS_ID=c3os
 ARG CGO_ENABLED=0
 
+RELEASEVERSION:
+    COMMAND
+    RUN echo "$IMAGE" > IMAGE
+    RUN echo "$VERSION" > VERSION
+    SAVE ARTIFACT VERSION AS LOCAL build/VERSION
+    SAVE ARTIFACT IMAGE AS LOCAL build/IMAGE
+
 all:
   BUILD +docker
   BUILD +iso
   BUILD +netboot
   BUILD +ipxe-iso
+  DO +RELEASEVERSION
 
 all-arm:
   BUILD --platform=linux/arm64 +docker
   BUILD +arm-image
+  DO +RELEASEVERSION
 
 go-deps:
     ARG GO_VERSION
@@ -208,7 +218,7 @@ arm-image:
   ARG ELEMENTAL_IMAGE
   FROM $ELEMENTAL_IMAGE
   ARG MODEL=rpi64
-  ARG IMAGE_NAME=${FLAVOR}.img
+  ARG IMAGE_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}.img
   RUN zypper in -y jq docker git curl gptfdisk kpartx sudo
   #COPY +luet/luet /usr/bin/luet
   WORKDIR /build

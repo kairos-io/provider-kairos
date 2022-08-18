@@ -57,42 +57,29 @@ jobs:
           FLAVOR: ${{ matrix.flavor }}
           MODEL: ${{ matrix.model }}
         run: |
-          export TAG=${GITHUB_REF##*/}
-          ./earthly.sh +all-arm --IMAGE_NAME=c3os-$FLAVOR-$TAG.img --IMAGE=quay.io/c3os/c3os-$FLAVOR:$TAG --MODEL=$MODEL --FLAVOR=$FLAVOR
-          docker push quay.io/c3os/c3os-$FLAVOR:$TAG
+          ./earthly.sh +all-arm --MODEL=$MODEL --FLAVOR=$FLAVOR --K3S_VERSION=${{ matrix.k3s_version }}
       - name: Push  🔧
         if: startsWith(github.ref, 'refs/tags/')
-        env:
-          FLAVOR: ${{ matrix.flavor }}
-          IMAGE: quay.io/c3os/c3os:${{ matrix.flavor }}-latest
-          MODEL: ${{ matrix.model }}
         run: |
-          export TAG=${GITHUB_REF##*/}
-          export IMAGE_NAME=c3os-$FLAVOR-$TAG.img
-          export IMAGE=quay.io/c3os/c3os-$FLAVOR:$TAG
-          docker push quay.io/c3os/c3os-$FLAVOR:$TAG
+          docker push $(cat build/IMAGE)
       - name: Sign image
         if: startsWith(github.ref, 'refs/tags/')
         env:
           COSIGN_EXPERIMENTAL: 1
         run: | 
-          TAG=${GITHUB_REF##*/}
-          cosign sign quay.io/c3os/c3os-${{ matrix.flavor }}:$TAG
-      - name: Export version
-        run: |
-             TAG=${GITHUB_REF##*/}
-             echo "VERSION=$TAG" >> $GITHUB_ENV
+          cosign sign $(cat build/IMAGE)
       - name: Upload Image
         if: startsWith(github.ref, 'refs/tags/')
         run: |
+          IMG=$(cat build/IMAGE).img
           sudo tar cvf build.tar build
-          sudo luet util pack quay.io/c3os/c3os-${{ matrix.flavor }}:$VERSION.img build.tar image.tar
+          sudo luet util pack $IMG build.tar image.tar
           sudo -E docker load -i image.tar
-          sudo -E docker push quay.io/c3os/c3os-${{ matrix.flavor }}:$VERSION.img
+          sudo -E docker push $IMG
       - name: Upload results
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.flavor }}-image
+          name: ${{ matrix.flavor }}-${{ matrix.k3s_version }}-image
           path: build
           if-no-files-found: error
       - name: Release
