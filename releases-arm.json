@@ -1,0 +1,10 @@
+[
+    {
+        "flavor": "opensuse-arm-rpi",
+        "model": "rpi64"
+    },
+    {
+        "flavor": "alpine-arm-rpi",
+        "model": "rpi64"
+    }
+]

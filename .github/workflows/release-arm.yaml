@@ -7,6 +7,19 @@ on:
       - '*'
 
 jobs:
+  get-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        git fetch --prune --unshallow
+    - id: set-matrix
+      run: |
+      MATRIX="$(cat releases-arm.json)"
+      echo "::set-output name=matrix::{\"include\":$MATRIX}"
+
   docker:
     runs-on: ubuntu-latest
     permissions:
@@ -14,12 +27,7 @@ jobs:
       contents: write
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - flavor: "opensuse-arm-rpi"
-            model: rpi64
-          - flavor: "alpine-arm-rpi"
-            model: rpi64
+      matrix: ${{fromJson(needs.get-matrix.outputs.matrix)}}
     steps:
       - name: Release space from worker
         run: |
