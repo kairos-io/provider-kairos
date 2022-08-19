@@ -31,7 +31,7 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@main
       - name: Login to Quay Registry
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: echo ${{ secrets.QUAY_PASSWORD }} | docker login -u ${{ secrets.QUAY_USERNAME }} --password-stdin quay.io
       - name: Build  🔧
         env:
@@ -74,7 +74,7 @@ jobs:
             *.ipxe
           if-no-files-found: error
       - name: Push to quay
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           COSIGN_EXPERIMENTAL: 1
         run: | 
