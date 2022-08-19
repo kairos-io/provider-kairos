@@ -78,6 +78,7 @@ jobs:
       - name: Upload Image
         if: startsWith(github.ref, 'refs/tags/')
         run: |
+          curl https://luet.io/install.sh | sudo sh
           IMG=$(cat build/IMAGE).img
           sudo tar cvf build.tar build
           sudo luet util pack $IMG build.tar image.tar
