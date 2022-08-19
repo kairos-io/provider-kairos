@@ -11,14 +11,14 @@ builds:
       - amd64
       - 386
     main: ./
-    id: "c3os"
-    binary: "c3os"
+    id: "c3os-cli"
+    binary: "c3os-cli"
 source:
   enabled: true
-  name_template: '{{ .ProjectName }}-{{ .Tag }}-source'
+  name_template: 'c3os-cli-{{ .Tag }}-source'
 archives:
   # Default template uses underscores instead of -
-  - name_template: "{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  - name_template: "c3os-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     replacements:
       darwin: Darwin
       linux: Linux
@@ -26,7 +26,7 @@ archives:
       386: i386
       amd64: x86_64
 checksum:
-  name_template: '{{ .ProjectName }}-{{ .Tag }}-checksums.txt'
+  name_template: 'c3os-cli-{{ .Tag }}-checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
