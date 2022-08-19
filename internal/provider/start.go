@@ -22,8 +22,12 @@ func Start() error {
 	factory.Add(bus.EventChallenge, Challenge)
 
 	factory.Add(bus.EventRecovery, Recovery)
+
 	factory.Add(bus.EventRecoveryStop, RecoveryStop)
+
 	factory.Add(bus.EventInteractiveInstall, InteractiveInstall)
+
+	factory.Add(bus.EventAvailableReleases, ListVersions)
 
 	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
 }
