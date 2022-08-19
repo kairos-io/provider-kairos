@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/c3os-io/c3os/pkg/utils"
 	"github.com/google/go-containerregistry/pkg/crane"
@@ -22,7 +23,15 @@ func ListVersions(e *pluggable.Event) pluggable.EventResponse {
 		return eventError(err)
 	}
 
-	versions, err := json.Marshal(tags)
+	displayTags := []string{}
+
+	for _, t := range tags {
+		if strings.Contains(t, "k3s") {
+			displayTags = append(displayTags, t)
+		}
+	}
+
+	versions, err := json.Marshal(displayTags)
 	resp := &pluggable.EventResponse{
 		Data: string(versions),
 	}
