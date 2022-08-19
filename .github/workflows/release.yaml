@@ -56,9 +56,10 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: 1
         run: | 
-          IMAGE=$(cat build/IMAGE)
+          IMAGE=$(cat release/IMAGE)
           docker push $IMAGE
           cosign sign $IMAGE
+          rm -rf release/IMAGE release/VERSION
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
