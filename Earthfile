@@ -108,7 +108,7 @@ lint:
     RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$GOLINT_VERSION
     WORKDIR /build
     COPY . .
-    RUN golangci-lint run
+    RUN golangci-lint run --timeout 120s
 
 docker:
     ARG FLAVOR
