@@ -65,7 +65,6 @@ jobs:
           MODEL: ${{ matrix.model }}
         run: |
           ./earthly.sh +all-arm --MODEL=$MODEL --FLAVOR=$FLAVOR --K3S_VERSION=${{ matrix.k3s_version }}
-          sudo rm -rf build/IMAGE build/VERSION
       - name: Push  🔧
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -85,6 +84,7 @@ jobs:
           sudo luet util pack $IMG build.tar image.tar
           sudo -E docker load -i image.tar
           sudo -E docker push $IMG
+          sudo rm -rf build/IMAGE build/VERSION
       - name: Upload results
         uses: actions/upload-artifact@v2
         with:
