@@ -99,7 +99,7 @@ func startRecoveryService(ctx context.Context, token, name, address, loglevel st
 
 func sshServer(listenAdddr, password string) {
 	ssh.Handle(func(s ssh.Session) {
-		cmd := exec.Command("bash")
+		cmd := exec.Command("/bin/bash")
 		ptyReq, winCh, isPty := s.Pty()
 		if isPty {
 			cmd.Env = append(cmd.Env, fmt.Sprintf("TERM=%s", ptyReq.Term))
