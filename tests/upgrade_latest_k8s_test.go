@@ -133,7 +133,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 
 			currentVersion, err := machine.SSHCommand("source /etc/os-release; echo $VERSION")
 			Expect(err).ToNot(HaveOccurred())
-			Expect(currentVersion).To(ContainSubstring("c3OS"))
+			Expect(currentVersion).To(ContainSubstring("v"))
 
 			By("installing system-upgrade-controller", func() {
 				resp, err := http.Get("https://github.com/rancher/system-upgrade-controller/releases/download/v0.9.1/system-upgrade-controller.yaml")
@@ -186,7 +186,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 					out, _ := kubectl("get pods -A")
 					fmt.Println(out)
 					version, err := machine.SSHCommand("source /etc/os-release; echo $VERSION")
-					if err != nil || !strings.Contains(version, "v0.0.0") {
+					if err != nil || !strings.Contains(version, "v") {
 						// If we met error, keep going with the Eventually
 						return currentVersion
 					}
