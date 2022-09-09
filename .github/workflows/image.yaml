@@ -322,7 +322,7 @@ jobs:
       # The default value is 'false'
         latest: true
         repository: "c3os-io/provider-c3os"
-        fileName: "*"
+        fileName: "*.iso"
         out-file-path: "last-release"
     - uses: actions/upload-artifact@v2
       with:
