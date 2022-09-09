@@ -321,7 +321,7 @@ jobs:
       # A flag to set the download target as latest release
       # The default value is 'false'
         latest: true
-        repository: "c3os-io/c3os"
+        repository: "c3os-io/provider-c3os"
         fileName: "*"
         out-file-path: "last-release"
     - uses: actions/upload-artifact@v2
