@@ -128,7 +128,7 @@ docker:
         && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" bash installer.sh \
         && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" bash installer.sh agent \
         && rm -rf installer.sh
-    RUN luet install -y utils/edgevpn && luet cleanup
+    RUN luet install -y utils/edgevpn utils/k9s utils/nerdctl container/kubectl && luet cleanup
     # Drop env files from k3s as we will generate them
     IF [ -e "/etc/rancher/k3s/k3s.env" ]
         RUN rm -rf /etc/rancher/k3s/k3s.env /etc/rancher/k3s/k3s-agent.env && touch /etc/rancher/k3s/.keep
