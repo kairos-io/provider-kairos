@@ -441,7 +441,7 @@ jobs:
           go-version: '^1.16'
     - run: |
             ls -liah
-            export ISO=$PWD/$(ls c3os-${{ matrix.flavor }}-*.iso)
+            export ISO=$PWD/$(ls c3os-${{ matrix.flavor }}-*.iso | tail -n1 )
             export GOPATH="/Users/runner/go"
             export CONTAINER_IMAGE=ttl.sh/c3os-${{ matrix.flavor }}-${{ github.sha }}:8h
             export PATH=$PATH:$GOPATH/bin
