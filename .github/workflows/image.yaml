@@ -18,11 +18,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+       k3s-version:
+          - v1.24.4+k3s1
+          - v1.23.10+k3s1
+          - v1.22.13+k3s1
        include:
          - flavor: "opensuse"
          #- flavor: "tumbleweed"
          #- flavor: "fedora"
-         #- flavor: "ubuntu"
+         - flavor: "ubuntu"
          - flavor: "alpine"
     steps:
       - uses: actions/checkout@v2
@@ -42,9 +46,10 @@ jobs:
       - name: Build  🔧
         env:
           FLAVOR: ${{ matrix.flavor }}
+          K3S_VER: ${{ matrix.k3s-version }}
           IMAGE: quay.io/c3os/c3os-${{ matrix.flavor }}:latest
         run: |
-          ./earthly.sh +all --IMAGE=$IMAGE --FLAVOR=$FLAVOR
+          ./earthly.sh +all --IMAGE=$IMAGE --FLAVOR=$FLAVOR --K3S_VERSION=$K3S_VER
           sudo mv build/* .
           sudo rm -rf build
       - uses: actions/upload-artifact@v2
