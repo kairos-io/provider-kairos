@@ -64,7 +64,7 @@ func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
 
 func startRecoveryService(ctx context.Context, token, name, address, loglevel string) error {
 
-	nc := networkConfig(token, "", loglevel, "c3osrecovery0")
+	nc := networkConfig(token, "", loglevel, "kairosrecovery0")
 
 	lvl, err := log.LevelFromString(loglevel)
 	if err != nil {

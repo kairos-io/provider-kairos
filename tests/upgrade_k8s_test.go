@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package mos_test
 
 import (
@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/c3os-io/c3os/tests/machine"
+	"github.com/kairos-io/kairos/tests/machine"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -30,17 +30,17 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		It("has default service active", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
 				out, _ := machine.Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("c3os"))
-				Expect(out).Should(ContainSubstring("c3os-agent"))
+				Expect(out).Should(ContainSubstring("kairos"))
+				Expect(out).Should(ContainSubstring("kairos-agent"))
 				Expect(out).Should(ContainSubstring("crond"))
 			} else {
 				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
+				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.Sudo("systemctl status c3os")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/c3os.service; enabled; vendor preset: disabled)"))
+				out, _ := machine.Sudo("systemctl status kairos")
+				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 
 				out, _ = machine.Sudo("systemctl status logrotate.timer")
 				Expect(out).Should(ContainSubstring("active (waiting)"))
@@ -67,11 +67,11 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		It("has default services on", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
 				out, _ := machine.Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("c3os"))
-				Expect(out).Should(ContainSubstring("c3os-agent"))
+				Expect(out).Should(ContainSubstring("kairos"))
+				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
-				out, _ := machine.Sudo("systemctl status c3os-agent")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/c3os-agent.service; enabled; vendor preset: disabled)"))
+				out, _ := machine.Sudo("systemctl status kairos-agent")
+				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
 				out, _ = machine.Sudo("systemctl status systemd-timesyncd")
 				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
@@ -82,15 +82,15 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 			Eventually(func() string {
 				var out string
 				if os.Getenv("FLAVOR") == "alpine" {
-					out, _ = machine.Sudo("cat /var/log/c3os/agent.log;cat /var/log/c3os-agent.log")
+					out, _ = machine.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
 				} else {
-					out, _ = machine.Sudo("systemctl status c3os-agent")
+					out, _ = machine.Sudo("systemctl status kairos-agent")
 				}
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
 
 			Eventually(func() string {
-				out, _ := machine.Sudo("cat /var/log/c3os/agent-provider.log")
+				out, _ := machine.Sudo("cat /var/log/kairos/agent-provider.log")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(Or(ContainSubstring("One time bootstrap starting"), ContainSubstring("Sentinel exists")))
 
@@ -101,10 +101,10 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		})
 
 		It("rotates logs", func() {
-			out, err := machine.Sudo("logrotate -vf /etc/logrotate.d/c3os")
+			out, err := machine.Sudo("logrotate -vf /etc/logrotate.d/kairos")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(out).To(ContainSubstring("log needs rotating"))
-			_, err = machine.Sudo("ls /var/log/c3os/agent-provider.log.1.gz")
+			_, err = machine.Sudo("ls /var/log/kairos/agent-provider.log.1.gz")
 			Expect(err).ToNot(HaveOccurred())
 		})
 

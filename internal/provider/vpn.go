@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/c3os-io/c3os/pkg/config"
-	"github.com/c3os-io/c3os/pkg/machine/systemd"
-	"github.com/c3os-io/c3os/pkg/utils"
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
-	"github.com/c3os-io/provider-c3os/internal/services"
+	"github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/kairos/pkg/machine/systemd"
+	"github.com/kairos-io/kairos/pkg/utils"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/services"
 
 	yip "github.com/mudler/yip/pkg/schema"
 )
@@ -35,7 +35,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 		"APILISTEN":            apiAddress,
 		"EDGEVPNLOWPROFILEVPN": "true",
 		"DHCP":                 "true",
-		"DHCPLEASEDIR":         "/usr/local/.c3os/lease",
+		"DHCPLEASEDIR":         "/usr/local/.kairos/lease",
 	}
 	// Override opts with user-supplied
 	for k, v := range c.VPN {
@@ -70,7 +70,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 
 	os.MkdirAll("/etc/systemd/system.conf.d/", 0600) //nolint:errcheck
 	// Setup edgevpn instance
-	err = utils.WriteEnv(filepath.Join(rootDir, "/etc/systemd/system.conf.d/edgevpn-c3os.env"), vpnOpts)
+	err = utils.WriteEnv(filepath.Join(rootDir, "/etc/systemd/system.conf.d/edgevpn-kairos.env"), vpnOpts)
 	if err != nil {
 		return fmt.Errorf("could not create write env file: %w", err)
 	}

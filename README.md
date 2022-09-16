@@ -9,7 +9,7 @@
 
 This repository generates c3OS images with full-mesh support. full-mesh support currently is available only with k3s, and the provider follows strictly k3s releases.
 
-To use c3os with mesh support, either download the bootable medium in the releases, or either use c3os light/core with the provider-c3os bundles, during configuration like so:
+To use kairosos with mesh support, either download the bootable medium in the releases, or either use kairos light/core with the provider-kairos bundles, during configuration like so:
 ```yaml
 #node-config
 
@@ -19,11 +19,11 @@ bundles:
 
 ## Upgrades
 
-Upgrading can be done either via Kubernetes or manually with `c3os-agent upgrade --image <image>`, or you can list available versions with `c3os-agent upgrade list-releases`. 
+Upgrading can be done either via Kubernetes or manually with `kairos-agent upgrade --image <image>`, or you can list available versions with `kairos-agent upgrade list-releases`. 
 
 Container images available for upgrades are pushed to quay:
 
-- [OpenSUSE based](https://quay.io/repository/c3os/c3os-opensuse)
-- [Alpine based](https://quay.io/repository/c3os/c3os-alpine)
-- [OpenSUSE RaspberryPi 3/4](https://quay.io/repository/c3os/c3os-opensuse-arm-rpi)
-- [Alpine RaspberryPi 3/4](https://quay.io/repository/c3os/c3os-alpine-arm-rpi)
+- [OpenSUSE based](https://quay.io/repository/kairos/kairos-opensuse)
+- [Alpine based](https://quay.io/repository/kairos/kairos-alpine)
+- [OpenSUSE RaspberryPi 3/4](https://quay.io/repository/kairos/kairos-opensuse-arm-rpi)
+- [Alpine RaspberryPi 3/4](https://quay.io/repository/kairos/kairos-alpine-arm-rpi)

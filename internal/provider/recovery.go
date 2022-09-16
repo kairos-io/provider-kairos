@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/c3os-io/c3os/pkg/utils"
+	"github.com/kairos-io/kairos/pkg/utils"
 
 	nodepair "github.com/mudler/go-nodepair"
 	"github.com/mudler/go-pluggable"

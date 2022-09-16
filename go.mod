@@ -1,11 +1,11 @@
-module github.com/c3os-io/provider-c3os
+module github.com/kairos-io/provider-kairos
 
 go 1.18
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
 require (
-	github.com/c3os-io/c3os v1.24.3-56.0.20220818151915-d719856bd7c3
+	github.com/kairos-io/kairos v1.24.3-56.0.20220818151915-d719856bd7c3
 	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0

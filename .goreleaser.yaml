@@ -11,14 +11,14 @@ builds:
       - amd64
       - 386
     main: ./
-    id: "c3os-cli"
-    binary: "c3os-cli"
+    id: "kairos-cli"
+    binary: "kairos-cli"
 source:
   enabled: true
-  name_template: 'c3os-cli-{{ .Tag }}-source'
+  name_template: 'kairos-cli-{{ .Tag }}-source'
 archives:
   # Default template uses underscores instead of -
-  - name_template: "c3os-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  - name_template: "kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     replacements:
       darwin: Darwin
       linux: Linux
@@ -26,7 +26,7 @@ archives:
       386: i386
       amd64: x86_64
 checksum:
-  name_template: 'c3os-cli-{{ .Tag }}-checksums.txt'
+  name_template: 'kairos-cli-{{ .Tag }}-checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:

@@ -1,9 +1,9 @@
 VERSION 0.6
 
-IMPORT github.com/c3os-io/c3os
+IMPORT github.com/kairos-io/kairos
 
 FROM alpine
-ARG VARIANT=c3os # core, lite, framework
+ARG VARIANT=kairos # core, lite, framework
 ARG FLAVOR=opensuse
 
 ## Versioning
@@ -16,8 +16,8 @@ ARG VERSION=$(cat VERSION)
 RUN echo "version ${VERSION}"
 ARG K3S_VERSION_TAG=$(echo $K3S_VERSION | sed s/+/-/)
 ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
-ARG IMAGE=quay.io/c3os/${VARIANT}-${FLAVOR}:$TAG
-ARG BASE_IMAGE=quay.io/c3os/core-${FLAVOR}:${CORE_VERSION}
+ARG IMAGE=quay.io/kairos/${VARIANT}-${FLAVOR}:$TAG
+ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
 
 ## External deps pinned versions
@@ -26,7 +26,7 @@ ARG ELEMENTAL_IMAGE=quay.io/costoolkit/elemental-cli:v0.0.15-8a78e6b
 ARG GOLINT_VERSION=1.47.3
 ARG GO_VERSION=1.18
 
-ARG OS_ID=c3os
+ARG OS_ID=kairos
 ARG CGO_ENABLED=0
 
 RELEASEVERSION:
@@ -83,12 +83,12 @@ BUILD_GOLANG:
     RUN go build -ldflags "-s -w" -o ${BIN} ${SRC} && upx ${BIN}
     SAVE ARTIFACT ${BIN} ${BIN} AS LOCAL build/${BIN}
 
-build-c3os-agent-provider:
+build-kairos-agent-provider:
     FROM +go-deps
-    DO +BUILD_GOLANG --BIN=agent-provider-c3os --SRC=./ --CGO_ENABLED=$CGO_ENABLED
+    DO +BUILD_GOLANG --BIN=agent-provider-kairos --SRC=./ --CGO_ENABLED=$CGO_ENABLED
 
 build:
-    BUILD +build-c3os-agent-provider
+    BUILD +build-kairos-agent-provider
 
 dist:
     ARG GO_VERSION
@@ -134,8 +134,8 @@ docker:
         RUN rm -rf /etc/rancher/k3s/k3s.env /etc/rancher/k3s/k3s-agent.env && touch /etc/rancher/k3s/.keep
     END
 
-    COPY +build-c3os-agent-provider/agent-provider-c3os /system/providers/agent-provider-c3os
-    RUN ln -s /system/providers/agent-provider-c3os /usr/bin/c3os
+    COPY +build-kairos-agent-provider/agent-provider-kairos /system/providers/agent-provider-kairos
+    RUN ln -s /system/providers/agent-provider-kairos /usr/bin/kairos
 
     ARG C3OS_VERSION
     IF [ "$C3OS_VERSION" = "" ]
@@ -146,10 +146,10 @@ docker:
     
     ARG OS_ID
     ARG OS_NAME=${OS_ID}-${FLAVOR}
-    ARG OS_REPO=quay.io/c3os/${VARIANT}-${FLAVOR}
+    ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
     ARG OS_LABEL=latest
 
-    DO c3os+OSRELEASE --BUG_REPORT_URL="https://github.com/c3os-io/c3os/issues/new/choose" --HOME_URL="https://github.com/c3os-io/provider-c3os" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="c3os-io/provider-c3os"
+    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos"
 
     SAVE IMAGE $IMAGE
 
@@ -162,18 +162,18 @@ elemental:
     FROM ${ELEMENTAL_IMAGE}
     SAVE ARTIFACT /usr/bin/elemental elemental
 
-c3os:
+kairos:
    ARG C3OS_VERSION=master
    FROM alpine
    RUN apk add git
-   WORKDIR /c3os
-   RUN git clone https://github.com/c3os-io/c3os /c3os && cd /c3os && git checkout "$C3OS_VERSION"
-   SAVE ARTIFACT /c3os/
+   WORKDIR /kairos
+   RUN git clone https://github.com/kairos-io/kairos /kairos && cd /kairos && git checkout "$C3OS_VERSION"
+   SAVE ARTIFACT /kairos/
 
-get-c3os-scripts:
+get-kairos-scripts:
     FROM alpine
     WORKDIR /build
-    COPY +c3os/c3os/ ./
+    COPY +kairos/kairos/ ./
     SAVE ARTIFACT /build/scripts AS LOCAL scripts
 
 iso:
@@ -189,27 +189,27 @@ iso:
 
     COPY . ./
     RUN mkdir -p overlay/files-iso
-    COPY +c3os/c3os/overlay/files-iso/ ./overlay/files-iso/
+    COPY +kairos/kairos/overlay/files-iso/ ./overlay/files-iso/
 
     WITH DOCKER --allow-privileged --load $IMAGE=(+docker)
         RUN elemental --repo $TOOLKIT_REPOSITORY --name $ISO_NAME --debug build-iso --date=false --local --overlay-iso /build/${overlay} $IMAGE --output /build/
     END
     # See: https://github.com/rancher/elemental-cli/issues/228
     RUN sha256sum $ISO_NAME.iso > $ISO_NAME.iso.sha256
-    SAVE ARTIFACT /build/$ISO_NAME.iso c3os.iso AS LOCAL build/$ISO_NAME.iso
-    SAVE ARTIFACT /build/$ISO_NAME.iso.sha256 c3os.iso.sha256 AS LOCAL build/$ISO_NAME.iso.sha256
+    SAVE ARTIFACT /build/$ISO_NAME.iso kairos.iso AS LOCAL build/$ISO_NAME.iso
+    SAVE ARTIFACT /build/$ISO_NAME.iso.sha256 kairos.iso.sha256 AS LOCAL build/$ISO_NAME.iso.sha256
 
 netboot:
    FROM opensuse/leap
    ARG VERSION
    ARG ISO_NAME
    WORKDIR /build
-   COPY +iso/c3os.iso c3os.iso
+   COPY +iso/kairos.iso kairos.iso
    COPY . .
    RUN zypper in -y cdrtools
 
-   COPY +c3os/c3os/scripts/netboot.sh ./
-   RUN sh netboot.sh c3os.iso $ISO_NAME $VERSION
+   COPY +kairos/kairos/scripts/netboot.sh ./
+   RUN sh netboot.sh kairos.iso $ISO_NAME $VERSION
 
    SAVE ARTIFACT /build/$ISO_NAME.squashfs squashfs AS LOCAL build/$ISO_NAME.squashfs
    SAVE ARTIFACT /build/$ISO_NAME-kernel kernel AS LOCAL build/$ISO_NAME-kernel
@@ -323,13 +323,13 @@ run-qemu-tests:
 
     IF [ "$FROM_ARTIFACTS" = "true" ]
         COPY . .
-        ENV ISO=/test/build/c3os.iso
+        ENV ISO=/test/build/kairos.iso
         ENV DATASOURCE=/test/build/datasource.iso
     ELSE
         COPY ./tests .
-        COPY +iso/c3os.iso c3os.iso
+        COPY +iso/kairos.iso kairos.iso
         COPY ( +datasource-iso/iso.iso --CLOUD_CONFIG=$CLOUD_CONFIG) datasource.iso
-        ENV ISO=/test/c3os.iso
+        ENV ISO=/test/kairos.iso
         ENV DATASOURCE=/test/datasource.iso
     END
 
@@ -340,12 +340,12 @@ run-qemu-tests:
 test-create-config:
     FROM alpine
     ARG WITH_DNS
-    COPY +build-c3os-agent-provider/agent-provider-c3os agent-provider-c3os
+    COPY +build-kairos-agent-provider/agent-provider-kairos agent-provider-kairos
     COPY . .
-    RUN ./agent-provider-c3os create-config > config.yaml
+    RUN ./agent-provider-kairos create-config > config.yaml
     RUN cat tests/assets/config.yaml >> config.yaml 
     IF [ "$WITH_DNS" == "true" ]
         RUN apk add yq
-        RUN yq -i '.c3os.dns = true' 'config.yaml'
+        RUN yq -i '.kairos.dns = true' 'config.yaml'
     END
     SAVE ARTIFACT config.yaml AS LOCAL config.yaml

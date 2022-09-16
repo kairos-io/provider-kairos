@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package mos_test
 
 import (
@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/c3os-io/c3os/tests/machine"
+	"github.com/kairos-io/kairos/tests/machine"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
 )
 
-var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func() {
+var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), func() {
 	BeforeEach(func() {
 		machine.EventuallyConnects()
 	})
@@ -28,16 +28,16 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 		It("has default service active", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
 				out, _ := machine.SSHCommand("sudo rc-status")
-				Expect(out).Should(ContainSubstring("c3os"))
-				Expect(out).Should(ContainSubstring("c3os-agent"))
+				Expect(out).Should(ContainSubstring("kairos"))
+				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
 				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
+				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.SSHCommand("sudo systemctl status c3os")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/c3os.service; enabled; vendor preset: disabled)"))
+				out, _ := machine.SSHCommand("sudo systemctl status kairos")
+				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 			}
 		})
 	})
@@ -61,16 +61,16 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 		It("has default services on", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
 				out, _ := machine.SSHCommand("sudo rc-status")
-				Expect(out).Should(ContainSubstring("c3os"))
-				Expect(out).Should(ContainSubstring("c3os-agent"))
+				Expect(out).Should(ContainSubstring("kairos"))
+				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
 				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
+				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/c3os-agent.service; enabled; vendor preset: disabled)"))
+				out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
+				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
 				out, _ = machine.SSHCommand("sudo systemctl status systemd-timesyncd")
 				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
@@ -92,10 +92,10 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 				out, _ = machine.SSHCommand("sudo mount " + state + " /tmp/mnt/STATE")
 				fmt.Println(out)
 				out, _ = machine.SSHCommand("sudo cat /tmp/mnt/STATE/grubmenu")
-				Expect(out).Should(ContainSubstring("c3os remote recovery"))
+				Expect(out).Should(ContainSubstring("kairos remote recovery"))
 
 				grub, _ := machine.SSHCommand("sudo cat /tmp/mnt/STATE/grub_oem_env")
-				Expect(grub).Should(ContainSubstring("default_menu_entry=c3os"))
+				Expect(grub).Should(ContainSubstring("default_menu_entry=kairos"))
 
 				machine.SSHCommand("sudo umount /tmp/mnt/STATE")
 			})
@@ -113,7 +113,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 			Expect(err).To(HaveOccurred())
 			if os.Getenv("FLAVOR") == "alpine" {
 				Eventually(func() string {
-					out, _ := machine.SSHCommand("sudo cat /var/log/c3os/agent.log")
+					out, _ := machine.SSHCommand("sudo cat /var/log/kairos/agent.log")
 					fmt.Println(out)
 					return out
 				}, 20*time.Minute, 1*time.Second).Should(
@@ -123,7 +123,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 					))
 			} else {
 				Eventually(func() string {
-					out, _ := machine.SSHCommand("sudo systemctl status c3os-agent")
+					out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
 					return out
 				}, 30*time.Minute, 1*time.Second).Should(
 					Or(
@@ -135,7 +135,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 
 		PIt("configure edgevpn", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("sudo cat /etc/systemd/system.conf.d/edgevpn-c3os.env")
+				out, _ := machine.SSHCommand("sudo cat /etc/systemd/system.conf.d/edgevpn-kairos.env")
 				return out
 			}, 1*time.Minute, 1*time.Second).Should(
 				And(
@@ -145,22 +145,22 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 
 		It("propagate kubeconfig", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("c3os get-kubeconfig")
+				out, _ := machine.SSHCommand("kairos get-kubeconfig")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
 			Eventually(func() string {
-				machine.SSHCommand("c3os get-kubeconfig > kubeconfig")
+				machine.SSHCommand("kairos get-kubeconfig > kubeconfig")
 				out, _ := machine.SSHCommand("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("Ready"))
 		})
 
 		It("has roles", func() {
-			uuid, _ := machine.SSHCommand("c3os-agent uuid")
+			uuid, _ := machine.SSHCommand("kairos-agent uuid")
 			Expect(uuid).ToNot(Equal(""))
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("c3os role list")
+				out, _ := machine.SSHCommand("kairos role list")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring(uuid),
@@ -203,7 +203,7 @@ var _ = Describe("c3os decentralized k8s test", Label("decentralized-k8s"), func
 		It("upgrades to a specific version", func() {
 			version, _ := machine.SSHCommand("source /etc/os-release; echo $VERSION")
 
-			out, _ := machine.SSHCommand("sudo c3os-agent upgrade --image quay.io/c3os/c3os:opensuse-v1.21.4-32")
+			out, _ := machine.SSHCommand("sudo kairos-agent upgrade --image quay.io/kairos/kairos:opensuse-v1.21.4-32")
 			Expect(out).To(ContainSubstring("Upgrade completed"))
 
 			machine.SSHCommand("sudo sync")

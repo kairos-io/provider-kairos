@@ -187,10 +187,10 @@ github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23/go.mod h1:bbYlZJ7
 github.com/butuzov/ireturn v0.1.1/go.mod h1:Wh6Zl3IMtTpaIKbmwzqi6olnM9ptYQxxVacMsOEFPoc=
 github.com/c-robinson/iplib v1.0.3 h1:NG0UF0GoEsrC1/vyfX1Lx2Ss7CySWl3KqqXh3q4DdPU=
 github.com/c-robinson/iplib v1.0.3/go.mod h1:i3LuuFL1hRT5gFpBRnEydzw8R6yhGkF4szNDIbF8pgo=
-github.com/c3os-io/c3os v1.24.3-56.0.20220812161215-f983eeb2bf4f h1:sYDd9y7rn3BvE5iKaxBJqhr3kZQNDhbJSc8WRMemB8I=
-github.com/c3os-io/c3os v1.24.3-56.0.20220812161215-f983eeb2bf4f/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
-github.com/c3os-io/c3os v1.24.3-56.0.20220818151915-d719856bd7c3 h1:6WPdTiAWhxVyF2SecI5y9COscCll0W93UoJmtu9nrbU=
-github.com/c3os-io/c3os v1.24.3-56.0.20220818151915-d719856bd7c3/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
+github.com/kairos-io/kairos v1.24.3-56.0.20220812161215-f983eeb2bf4f h1:sYDd9y7rn3BvE5iKaxBJqhr3kZQNDhbJSc8WRMemB8I=
+github.com/kairos-io/kairos v1.24.3-56.0.20220812161215-f983eeb2bf4f/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
+github.com/kairos-io/kairos v1.24.3-56.0.20220818151915-d719856bd7c3 h1:6WPdTiAWhxVyF2SecI5y9COscCll0W93UoJmtu9nrbU=
+github.com/kairos-io/kairos v1.24.3-56.0.20220818151915-d719856bd7c3/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cavaliergopher/grab v2.0.0+incompatible/go.mod h1:6ICNRTQPwkMP0m2sKIDv/9XkhFJJwiEOQyZ+8E4H7Yg=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=

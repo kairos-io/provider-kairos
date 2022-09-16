@@ -1,11 +1,11 @@
 package services
 
 import (
-	"github.com/c3os-io/c3os/pkg/machine/openrc"
-	"github.com/c3os-io/c3os/pkg/machine/systemd"
+	"github.com/kairos-io/kairos/pkg/machine/openrc"
+	"github.com/kairos-io/kairos/pkg/machine/systemd"
 
-	"github.com/c3os-io/c3os/pkg/machine"
-	"github.com/c3os-io/c3os/pkg/utils"
+	"github.com/kairos-io/kairos/pkg/machine"
+	"github.com/kairos-io/kairos/pkg/utils"
 )
 
 const edgevpnOpenRC string = `#!/sbin/openrc-run
@@ -23,7 +23,7 @@ pidfile="/run/edgevpn.pid"
 respawn_delay=5
 set -o allexport
 if [ -f /etc/environment ]; then source /etc/environment; fi
-if [ -f /etc/systemd/system.conf.d/edgevpn-c3os.env ]; then source /etc/systemd/system.conf.d/edgevpn-c3os.env; fi
+if [ -f /etc/systemd/system.conf.d/edgevpn-kairos.env ]; then source /etc/systemd/system.conf.d/edgevpn-kairos.env; fi
 set +o allexport`
 
 const edgevpnSystemd string = `[Unit]
@@ -37,7 +37,7 @@ Restart=always
 [Install]
 WantedBy=multi-user.target`
 
-const EdgeVPNDefaultInstance string = "c3os"
+const EdgeVPNDefaultInstance string = "kairos"
 
 func EdgeVPN(instance, rootDir string) (machine.Service, error) {
 	if utils.IsOpenRCBased() {

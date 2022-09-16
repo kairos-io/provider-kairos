@@ -3,10 +3,10 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/c3os-io/c3os/sdk/bus"
+	"github.com/kairos-io/kairos/sdk/bus"
 
-	"github.com/c3os-io/c3os/pkg/config"
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	"github.com/kairos-io/kairos/pkg/config"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 
 	"github.com/mudler/go-nodepair"
 	"github.com/mudler/go-pluggable"

@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	config "github.com/c3os-io/c3os/pkg/config"
-	"github.com/c3os-io/provider-c3os/internal/provider"
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
-	"github.com/c3os-io/provider-c3os/internal/services"
+	config "github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/provider-kairos/internal/provider"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/services"
 	"gopkg.in/yaml.v3"
 )
 
@@ -63,9 +63,9 @@ func ReplaceToken(dir []string, token string) (err error) {
 		return err
 	}
 
-	section, exists := content["c3os"]
+	section, exists := content["kairos"]
 	if !exists {
-		return errors.New("no c3os section in config file")
+		return errors.New("no kairos section in config file")
 	}
 
 	dd, err := yaml.Marshal(section)
@@ -80,7 +80,7 @@ func ReplaceToken(dir []string, token string) (err error) {
 	}
 
 	piece["network_token"] = token
-	content["c3os"] = piece
+	content["kairos"] = piece
 
 	d, err := yaml.Marshal(content)
 	if err != nil {
