@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/c3os-io/c3os/sdk/bus"
-	cli "github.com/c3os-io/provider-c3os/internal/cli"
+	"github.com/kairos-io/kairos/sdk/bus"
+	cli "github.com/kairos-io/provider-kairos/internal/cli"
 
-	"github.com/c3os-io/provider-c3os/internal/provider"
+	"github.com/kairos-io/provider-kairos/internal/provider"
 )
 
 func checkErr(err error) {

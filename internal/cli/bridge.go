@@ -6,8 +6,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/c3os-io/c3os/pkg/utils"
 	"github.com/ipfs/go-log"
+	"github.com/kairos-io/kairos/pkg/utils"
 	"github.com/mudler/edgevpn/api"
 	"github.com/mudler/edgevpn/pkg/logger"
 	"github.com/mudler/edgevpn/pkg/node"
@@ -51,7 +51,7 @@ func bridge(c *cli.Context) error {
 
 	ctx := context.Background()
 
-	nc := networkConfig(token, c.String("address"), c.String("log-level"), "c3os0")
+	nc := networkConfig(token, c.String("address"), c.String("log-level"), "kairos0")
 
 	lvl, err := log.LevelFromString(nc.LogLevel)
 	if err != nil {

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/c3os-io/c3os/pkg/config"
-	. "github.com/c3os-io/provider-c3os/internal/cli"
+	"github.com/kairos-io/kairos/pkg/config"
+	. "github.com/kairos-io/provider-kairos/internal/cli"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/yaml.v2"
@@ -15,7 +15,7 @@ import (
 type TConfig struct {
 	C3OS struct {
 		NetworkToken string `yaml:"network_token"`
-	} `yaml:"c3os"`
+	} `yaml:"kairos"`
 }
 
 var _ = Describe("Get config", func() {
@@ -24,7 +24,7 @@ var _ = Describe("Get config", func() {
 		It("replace token in config files", func() {
 
 			var cc string = `#node-config
-c3os:
+kairos:
   network_token: "foo"
 
 bb: 
@@ -54,8 +54,8 @@ fooz:
 			Expect(hasHeader).To(BeTrue())
 
 			Expect(res).To(Equal(map[interface{}]interface{}{
-				"c3os": map[interface{}]interface{}{"network_token": "baz"},
-				"bb":   map[interface{}]interface{}{"nothing": "foo"},
+				"kairos": map[interface{}]interface{}{"network_token": "baz"},
+				"bb":     map[interface{}]interface{}{"nothing": "foo"},
 			}))
 		})
 

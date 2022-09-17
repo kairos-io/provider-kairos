@@ -9,7 +9,7 @@ import (
 
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v1"
 
@@ -25,7 +25,7 @@ var networkAPI = []cli.Flag{
 	},
 	&cli.StringFlag{
 		Name:  "network-id",
-		Value: "c3os",
+		Value: "kairos",
 		Usage: "Kubernetes Network Deployment ID",
 	},
 }
@@ -34,12 +34,12 @@ const recoveryAddr = "127.0.0.1:2222"
 
 func Start() error {
 	app := &cli.App{
-		Name:    "c3os",
+		Name:    "kairos",
 		Version: "0.1",
 		Author:  "Ettore Di Giacinto",
-		Usage:   "c3os CLI to bootstrap, upgrade, connect and manage a c3os network",
+		Usage:   "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
 		Description: `
-The c3os CLI can be used to manage a c3os box and perform all day-two tasks, like:
+The kairos CLI can be used to manage a kairos box and perform all day-two tasks, like:
 - register a node
 - connect to a node in recovery mode
 - to establish a VPN connection
@@ -48,7 +48,7 @@ The c3os CLI can be used to manage a c3os box and perform all day-two tasks, lik
 
 and much more.
 
-For all the example cases, see: https://docs.c3os.io .
+For all the example cases, see: https://docs.kairos.io .
 `,
 		UsageText: ``,
 		Copyright: "Ettore Di Giacinto",
@@ -89,16 +89,16 @@ For all the example cases, see: https://docs.c3os.io .
 				UsageText: "register --reboot --device /dev/sda /image/snapshot.png",
 				Usage:     "Registers and bootstraps a node",
 				Description: `
-		Bootstraps a node which is started in pairing mode. It can send over a configuration file used to install the c3os node.
+		Bootstraps a node which is started in pairing mode. It can send over a configuration file used to install the kairos node.
 		
 		For example:
-		$ c3os register --config config.yaml --device /dev/sda ~/Downloads/screenshot.png
+		$ kairos register --config config.yaml --device /dev/sda ~/Downloads/screenshot.png
 		
 		will decode the QR code from ~/Downloads/screenshot.png and bootstrap the node remotely.
 		
 		If the image is omitted, a screenshot will be taken and used to decode the QR code.
 		
-		See also https://docs.c3os.io/installation/device_pairing/ for documentation.
+		See also https://docs.kairos.io/installation/device_pairing/ for documentation.
 		`,
 				ArgsUsage: "Register optionally accepts an image. If nothing is passed will take a screenshot of the screen and try to decode the QR code",
 				Flags: []cli.Flag{
@@ -137,9 +137,9 @@ For all the example cases, see: https://docs.c3os.io .
 			{
 				Name:      "bridge",
 				UsageText: "bridge --network-token XXX",
-				Usage:     "Connect to a c3os VPN network",
+				Usage:     "Connect to a kairos VPN network",
 				Description: `
-		Starts a bridge with a c3os network or a node. 
+		Starts a bridge with a kairos network or a node. 
 		
 		# With a network
 		
@@ -147,7 +147,7 @@ For all the example cases, see: https://docs.c3os.io .
 		
 		For example:
 		
-		$ sudo c3os bridge --network-token <TOKEN>
+		$ sudo kairos bridge --network-token <TOKEN>
 		
 		Will start a VPN, which local ip is fixed to 10.1.0.254 (tweakable with --address).
 		
@@ -155,16 +155,16 @@ For all the example cases, see: https://docs.c3os.io .
 		
 		# With a node
 		
-		"c3os bridge" can be used also to connect over to a node in recovery mode. When operating in this modality c3os bridge requires no specific permissions, indeed a tunnel
+		"kairos bridge" can be used also to connect over to a node in recovery mode. When operating in this modality kairos bridge requires no specific permissions, indeed a tunnel
 		will be created locally to connect to the machine remotely.
 		
 		For example:
 		
-		$ c3os bridge --qr-code-image /path/to/image.png
+		$ kairos bridge --qr-code-image /path/to/image.png
 		
 		Will scan the QR code in the image and connect over. Further instructions on how to connect over will be printed out to the screen.
 		
-		See also: https://docs.c3os.io/after_install/troubleshooting/#connect-to-the-cluster-network and https://docs.c3os.io/after_install/recovery_mode/
+		See also: https://docs.kairos.io/after_install/troubleshooting/#connect-to-the-cluster-network and https://docs.kairos.io/after_install/recovery_mode/
 		
 		`,
 				Flags: []cli.Flag{
@@ -210,7 +210,7 @@ For all the example cases, see: https://docs.c3os.io .
 						Usage:  "Specify an address for the bridge",
 					},
 					&cli.StringFlag{
-						Value:  "/tmp/c3os",
+						Value:  "/tmp/kairos",
 						Name:   "lease-dir",
 						EnvVar: "lease-dir",
 						Usage:  "DHCP Lease directory",
@@ -221,7 +221,7 @@ For all the example cases, see: https://docs.c3os.io .
 			{
 				Name:      "get-kubeconfig",
 				Usage:     "Return a deployment kubeconfig",
-				UsageText: "Retrieve a c3os network kubeconfig (only for automated deployments)",
+				UsageText: "Retrieve a kairos network kubeconfig (only for automated deployments)",
 				Description: `
 		Retrieve a network kubeconfig and prints out to screen.
 		
@@ -229,7 +229,7 @@ For all the example cases, see: https://docs.c3os.io .
 		
 		For example:
 		
-		$ c3os get-kubeconfig --network-id c3os
+		$ kairos get-kubeconfig --network-id kairos
 		`,
 				Flags: networkAPI,
 				Action: func(c *cli.Context) error {
@@ -251,16 +251,16 @@ For all the example cases, see: https://docs.c3os.io .
 						Flags:     networkAPI,
 						Name:      "set",
 						Usage:     "Set a node role",
-						UsageText: "c3os role set <UUID> master",
+						UsageText: "kairos role set <UUID> master",
 						Description: `
 		Sets a node role propagating the setting to the network.
 		
-		A role must be set prior to the node joining a network. You can retrieve a node UUID by running "c3os uuid".
+		A role must be set prior to the node joining a network. You can retrieve a node UUID by running "kairos uuid".
 		
 		Example:
 		
-		$ (node A) c3os uuid
-		$ (node B) c3os role set <UUID of node A> master
+		$ (node A) kairos uuid
+		$ (node B) kairos role set <UUID of node A> master
 		`,
 						Action: func(c *cli.Context) error {
 							cc := service.NewClient(
@@ -295,7 +295,7 @@ For all the example cases, see: https://docs.c3os.io .
 
 				Usage: "Creates a pristine config file",
 				Description: `
-		Prints a vanilla YAML configuration on screen which can be used to bootstrap a c3os network.
+		Prints a vanilla YAML configuration on screen which can be used to bootstrap a kairos network.
 		`,
 				ArgsUsage: "Optionally takes a token rotation interval (seconds)",
 
@@ -319,7 +319,7 @@ For all the example cases, see: https://docs.c3os.io .
 				UsageText: "Generate a network token",
 				Usage:     "Creates a new token",
 				Description: `
-		Generates a new token which can be used to bootstrap a c3os network.
+		Generates a new token which can be used to bootstrap a kairos network.
 		`,
 				ArgsUsage: "Optionally takes a token rotation interval (seconds)",
 

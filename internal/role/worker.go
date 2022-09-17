@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c3os-io/c3os/pkg/config"
-	"github.com/c3os-io/c3os/pkg/machine"
-	"github.com/c3os-io/c3os/pkg/utils"
+	"github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/kairos/pkg/machine"
+	"github.com/kairos-io/kairos/pkg/utils"
 
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 

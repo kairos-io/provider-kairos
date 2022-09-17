@@ -6,22 +6,22 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c3os-io/c3os/sdk/bus"
+	"github.com/kairos-io/kairos/sdk/bus"
 
 	logging "github.com/ipfs/go-log"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 	"go.uber.org/zap"
 
-	"github.com/c3os-io/c3os/pkg/machine"
-	"github.com/c3os-io/c3os/pkg/machine/openrc"
-	"github.com/c3os-io/c3os/pkg/machine/systemd"
-	"github.com/c3os-io/c3os/pkg/utils"
-	sdk "github.com/c3os-io/c3os/sdk/bus"
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
-	"github.com/c3os-io/provider-c3os/internal/role"
-	"github.com/c3os-io/provider-c3os/internal/services"
+	"github.com/kairos-io/kairos/pkg/machine"
+	"github.com/kairos-io/kairos/pkg/machine/openrc"
+	"github.com/kairos-io/kairos/pkg/machine/systemd"
+	"github.com/kairos-io/kairos/pkg/utils"
+	sdk "github.com/kairos-io/kairos/sdk/bus"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/role"
+	"github.com/kairos-io/provider-kairos/internal/services"
 
-	"github.com/c3os-io/c3os/pkg/config"
+	"github.com/kairos-io/kairos/pkg/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/mudler/go-pluggable"
 )
@@ -49,11 +49,11 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (providerConfig.C3OS != nil && providerConfig.C3OS.NetworkToken == "")
 
 	if providerConfig.C3OS == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
-		return pluggable.EventResponse{State: "no c3os or k3s configuration. nothing to do"}
+		return pluggable.EventResponse{State: "no kairos or k3s configuration. nothing to do"}
 	}
 
-	utils.SH("elemental run-stage c3os-agent.bootstrap")    //nolint:errcheck
-	sdk.RunHookScript("/usr/bin/c3os-agent.bootstrap.hook") //nolint:errcheck
+	utils.SH("elemental run-stage kairos-agent.bootstrap")    //nolint:errcheck
+	sdk.RunHookScript("/usr/bin/kairos-agent.bootstrap.hook") //nolint:errcheck
 
 	logLevel := "debug"
 
@@ -81,7 +81,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	log := &logging.ZapEventLogger{SugaredLogger: *logger.Sugar()}
 
 	// Do onetimebootstrap if K3s or K3s-agent are enabled.
-	// Those blocks are not required to be enabled in case of a c3os
+	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
 	if providerConfig.K3s.Enabled || providerConfig.K3sAgent.Enabled {
 		err := oneTimeBootstrap(log, providerConfig, func() error {
@@ -100,7 +100,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return ErrorEvent("Failed setup VPN: %s", err.Error())
 	}
 
-	networkID := "c3os"
+	networkID := "kairos"
 
 	if providerConfig.C3OS != nil && providerConfig.C3OS.NetworkID != "" {
 		networkID = providerConfig.C3OS.NetworkID
@@ -114,7 +114,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithLogger(log),
 		service.WithClient(cc),
 		service.WithUUID(machine.UUID()),
-		service.WithStateDir("/usr/local/.c3os/state"),
+		service.WithStateDir("/usr/local/.kairos/state"),
 		service.WithNetworkToken(providerConfig.C3OS.NetworkToken),
 		service.WithPersistentRoles("auto"),
 		service.WithRoles(

@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/c3os-io/c3os/sdk/bus"
+	"github.com/kairos-io/kairos/sdk/bus"
 
-	. "github.com/c3os-io/provider-c3os/internal/provider"
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	. "github.com/kairos-io/provider-kairos/internal/provider"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/mudler/go-pluggable"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

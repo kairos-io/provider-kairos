@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/c3os-io/c3os/pkg/utils"
+	"github.com/kairos-io/kairos/pkg/utils"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/mudler/go-pluggable"
 )

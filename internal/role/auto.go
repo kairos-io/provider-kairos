@@ -1,9 +1,9 @@
 package role
 
 import (
-	"github.com/c3os-io/c3os/pkg/config"
+	"github.com/kairos-io/kairos/pkg/config"
 
-	providerConfig "github.com/c3os-io/provider-c3os/internal/provider/config"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	utils "github.com/mudler/edgevpn/pkg/utils"
 
 	service "github.com/mudler/edgevpn/api/client/service"

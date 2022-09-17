@@ -10,12 +10,12 @@ import (
 type Role func(*service.RoleConfig) error
 
 func SentinelExist() bool {
-	if _, err := os.Stat("/usr/local/.c3os/deployed"); err == nil {
+	if _, err := os.Stat("/usr/local/.kairos/deployed"); err == nil {
 		return true
 	}
 	return false
 }
 
 func CreateSentinel() error {
-	return ioutil.WriteFile("/usr/local/.c3os/deployed", []byte{}, os.ModePerm)
+	return ioutil.WriteFile("/usr/local/.kairos/deployed", []byte{}, os.ModePerm)
 }
