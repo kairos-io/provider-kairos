@@ -187,10 +187,6 @@ github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23/go.mod h1:bbYlZJ7
 github.com/butuzov/ireturn v0.1.1/go.mod h1:Wh6Zl3IMtTpaIKbmwzqi6olnM9ptYQxxVacMsOEFPoc=
 github.com/c-robinson/iplib v1.0.3 h1:NG0UF0GoEsrC1/vyfX1Lx2Ss7CySWl3KqqXh3q4DdPU=
 github.com/c-robinson/iplib v1.0.3/go.mod h1:i3LuuFL1hRT5gFpBRnEydzw8R6yhGkF4szNDIbF8pgo=
-github.com/kairos-io/kairos v1.24.3-56.0.20220812161215-f983eeb2bf4f h1:sYDd9y7rn3BvE5iKaxBJqhr3kZQNDhbJSc8WRMemB8I=
-github.com/kairos-io/kairos v1.24.3-56.0.20220812161215-f983eeb2bf4f/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
-github.com/kairos-io/kairos v1.24.3-56.0.20220818151915-d719856bd7c3 h1:6WPdTiAWhxVyF2SecI5y9COscCll0W93UoJmtu9nrbU=
-github.com/kairos-io/kairos v1.24.3-56.0.20220818151915-d719856bd7c3/go.mod h1:YvuC8j7UNOKlYgOWJIBGw0iK+wZqqnYT1aMpTvaDAvE=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cavaliergopher/grab v2.0.0+incompatible/go.mod h1:6ICNRTQPwkMP0m2sKIDv/9XkhFJJwiEOQyZ+8E4H7Yg=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
@@ -736,6 +732,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/P7kNBrnL/FEQlDGN1/6WoxXEjSSXO0DV0=
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
+github.com/kairos-io/kairos v1.0.0-rc2 h1:CSgrEFGMiApfcbz2/LmGwnvPeaQJWnz8GbiK7rCQ8SA=
+github.com/kairos-io/kairos v1.0.0-rc2/go.mod h1:zrRil2eirKMOiyZGNBwVaX7qc2IEg7QnoB0f8W/Gwno=
 github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d/go.mod h1:P2viExyCEfeWGU259JnaQ34Inuec4R38JCyBx2edgD0=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
@@ -1211,7 +1209,6 @@ github.com/mudler/go-nodepair v0.0.0-20220507212557-7d47aa3cc1f1 h1:CJZab2AadIHF
 github.com/mudler/go-nodepair v0.0.0-20220507212557-7d47aa3cc1f1/go.mod h1:KU8NqS1PhoJ8qVfPyXclR/XptuoxML8jQdb7eheJjqo=
 github.com/mudler/go-pluggable v0.0.0-20220716112424-189d463e3ff3 h1:t4X6t8WisUy5mExfS58RBOkzaEGmuor5kOUMQS8lT2g=
 github.com/mudler/go-pluggable v0.0.0-20220716112424-189d463e3ff3/go.mod h1:WmKcT8ONmhDQIqQ+HxU+tkGWjzBEyY/KFO8LTGCu4AI=
-github.com/mudler/go-processmanager v0.0.0-20211226182900-899fbb0b97f6 h1:LiWUDzDh/DkFYhUeIIdWPuMt/LsEVD3vc/QKDVXlWAY=
 github.com/mudler/go-processmanager v0.0.0-20211226182900-899fbb0b97f6/go.mod h1:HGGAOJhipApckwNV8ZTliRJqxctUv3xRY+zbQEwuytc=
 github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d h1:/lAg9vPAAU+s35cDMCx1IyeMn+4OYfCBPqi08Q8vXDg=
 github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d/go.mod h1:HGGAOJhipApckwNV8ZTliRJqxctUv3xRY+zbQEwuytc=
