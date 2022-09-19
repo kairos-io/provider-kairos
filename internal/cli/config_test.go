@@ -13,7 +13,7 @@ import (
 )
 
 type TConfig struct {
-	C3OS struct {
+	Kairos struct {
 		NetworkToken string `yaml:"network_token"`
 	} `yaml:"kairos"`
 }

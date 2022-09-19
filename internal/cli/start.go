@@ -104,7 +104,7 @@ For all the example cases, see: https://docs.kairos.io .
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "config",
-						Usage: "C3OS YAML configuration file",
+						Usage: "Kairos YAML configuration file",
 					},
 					&cli.StringFlag{
 						Name:  "device",
@@ -307,7 +307,7 @@ For all the example cases, see: https://docs.kairos.io .
 							l = i
 						}
 					}
-					cc := &providerConfig.Config{C3OS: &providerConfig.C3OS{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
+					cc := &providerConfig.Config{Kairos: &providerConfig.Kairos{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
 					y, _ := yaml.Marshal(cc)
 					fmt.Println(string(y))
 					return nil

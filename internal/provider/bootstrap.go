@@ -46,9 +46,9 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 	// TODO: this belong to a systemd service that is started instead
 
-	tokenNotDefined := (providerConfig.C3OS != nil && providerConfig.C3OS.NetworkToken == "")
+	tokenNotDefined := (providerConfig.Kairos != nil && providerConfig.Kairos.NetworkToken == "")
 
-	if providerConfig.C3OS == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
+	if providerConfig.Kairos == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
 		return pluggable.EventResponse{State: "no kairos or k3s configuration. nothing to do"}
 	}
 
@@ -57,8 +57,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logLevel := "debug"
 
-	if providerConfig.C3OS != nil && providerConfig.C3OS.LogLevel != "" {
-		logLevel = providerConfig.C3OS.LogLevel
+	if providerConfig.Kairos != nil && providerConfig.Kairos.LogLevel != "" {
+		logLevel = providerConfig.Kairos.LogLevel
 	}
 
 	lvl, err := logging.LevelFromString(logLevel)
@@ -102,8 +102,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	networkID := "kairos"
 
-	if providerConfig.C3OS != nil && providerConfig.C3OS.NetworkID != "" {
-		networkID = providerConfig.C3OS.NetworkID
+	if providerConfig.Kairos != nil && providerConfig.Kairos.NetworkID != "" {
+		networkID = providerConfig.Kairos.NetworkID
 	}
 
 	cc := service.NewClient(
@@ -115,7 +115,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithClient(cc),
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
-		service.WithNetworkToken(providerConfig.C3OS.NetworkToken),
+		service.WithNetworkToken(providerConfig.Kairos.NetworkToken),
 		service.WithPersistentRoles("auto"),
 		service.WithRoles(
 			service.RoleKey{
@@ -134,8 +134,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	// Optionally set up a specific node role if the user has defined so
-	if providerConfig.C3OS.Role != "" {
-		nodeOpts = append(nodeOpts, service.WithDefaultRoles(providerConfig.C3OS.Role))
+	if providerConfig.Kairos.Role != "" {
+		nodeOpts = append(nodeOpts, service.WithDefaultRoles(providerConfig.Kairos.Role))
 	}
 
 	k, err := service.NewNode(nodeOpts...)

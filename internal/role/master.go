@@ -75,10 +75,10 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return errors.New("node doesn't have an ip yet")
 		}
 
-		if pconfig.C3OS.Role != "" {
+		if pconfig.Kairos.Role != "" {
 			// propagate role if we were forced by configuration
 			// This unblocks eventual auto instances to try to assign roles
-			if err := c.Client.Set("role", c.UUID, pconfig.C3OS.Role); err != nil {
+			if err := c.Client.Set("role", c.UUID, pconfig.Kairos.Role); err != nil {
 				c.Logger.Error(err)
 			}
 		}

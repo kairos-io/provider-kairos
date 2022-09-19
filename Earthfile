@@ -137,11 +137,11 @@ docker:
     COPY +build-kairos-agent-provider/agent-provider-kairos /system/providers/agent-provider-kairos
     RUN ln -s /system/providers/agent-provider-kairos /usr/bin/kairos
 
-    ARG C3OS_VERSION
-    IF [ "$C3OS_VERSION" = "" ]
+    ARG KAIROS_VERSION
+    IF [ "$KAIROS_VERSION" = "" ]
         ARG OS_VERSION=${VERSION}
     ELSE 
-        ARG OS_VERSION=${C3OS_VERSION}
+        ARG OS_VERSION=${KAIROS_VERSION}
     END
     
     ARG OS_ID
@@ -163,11 +163,11 @@ elemental:
     SAVE ARTIFACT /usr/bin/elemental elemental
 
 kairos:
-   ARG C3OS_VERSION=master
+   ARG KAIROS_VERSION=master
    FROM alpine
    RUN apk add git
    WORKDIR /kairos
-   RUN git clone https://github.com/kairos-io/kairos /kairos && cd /kairos && git checkout "$C3OS_VERSION"
+   RUN git clone https://github.com/kairos-io/kairos /kairos && cd /kairos && git checkout "$KAIROS_VERSION"
    SAVE ARTIFACT /kairos/
 
 get-kairos-scripts:

@@ -17,7 +17,7 @@ import (
 
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
 
-	if c.C3OS == nil || c.C3OS.NetworkToken == "" {
+	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
 		return fmt.Errorf("no network token defined")
 	}
 
@@ -30,7 +30,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"EDGEVPNTOKEN":         c.C3OS.NetworkToken,
+		"EDGEVPNTOKEN":         c.Kairos.NetworkToken,
 		"API":                  "true",
 		"APILISTEN":            apiAddress,
 		"EDGEVPNLOWPROFILEVPN": "true",
@@ -42,7 +42,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 		vpnOpts[k] = v
 	}
 
-	if c.C3OS.DNS {
+	if c.Kairos.DNS {
 		vpnOpts["DNSADDRESS"] = "127.0.0.1:53"
 		vpnOpts["DNSFORWARD"] = "true"
 		if !utils.IsOpenRCBased() {

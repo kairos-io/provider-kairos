@@ -39,7 +39,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		toSelect := unassignedNodes
 
 		// Avoid to schedule to ourselves if we have a static role
-		if pconfig.C3OS.Role != "" {
+		if pconfig.Kairos.Role != "" {
 			toSelect = []string{}
 			for _, u := range unassignedNodes {
 				if u != c.UUID {

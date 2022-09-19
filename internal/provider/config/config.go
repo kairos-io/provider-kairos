@@ -1,6 +1,6 @@
 package config
 
-type C3OS struct {
+type Kairos struct {
 	NetworkToken string `yaml:"network_token,omitempty"`
 	NetworkID    string `yaml:"network_id,omitempty"`
 	Role         string `yaml:"role,omitempty"`
@@ -9,7 +9,7 @@ type C3OS struct {
 }
 
 type Config struct {
-	C3OS     *C3OS             `yaml:"kairos,omitempty"`
+	Kairos   *Kairos           `yaml:"kairos,omitempty"`
 	K3sAgent K3s               `yaml:"k3s-agent,omitempty"`
 	K3s      K3s               `yaml:"k3s,omitempty"`
 	VPN      map[string]string `yaml:"vpn,omitempty"`
