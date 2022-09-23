@@ -19,6 +19,7 @@ ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
 ARG IMAGE=quay.io/kairos/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
+ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.32.4
@@ -177,22 +178,18 @@ get-kairos-scripts:
     SAVE ARTIFACT /build/scripts AS LOCAL scripts
 
 iso:
-    ARG ELEMENTAL_IMAGE
-    ARG ISO_NAME
+    ARG OSBUILDER_IMAGE
+    ARG ISO_NAME=${OS_ID}
     ARG IMG=docker:$IMAGE
     ARG overlay=overlay/files-iso
-
-    ARG TOOLKIT_REPOSITORY=quay.io/costoolkit/releases-teal
-    FROM $ELEMENTAL_IMAGE
+    FROM $OSBUILDER_IMAGE
     RUN zypper in -y jq docker
     WORKDIR /build
-
     COPY . ./
     RUN mkdir -p overlay/files-iso
     COPY +kairos/kairos/overlay/files-iso/ ./overlay/files-iso/
-
     WITH DOCKER --allow-privileged --load $IMAGE=(+docker)
-        RUN elemental --repo $TOOLKIT_REPOSITORY --name $ISO_NAME --debug build-iso --date=false --local --overlay-iso /build/${overlay} $IMAGE --output /build/
+        RUN /entrypoint.sh --name $ISO_NAME --debug build-iso --date=false --local --overlay-iso /build/${overlay} $IMAGE --output /build/
     END
     # See: https://github.com/rancher/elemental-cli/issues/228
     RUN sha256sum $ISO_NAME.iso > $ISO_NAME.iso.sha256
