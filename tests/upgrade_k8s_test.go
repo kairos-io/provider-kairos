@@ -158,7 +158,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 					fmt.Println(out)
 					version, _ := machine.SSHCommand("source /etc/os-release; echo $VERSION")
 					return version
-				}, 20*time.Minute, 10*time.Second).Should(ContainSubstring("v"))
+				}, 30*time.Minute, 10*time.Second).Should(ContainSubstring("v"))
 			})
 		})
 	})
