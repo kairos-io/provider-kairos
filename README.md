@@ -24,6 +24,7 @@ Upgrading can be done either via Kubernetes or manually with `kairos-agent upgra
 Container images available for upgrades are pushed to quay:
 
 - [OpenSUSE based](https://quay.io/repository/kairos/kairos-opensuse)
+- [Ubuntu based](https://quay.io/repository/kairos/kairos-ubuntu)
 - [Alpine based](https://quay.io/repository/kairos/kairos-alpine)
 - [OpenSUSE RaspberryPi 3/4](https://quay.io/repository/kairos/kairos-opensuse-arm-rpi)
 - [Alpine RaspberryPi 3/4](https://quay.io/repository/kairos/kairos-alpine-arm-rpi)

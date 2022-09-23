@@ -24,6 +24,7 @@ jobs:
          #- flavor: "fedora"
          #- flavor: "ubuntu"
          - flavor: "alpine"
+         - flavor: "ubuntu"
     steps:
       - uses: actions/checkout@v2
       - run: |
