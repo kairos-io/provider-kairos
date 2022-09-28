@@ -732,8 +732,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/P7kNBrnL/FEQlDGN1/6WoxXEjSSXO0DV0=
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
-github.com/kairos-io/kairos v1.0.0-rc2 h1:CSgrEFGMiApfcbz2/LmGwnvPeaQJWnz8GbiK7rCQ8SA=
-github.com/kairos-io/kairos v1.0.0-rc2/go.mod h1:zrRil2eirKMOiyZGNBwVaX7qc2IEg7QnoB0f8W/Gwno=
+github.com/kairos-io/kairos v1.0.0 h1:nE/4a3eeIqPAwHIBV/C9WGbFfa3bXh4uix4wR98a4ts=
+github.com/kairos-io/kairos v1.0.0/go.mod h1:zrRil2eirKMOiyZGNBwVaX7qc2IEg7QnoB0f8W/Gwno=
 github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d/go.mod h1:P2viExyCEfeWGU259JnaQ34Inuec4R38JCyBx2edgD0=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
