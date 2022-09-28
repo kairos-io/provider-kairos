@@ -104,7 +104,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		It("has default image sizes", func() {
 			for _, p := range []string{"active.img", "passive.img"} {
 				out, _ := machine.SSHCommand(`sudo stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
-				Expect(out).Should(ContainSubstring("2097152000"))
+				Expect(out).Should(ContainSubstring("3145728000"))
 			}
 		})
 
