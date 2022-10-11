@@ -12,6 +12,18 @@
     "k3s_version": "v1.24.6+k3s1"
   },
   {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
+    "flavor": "fedora",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
     "flavor": "opensuse",
     "k3s_version": "v1.25.2+k3s1"
   },
@@ -21,6 +33,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.25.2+k3s1"
   },
   {
@@ -36,6 +60,18 @@
     "k3s_version": "v1.16.15+k3s1"
   },
   {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.16.15+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.16.15+k3s1"
+  },
+  {
+    "flavor": "fedora",
+    "k3s_version": "v1.16.15+k3s1"
+  },
+  {
     "flavor": "opensuse",
     "k3s_version": "v1.17.17+k3s1"
   },
@@ -48,6 +84,18 @@
     "k3s_version": "v1.17.17+k3s1"
   },
   {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.17.17+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.17.17+k3s1"
+  },
+  {
+    "flavor": "fedora",
+    "k3s_version": "v1.17.17+k3s1"
+  },
+  {
     "flavor": "opensuse",
     "k3s_version": "v1.18.20+k3s1"
   },
@@ -57,6 +105,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.18.20+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.18.20+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.18.20+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.18.20+k3s1"
   },
   {
@@ -69,6 +129,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.19.16+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.19.16+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.19.16+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.19.16+k3s1"
   },
   {
@@ -81,6 +153,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.20.15+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.20.15+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.20.15+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.20.15+k3s1"
   },
   {
@@ -93,6 +177,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.21.14+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.21.14+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.21.14+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.21.14+k3s1"
   },
   {
@@ -105,6 +201,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.22.15+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.22.15+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.22.15+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.22.15+k3s1"
   },
   {
@@ -117,6 +225,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.23.12+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.23.12+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.23.12+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.23.12+k3s1"
   },
   {
@@ -129,6 +249,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.24.6+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.24.6+k3s1"
   },
   {
@@ -141,6 +273,18 @@
   },
   {
     "flavor": "ubuntu",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "ubuntu-20-lts",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "ubuntu-22-lts",
+    "k3s_version": "v1.25.2+k3s1"
+  },
+  {
+    "flavor": "fedora",
     "k3s_version": "v1.25.2+k3s1"
   }
 ]
