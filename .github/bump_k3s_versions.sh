@@ -2,7 +2,7 @@
 
 versions=$(curl https://update.k3s.io/v1-release/channels | jq -rc '.data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest')
 
-amd64_flavor=("opensuse" "alpine" "ubuntu" "ubuntu-rolling" "fedora")
+amd64_flavor=("opensuse" "alpine" "ubuntu" "ubuntu-20-lts" "ubuntu-22-lts" "fedora")
 arm64_flavor=("opensuse-arm-rpi" "alpine-arm-rpi")
 arm64_models=("rpi64")
 releases="[]"
