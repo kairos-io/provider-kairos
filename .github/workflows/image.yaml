@@ -322,6 +322,12 @@ jobs:
 
   latest-release:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+       include:
+         - flavor: "alpine"
+         - flavor: "opensuse"
     steps:
     - uses: robinraju/release-downloader@v1.5
       with:     
@@ -329,11 +335,11 @@ jobs:
       # The default value is 'false'
         latest: true
         repository: "kairos-io/provider-kairos"
-        fileName: "*.iso"
+        fileName: "kairos-${{ matrix.flavor }}-*v1.25*.iso"
         out-file-path: "last-release"
     - uses: actions/upload-artifact@v2
       with:
-          name: latest-release.zip
+          name: latest-release-${{ matrix.flavor }}.zip
           path: last-release
           if-no-files-found: error
 
@@ -438,7 +444,7 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
-        name: latest-release.zip
+        name: latest-release-${{ matrix.flavor }}.zip
     - name: Install deps
       run: |
         brew install cdrtools jq
