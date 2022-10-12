@@ -66,9 +66,10 @@ test:
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.1.4
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.1.4
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.1.4
-    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-    RUN curl https://luet.io/install.sh | sh
+
+    COPY (kairos+luet/luet) /usr/bin/luet
     COPY . .
+    RUN go install github.com/onsi/ginkgo/v2/ginkgo
     RUN ginkgo run --fail-fast --slow-spec-threshold 30s --covermode=atomic --coverprofile=coverage.out -p -r ./internal
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
@@ -315,7 +316,6 @@ run-qemu-tests:
 
     ENV GOPATH="/go"
 
-    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
     ENV CLOUD_CONFIG=$CLOUD_CONFIG
 
     IF [ "$FROM_ARTIFACTS" = "true" ]
@@ -329,6 +329,8 @@ run-qemu-tests:
         ENV ISO=/test/kairos.iso
         ENV DATASOURCE=/test/datasource.iso
     END
+
+    RUN go install github.com/onsi/ginkgo/v2/ginkgo
 
     ENV CLOUD_INIT=$CLOUD_CONFIG
 
