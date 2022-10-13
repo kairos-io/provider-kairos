@@ -92,7 +92,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				out, _ = machine.SSHCommand("sudo mount " + state + " /tmp/mnt/STATE")
 				fmt.Println(out)
 				out, _ = machine.SSHCommand("sudo cat /tmp/mnt/STATE/grubmenu")
-				Expect(out).Should(ContainSubstring("kairos remote recovery"))
+				Expect(out).Should(ContainSubstring("Kairos remote recovery"))
 
 				grub, _ := machine.SSHCommand("sudo cat /tmp/mnt/STATE/grub_oem_env")
 				Expect(grub).Should(ContainSubstring("default_menu_entry=Kairos"))

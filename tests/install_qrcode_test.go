@@ -68,7 +68,7 @@ var _ = Describe("kairos qr code install", Label("qrcode-install"), func() {
 				Eventually(func() string {
 					v, _ = machine.SSHCommand("ps aux")
 					return v
-				}, 10*time.Minute, 10*time.Second).Should(ContainSubstring("elemental install"))
+				}, 20*time.Minute, 10*time.Second).Should(ContainSubstring("elemental install"))
 			})
 
 			By("checking that the installer has terminated", func() {
