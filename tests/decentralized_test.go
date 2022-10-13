@@ -7,15 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kairos-io/kairos/tests/machine"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
+	. "github.com/spectrocloud/peg/matcher"
 )
 
 var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), func() {
 	BeforeEach(func() {
-		machine.EventuallyConnects()
+		EventuallyConnects()
 	})
 
 	AfterEach(func() {
@@ -27,7 +27,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 	Context("live cd", func() {
 		It("has default service active", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
-				out, _ := machine.SSHCommand("sudo rc-status")
+				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
@@ -36,7 +36,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.SSHCommand("sudo systemctl status kairos")
+				out, _ := Sudo("systemctl status kairos")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 			}
 		})
@@ -44,15 +44,14 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 	Context("install", func() {
 		It("to disk with custom config", func() {
-			err := machine.SendFile(os.Getenv("CLOUD_INIT"), "/tmp/config.yaml", "0770")
+			err := Machine.SendFile(os.Getenv("CLOUD_INIT"), "/tmp/config.yaml", "0770")
 			Expect(err).ToNot(HaveOccurred())
 
-			out, _ := machine.SSHCommand("sudo elemental install --cloud-init /tmp/config.yaml /dev/sda")
+			out, _ := Sudo("kairos-agent manual-install --device auto /tmp/config.yaml")
 			Expect(out).Should(ContainSubstring("Running after-install hook"))
 			fmt.Println(out)
-			machine.SSHCommand("sudo sync")
-			machine.DetachCD()
-			machine.Restart()
+			Sudo("sync")
+			detachAndReboot()
 		})
 	})
 
@@ -60,7 +59,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 		It("has default services on", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
-				out, _ := machine.SSHCommand("sudo rc-status")
+				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
@@ -69,10 +68,10 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
+				out, _ := Sudo("systemctl status kairos-agent")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
-				out, _ = machine.SSHCommand("sudo systemctl status systemd-timesyncd")
+				out, _ = Sudo("systemctl status systemd-timesyncd")
 				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 			}
 		})
@@ -83,37 +82,37 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			}
 
 			By("checking entries", func() {
-				state, _ := machine.SSHCommand("sudo blkid -L COS_STATE")
+				state, _ := Sudo("blkid -L COS_STATE")
 				state = strings.TrimSpace(state)
-				out, _ := machine.SSHCommand("sudo blkid")
+				out, _ := Sudo("blkid")
 				fmt.Println(out)
-				out, _ = machine.SSHCommand("sudo mkdir -p /tmp/mnt/STATE")
+				out, _ = Sudo("mkdir -p /tmp/mnt/STATE")
 				fmt.Println(out)
-				out, _ = machine.SSHCommand("sudo mount " + state + " /tmp/mnt/STATE")
+				out, _ = Sudo("mount " + state + " /tmp/mnt/STATE")
 				fmt.Println(out)
-				out, _ = machine.SSHCommand("sudo cat /tmp/mnt/STATE/grubmenu")
+				out, _ = Sudo("cat /tmp/mnt/STATE/grubmenu")
 				Expect(out).Should(ContainSubstring("Kairos remote recovery"))
 
-				grub, _ := machine.SSHCommand("sudo cat /tmp/mnt/STATE/grub_oem_env")
+				grub, _ := Sudo("cat /tmp/mnt/STATE/grub_oem_env")
 				Expect(grub).Should(ContainSubstring("default_menu_entry=Kairos"))
 
-				machine.SSHCommand("sudo umount /tmp/mnt/STATE")
+				Sudo("umount /tmp/mnt/STATE")
 			})
 		})
 
 		It("has default image sizes", func() {
 			for _, p := range []string{"active.img", "passive.img"} {
-				out, _ := machine.SSHCommand(`sudo stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
+				out, _ := Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
 				Expect(out).Should(ContainSubstring("3145728000"))
 			}
 		})
 
 		It("configure k3s", func() {
-			_, err := machine.SSHCommand("cat /run/cos/live_mode")
+			_, err := Machine.Command("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred())
 			if os.Getenv("FLAVOR") == "alpine" {
 				Eventually(func() string {
-					out, _ := machine.SSHCommand("sudo cat /var/log/kairos/agent.log")
+					out, _ := Sudo("sudo cat /var/log/kairos/agent.log")
 					fmt.Println(out)
 					return out
 				}, 20*time.Minute, 1*time.Second).Should(
@@ -123,7 +122,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					))
 			} else {
 				Eventually(func() string {
-					out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
+					out, _ := Sudo("systemctl status kairos-agent")
 					return out
 				}, 30*time.Minute, 1*time.Second).Should(
 					Or(
@@ -135,7 +134,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 		PIt("configure edgevpn", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("sudo cat /etc/systemd/system.conf.d/edgevpn-kairos.env")
+				out, _ := Sudo("cat /etc/systemd/system.conf.d/edgevpn-kairos.env")
 				return out
 			}, 1*time.Minute, 1*time.Second).Should(
 				And(
@@ -145,22 +144,22 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 		It("propagate kubeconfig", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("kairos get-kubeconfig")
+				out, _ := Machine.Command("kairos get-kubeconfig")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
 			Eventually(func() string {
-				machine.SSHCommand("kairos get-kubeconfig > kubeconfig")
-				out, _ := machine.SSHCommand("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
+				Machine.Command("kairos get-kubeconfig > kubeconfig")
+				out, _ := Machine.Command("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("Ready"))
 		})
 
 		It("has roles", func() {
-			uuid, _ := machine.SSHCommand("kairos-agent uuid")
+			uuid, _ := Machine.Command("kairos-agent uuid")
 			Expect(uuid).ToNot(Equal(""))
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("kairos role list")
+				out, _ := Machine.Command("kairos role list")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring(uuid),
@@ -173,7 +172,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 		It("has machines with different IPs", func() {
 			Eventually(func() string {
-				out, _ := machine.SSHCommand(`curl http://localhost:8080/api/machines`)
+				out, _ := Machine.Command(`curl http://localhost:8080/api/machines`)
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring("10.1.0.1"),
@@ -186,14 +185,14 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				Skip("DNS not working on alpine yet")
 			}
 			Eventually(func() string {
-				machine.SSHCommand(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
-				out, _ := machine.SSHCommand("ping -c 1 foo.bar")
+				Machine.Command(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
+				out, _ := Machine.Command("ping -c 1 foo.bar")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring("2.2.2.2"),
 			))
 			Eventually(func() string {
-				out, _ := machine.SSHCommand("ping -c 1 google.com")
+				out, _ := Machine.Command("ping -c 1 google.com")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring("64 bytes from"),
@@ -201,17 +200,17 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		})
 
 		It("upgrades to a specific version", func() {
-			version, _ := machine.SSHCommand("source /etc/os-release; echo $VERSION")
+			version, _ := Machine.Command("source /etc/os-release; echo $VERSION")
 
-			out, _ := machine.SSHCommand("sudo kairos-agent upgrade --image quay.io/kairos/kairos-opensuse:v1.0.0-rc2-k3sv1.21.14-k3s1")
+			out, _ := Sudo("kairos-agent upgrade --image quay.io/kairos/kairos-opensuse:v1.0.0-rc2-k3sv1.21.14-k3s1")
 			Expect(out).To(ContainSubstring("Upgrade completed"))
 
-			machine.SSHCommand("sudo sync")
-			machine.Restart()
+			Sudo("sync")
+			Reboot()
 
-			machine.EventuallyConnects(700)
+			EventuallyConnects(700)
 
-			version2, _ := machine.SSHCommand("source /etc/os-release; echo $VERSION")
+			version2, _ := Machine.Command("source /etc/os-release; echo $VERSION")
 			Expect(version).ToNot(Equal(version2))
 		})
 	})
