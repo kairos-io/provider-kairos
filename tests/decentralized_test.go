@@ -100,13 +100,6 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			})
 		})
 
-		It("has default image sizes", func() {
-			for _, p := range []string{"active.img", "passive.img"} {
-				out, _ := Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
-				Expect(out).Should(ContainSubstring("3145728000"))
-			}
-		})
-
 		It("configure k3s", func() {
 			_, err := Machine.Command("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred())
@@ -140,6 +133,13 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				And(
 					ContainSubstring("EDGEVPNLOGLEVEL=\"debug\""),
 				))
+		})
+
+		It("has default image sizes", func() {
+			for _, p := range []string{"active.img", "passive.img"} {
+				out, _ := Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
+				Expect(out).Should(ContainSubstring("3145728000"))
+			}
 		})
 
 		It("propagate kubeconfig", func() {
