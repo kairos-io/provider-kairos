@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/kairos-io/kairos/pkg/utils"
 	"github.com/google/go-containerregistry/pkg/crane"
+	"github.com/kairos-io/kairos/pkg/utils"
 	"github.com/mudler/go-pluggable"
 )
 

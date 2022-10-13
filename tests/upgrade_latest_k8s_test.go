@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kairos-io/kairos/tests/machine"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	. "github.com/spectrocloud/peg/matcher"
 )
 
 func sucYAML(image, version string) string {
@@ -46,7 +46,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 	containerImage := os.Getenv("CONTAINER_IMAGE")
 
 	BeforeEach(func() {
-		machine.EventuallyConnects()
+		EventuallyConnects()
 	})
 
 	AfterEach(func() {
@@ -61,16 +61,16 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				Fail("CONTAINER_IMAGE needs to be set")
 			}
 			if os.Getenv("FLAVOR") == "alpine" {
-				out, _ := machine.Sudo("rc-status")
+				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
 				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
+				// 	out, _ := Machine.Command("sudo systemctl status kairos-agent")
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.Sudo("systemctl status kairos")
+				out, _ := Sudo("systemctl status kairos")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 			}
 		})
@@ -78,15 +78,14 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 
 	Context("install", func() {
 		It("to disk with custom config", func() {
-			err := machine.SendFile("assets/single.yaml", "/tmp/config.yaml", "0770")
+			err := Machine.SendFile("assets/single.yaml", "/tmp/config.yaml", "0770")
 			Expect(err).ToNot(HaveOccurred())
 
-			out, _ := machine.Sudo("elemental install --cloud-init /tmp/config.yaml /dev/sda")
+			out, _ := Sudo("elemental install --cloud-init /tmp/config.yaml /dev/sda")
 			Expect(out).Should(ContainSubstring("Running after-install hook"))
 			fmt.Println(out)
-			machine.Sudo("sync")
-			machine.DetachCD()
-			machine.Restart()
+			Sudo("sync")
+			detachAndReboot()
 		})
 	})
 
@@ -94,19 +93,19 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 
 		It("has default services on", func() {
 			if os.Getenv("FLAVOR") == "alpine" {
-				out, _ := machine.Sudo("rc-status")
+				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
 				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
+				// 	out, _ := Machine.Command("sudo systemctl status kairos-agent")
 				// 	return out
 				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := machine.Sudo("systemctl status kairos-agent")
+				out, _ := Sudo("systemctl status kairos-agent")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
-				out, _ = machine.Sudo("systemctl status systemd-timesyncd")
+				out, _ = Sudo("systemctl status systemd-timesyncd")
 				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 			}
 		})
@@ -115,23 +114,23 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 			Eventually(func() string {
 				var out string
 				if os.Getenv("FLAVOR") == "alpine" {
-					out, _ = machine.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
+					out, _ = Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
 				} else {
-					out, _ = machine.Sudo("systemctl status kairos-agent")
+					out, _ = Sudo("systemctl status kairos-agent")
 				}
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
 
 			Eventually(func() string {
-				out, _ := machine.Sudo("cat /etc/rancher/k3s/k3s.yaml")
+				out, _ := Sudo("cat /etc/rancher/k3s/k3s.yaml")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
 			kubectl := func(s string) (string, error) {
-				return machine.Sudo("k3s kubectl " + s)
+				return Sudo("k3s kubectl " + s)
 			}
 
-			currentVersion, err := machine.SSHCommand("source /etc/os-release; echo $VERSION")
+			currentVersion, err := Machine.Command("source /etc/os-release; echo $VERSION")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(currentVersion).To(ContainSubstring("v"))
 
@@ -151,7 +150,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				err = ioutil.WriteFile(temp.Name(), data.Bytes(), os.ModePerm)
 				Expect(err).ToNot(HaveOccurred())
 
-				err = machine.SendFile(temp.Name(), "/tmp/kubectl.yaml", "0770")
+				err = Machine.SendFile(temp.Name(), "/tmp/kubectl.yaml", "0770")
 				Expect(err).ToNot(HaveOccurred())
 
 				Eventually(func() string {
@@ -166,7 +165,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				err := ioutil.WriteFile("assets/generated.yaml", []byte(suc), os.ModePerm)
 				Expect(err).ToNot(HaveOccurred())
 
-				err = machine.SendFile("assets/generated.yaml", "./suc.yaml", "0770")
+				err = Machine.SendFile("assets/generated.yaml", "./suc.yaml", "0770")
 				Expect(err).ToNot(HaveOccurred())
 				fmt.Println(suc)
 
@@ -185,13 +184,13 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				Eventually(func() string {
 					out, _ := kubectl("get pods -A")
 					fmt.Println(out)
-					version, err := machine.SSHCommand("source /etc/os-release; echo $VERSION")
+					version, err := Machine.Command("source /etc/os-release; echo $VERSION")
 					if err != nil || !strings.Contains(version, "v") {
 						// If we met error, keep going with the Eventually
 						return currentVersion
 					}
 					return version
-				}, 30*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion))
+				}, 50*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion))
 			})
 		})
 	})
