@@ -190,7 +190,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 						return currentVersion
 					}
 					return version
-				}, 30*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion))
+				}, 50*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion))
 			})
 		})
 	})
