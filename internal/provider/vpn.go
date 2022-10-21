@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +17,13 @@ import (
 	yip "github.com/mudler/yip/pkg/schema"
 )
 
+func SaveOEMCloudConfig(name string, yc yip.YipConfig) error {
+	dnsYAML, err := yaml.Marshal(yc)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("100_%s.yaml", name)), dnsYAML, 0700)
+}
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
 
 	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
@@ -49,15 +57,25 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 		dnsConfig := yip.YipConfig{
 			Name: "DNS Configuration",
 			Stages: map[string][]yip.Stage{
-				"boot": {{Dns: yip.DNS{Nameservers: []string{"127.0.0.1"}}}}},
+				"initramfs": {
+					{
+						Files: []yip.File{{
+							Path: "/etc/systemd/resolved.conf", Content: `
+[Resolve]
+DNS=127.0.0.1`,
+						}},
+					},
+					{
+						Dns: yip.DNS{Nameservers: []string{"127.0.0.1"}}},
+				}},
 		}
 
-		dat, err := yaml.Marshal(dnsConfig)
+		dat, err := yaml.Marshal(&dnsConfig)
 		if err == nil {
-			machine.ExecuteInlineCloudConfig(string(dat), "boot")
+			machine.ExecuteInlineCloudConfig(string(dat), config.NetworkStage.String())
 		}
 
-		if err := config.SaveCloudConfig("dns", dnsConfig); err != nil {
+		if err := SaveOEMCloudConfig("vpn_dns", dnsConfig); err != nil {
 			return fmt.Errorf("could not create dns config: %w", err)
 		}
 	}
