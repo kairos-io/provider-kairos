@@ -19,11 +19,10 @@ ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
 ARG IMAGE=quay.io/kairos/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
-ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools
+ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.2.1
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.32.4
-ARG ELEMENTAL_IMAGE=quay.io/costoolkit/elemental-cli:v0.0.15-8a78e6b
 ARG GOLINT_VERSION=1.47.3
 ARG GO_VERSION=1.18
 
@@ -159,11 +158,6 @@ docker-rootfs:
     FROM +docker
     SAVE ARTIFACT /. rootfs
 
-elemental:
-    ARG ELEMENTAL_IMAGE
-    FROM ${ELEMENTAL_IMAGE}
-    SAVE ARTIFACT /usr/bin/elemental elemental
-
 kairos:
    ARG KAIROS_VERSION=master
    FROM alpine
@@ -215,15 +209,11 @@ netboot:
    SAVE ARTIFACT /build/$ISO_NAME.ipxe ipxe AS LOCAL build/$ISO_NAME.ipxe
 
 arm-image:
-  ARG ELEMENTAL_IMAGE
-  FROM $ELEMENTAL_IMAGE
+  ARG OSBUILDER_IMAGE
+  FROM $OSBUILDER_IMAGE
   ARG MODEL=rpi64
   ARG IMAGE_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}.img
-  RUN zypper in -y jq docker git curl gptfdisk kpartx sudo
-  #COPY +luet/luet /usr/bin/luet
   WORKDIR /build
-  RUN git clone https://github.com/rancher/elemental-toolkit && mkdir elemental-toolkit/build
-  RUN curl https://luet.io/install.sh | sh
   ENV STATE_SIZE="6200"
   ENV RECOVERY_SIZE="4200"
   ENV SIZE="15200"
@@ -231,12 +221,11 @@ arm-image:
   COPY --platform=linux/arm64 +docker-rootfs/rootfs /build/image
   # With docker is required for loop devices
   WITH DOCKER --allow-privileged
-    RUN cd elemental-toolkit && \
-          ./images/arm-img-builder.sh --model $MODEL --directory "/build/image" build/$IMAGE_NAME && mv build ../
+    RUN /build-arm-image.sh --model $MODEL --directory "/build/image" /build/$IMAGE_NAME
   END
-  RUN xz -v /build/build/$IMAGE_NAME
-  SAVE ARTIFACT /build/build/$IMAGE_NAME.xz img AS LOCAL build/$IMAGE_NAME
-  SAVE ARTIFACT /build/build/$IMAGE_NAME.sha256 img-sha256 AS LOCAL build/$IMAGE_NAME.sha256
+  RUN xz -v /build/$IMAGE_NAME
+  SAVE ARTIFACT /build/$IMAGE_NAME.xz img AS LOCAL build/$IMAGE_NAME.xz
+  SAVE ARTIFACT /build/$IMAGE_NAME.sha256 img-sha256 AS LOCAL build/$IMAGE_NAME.sha256
 
 ipxe-iso:
     FROM ubuntu
