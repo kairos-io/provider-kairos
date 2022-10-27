@@ -61,11 +61,9 @@ go-deps:
 test:
     FROM +go-deps
     WORKDIR /build
-    RUN go get github.com/onsi/gomega/...
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.1.4
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.1.4
     RUN go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.1.4
-
     COPY (kairos+luet/luet) /usr/bin/luet
     COPY . .
     RUN go install github.com/onsi/ginkgo/v2/ginkgo
