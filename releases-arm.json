@@ -2,22 +2,22 @@
   {
     "flavor": "opensuse-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.24.6+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   },
   {
     "flavor": "alpine-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.24.6+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   },
   {
     "flavor": "opensuse-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.25.2+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   },
   {
     "flavor": "alpine-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.25.2+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   },
   {
     "flavor": "opensuse-arm-rpi",
@@ -92,31 +92,31 @@
   {
     "flavor": "opensuse-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.23.12+k3s1"
+    "k3s_version": "v1.23.13+k3s1"
   },
   {
     "flavor": "alpine-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.23.12+k3s1"
+    "k3s_version": "v1.23.13+k3s1"
   },
   {
     "flavor": "opensuse-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.24.6+k3s1"
+    "k3s_version": "v1.24.7+k3s1"
   },
   {
     "flavor": "alpine-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.24.6+k3s1"
+    "k3s_version": "v1.24.7+k3s1"
   },
   {
     "flavor": "opensuse-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.25.2+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   },
   {
     "flavor": "alpine-arm-rpi",
     "model": "rpi64",
-    "k3s_version": "v1.25.2+k3s1"
+    "k3s_version": "v1.25.3+k3s1"
   }
 ]
