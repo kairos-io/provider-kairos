@@ -124,8 +124,8 @@ docker:
 
     ENV INSTALL_K3S_BIN_DIR="/usr/bin"
     RUN curl -sfL https://get.k3s.io > installer.sh \
-        && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" bash installer.sh \
-        && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" bash installer.sh agent \
+        && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh \
+        && INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh agent \
         && rm -rf installer.sh
     RUN luet install -y utils/edgevpn utils/k9s utils/nerdctl container/kubectl && luet cleanup
     # Drop env files from k3s as we will generate them
