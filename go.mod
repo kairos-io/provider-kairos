@@ -19,7 +19,7 @@ require (
 	github.com/onsi/gomega v1.20.0
 	github.com/pterm/pterm v0.12.41
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
-	github.com/urfave/cli v1.22.9
+	github.com/urfave/cli v1.22.10
 	go.uber.org/zap v1.21.0
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
