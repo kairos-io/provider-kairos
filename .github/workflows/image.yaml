@@ -26,7 +26,7 @@ jobs:
          - flavor: "alpine"
          - flavor: "ubuntu"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           git fetch --prune --unshallow
       - name: setup-docker
@@ -106,7 +106,7 @@ jobs:
 #         - flavor: "ubuntu"
 #         - flavor: "fedora"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           brew install hudochenkov/sshpass/sshpass
@@ -135,7 +135,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           git fetch --prune --unshallow
       - name: Install Go
@@ -169,7 +169,7 @@ jobs:
          #- flavor: "tumbleweed"
          #  node: "C"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -218,7 +218,7 @@ jobs:
 #         - flavor: "alpine"
 #           node: "C"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -254,7 +254,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           git fetch --prune --unshallow
       - name: Install Go
@@ -288,7 +288,7 @@ jobs:
 #         - flavor: "alpine"
 #           node: "C"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -351,7 +351,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:      
@@ -389,7 +389,7 @@ jobs:
 #         - flavor: "alpine"
 #           node: "C"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:      
@@ -440,7 +440,7 @@ jobs:
 #         - flavor: "alpine"
 #           node: "C"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
