@@ -1,6 +1,6 @@
 module github.com/kairos-io/provider-kairos
 
-go 1.18
+go 1.19
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
