@@ -112,7 +112,7 @@ jobs:
           brew install hudochenkov/sshpass/sshpass
           brew install qemu
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
       - run: |
@@ -171,11 +171,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: config.yaml
       - name: Install deps
@@ -220,11 +220,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: config.yaml
       - name: Install deps
@@ -290,11 +290,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: config.yaml
       - name: Install deps
@@ -353,7 +353,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:      
           name: config.yaml
     - name: Install Go
@@ -391,11 +391,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:      
           name: config.yaml
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
           name: kairos-${{ matrix.flavor }}.iso.zip
     - name: Install deps
@@ -442,7 +442,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: latest-release-${{ matrix.flavor }}.zip
     - name: Install deps
