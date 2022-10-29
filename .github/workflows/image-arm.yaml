@@ -43,7 +43,7 @@ jobs:
           export TAG=${GITHUB_REF##*/}
           ./earthly.sh +all-arm --IMAGE_NAME=kairos-$FLAVOR-$TAG.img --IMAGE=quay.io/kairos/kairos-$FLAVOR:$TAG --MODEL=$MODEL --FLAVOR=$FLAVOR
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.flavor }}-image
           path: build
