@@ -30,12 +30,11 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"EDGEVPNTOKEN":         c.Kairos.NetworkToken,
-		"API":                  "true",
-		"APILISTEN":            apiAddress,
-		"EDGEVPNLOWPROFILEVPN": "true",
-		"DHCP":                 "true",
-		"DHCPLEASEDIR":         "/usr/local/.kairos/lease",
+		"EDGEVPNTOKEN": c.Kairos.NetworkToken,
+		"API":          "true",
+		"APILISTEN":    apiAddress,
+		"DHCP":         "true",
+		"DHCPLEASEDIR": "/usr/local/.kairos/lease",
 	}
 	// Override opts with user-supplied
 	for k, v := range c.VPN {
