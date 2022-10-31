@@ -86,7 +86,7 @@ jobs:
           sudo -E docker push $IMG
           sudo rm -rf build/IMAGE build/VERSION
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.flavor }}-${{ matrix.k3s_version }}-image
           path: build

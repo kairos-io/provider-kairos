@@ -69,7 +69,7 @@ jobs:
       - run: |
           sudo mv release/*.iso ./
           sudo mv release/*.sha256 ./
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}${{ matrix.k3s_version }}.iso.zip
           path: |

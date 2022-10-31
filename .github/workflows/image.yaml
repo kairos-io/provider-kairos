@@ -48,33 +48,33 @@ jobs:
           ./earthly.sh +all --IMAGE=$IMAGE --FLAVOR=$FLAVOR
           sudo mv build/* .
           sudo rm -rf build
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
           path: |
             *.iso
             *.sha256
           if-no-files-found: error
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.initrd.zip
           path: |
             *-initrd
           if-no-files-found: error
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.squashfs.zip
           path: |
             *.squashfs
           if-no-files-found: error
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.kernel.zip
           path: |
             *-kernel
             *-initrd
           if-no-files-found: error
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.ipxe.zip
           path: |
@@ -120,12 +120,12 @@ jobs:
               ls -liah
               iso=$(ls *.iso)
               bash kairos/scripts/build_vm.sh $iso
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
           path: |
             *.qcow2.tar.xz
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.ova
           path: |
@@ -145,7 +145,7 @@ jobs:
       - name: Prepare config
         run: |
               ./earthly.sh +test-create-config --WITH_DNS=true
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: config.yaml
           path: |
@@ -194,7 +194,7 @@ jobs:
               export CREATE_VM=true 
               export FLAVOR=${{ matrix.flavor }}
               ./.github/run_test.sh "upgrade-k8s"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.flavor }}-vbox.logs.zip
@@ -243,7 +243,7 @@ jobs:
               export CREATE_VM=true
               export FLAVOR=${{ matrix.flavor }}
               ./.github/run_test.sh "decentralized-k8s"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.flavor }}-vbox.logs.zip
@@ -264,7 +264,7 @@ jobs:
       - name: Prepare config
         run: |
               ./earthly.sh +test-create-config --WITH_DNS=true
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: config.yaml
           path: |
@@ -313,7 +313,7 @@ jobs:
               export CREATE_VM=true
               export FLAVOR=${{ matrix.flavor }}
               ./.github/run_test.sh "decentralized-k8s"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.flavor }}-vbox.logs.zip
@@ -337,7 +337,7 @@ jobs:
         repository: "kairos-io/provider-kairos"
         fileName: "kairos-${{ matrix.flavor }}-*v1.25*.iso"
         out-file-path: "last-release"
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
           name: latest-release-${{ matrix.flavor }}.zip
           path: last-release
@@ -368,7 +368,7 @@ jobs:
              ./.github/run_test.sh "qrcode-register"
       env:
        SENDKEY: 4kgpo43kphopj
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: failure()
       with:
         name: screenshot.zip
@@ -416,7 +416,7 @@ jobs:
             ./.github/run_test.sh "qrcode-install"
       env:
        SENDKEY: 4kgpo43kphopj
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: failure()
       with:
         name: ${{ matrix.flavor }}-qrcode-test.logs.zip
@@ -462,7 +462,7 @@ jobs:
             export CREATE_VM=true
             export FLAVOR=${{ matrix.flavor }}
             ./.github/run_test.sh "upgrade-latest-with-kubernetes"
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: failure()
       with:
         name: ${{ matrix.flavor }}-upgrade-test.logs.zip
