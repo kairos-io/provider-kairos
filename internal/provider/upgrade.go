@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/kairos-io/kairos/pkg/utils"
 	"github.com/mudler/go-pluggable"
+	"golang.org/x/mod/semver"
 )
 
 func eventError(err error) pluggable.EventResponse {
@@ -30,6 +31,8 @@ func ListVersions(e *pluggable.Event) pluggable.EventResponse {
 			displayTags = append(displayTags, t)
 		}
 	}
+
+	semver.Sort(displayTags)
 
 	versions, err := json.Marshal(displayTags)
 	resp := &pluggable.EventResponse{
