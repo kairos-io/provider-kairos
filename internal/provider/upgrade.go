@@ -34,6 +34,10 @@ func ListVersions(e *pluggable.Event) pluggable.EventResponse {
 
 	semver.Sort(displayTags)
 
+	if e.Data == "stable" {
+		keepOnlyStable(displayTags)
+	}
+
 	versions, err := json.Marshal(displayTags)
 	resp := &pluggable.EventResponse{
 		Data: string(versions),
@@ -44,4 +48,15 @@ func ListVersions(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	return *resp
+}
+
+func keepOnlyStable(versions []string) []string {
+	result := []string{}
+	for _, v := range versions {
+		if semver.Prerelease(v) == "" {
+			result = append(result, v)
+		}
+	}
+
+	return result
 }
