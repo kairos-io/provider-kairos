@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kairos-io/kairos/pkg/config"
 	"github.com/kairos-io/kairos/pkg/machine"
+	"github.com/kairos-io/kairos/pkg/machine/systemd"
 	"github.com/kairos-io/kairos/pkg/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/services"
@@ -70,9 +70,15 @@ DNS=127.0.0.1`,
 				}},
 		}
 
-		dat, err := yaml.Marshal(&dnsConfig)
-		if err == nil {
-			machine.ExecuteInlineCloudConfig(string(dat), config.NetworkStage.String())
+		dat, _ := yaml.Marshal(&dnsConfig)
+		machine.ExecuteInlineCloudConfig(string(dat), "initramfs")
+		if !utils.IsOpenRCBased() {
+			svc, err := systemd.NewService(
+				systemd.WithName("systemd-resolved"),
+			)
+			if err == nil {
+				svc.Restart()
+			}
 		}
 
 		if err := SaveOEMCloudConfig("vpn_dns", dnsConfig); err != nil {
