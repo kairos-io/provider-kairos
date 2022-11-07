@@ -1,0 +1,9 @@
+stages:
+   initramfs:
+     - name: "Set user and password"
+       users:
+        kairos:
+          passwd: "kairos"
+
+k3s:
+  enabled: true
