@@ -19,7 +19,7 @@ ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
 ARG IMAGE=quay.io/kairos/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
-ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.2.3
+ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.3.3
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.32.4
