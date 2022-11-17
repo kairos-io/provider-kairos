@@ -1,6 +1,18 @@
 #!/bin/bash
 
-versions=$(curl https://update.k3s.io/v1-release/channels | jq -rc '.data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest')
+# Compares two semantic versions. True if the first is lower or equal to the second.
+# https://stackoverflow.com/a/4024263
+verlte() {
+    [  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+}
+
+versions=($(curl https://update.k3s.io/v1-release/channels | jq -rc '.data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest'))
+
+# Filter only versions above v1.20.0 (https://stackoverflow.com/a/40375567)
+for index in "${!versions[@]}" ; do
+    (verlte ${versions[$index]} v1.20.0) && unset -v 'versions[$index]'
+done
+versions="${versions[@]}"
 
 amd64_flavor=("opensuse" "alpine" "ubuntu" "ubuntu-20-lts" "ubuntu-22-lts" "fedora")
 arm64_flavor=("opensuse-arm-rpi" "alpine-arm-rpi")
