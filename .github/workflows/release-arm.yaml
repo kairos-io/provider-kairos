@@ -64,7 +64,7 @@ jobs:
           FLAVOR: ${{ matrix.flavor }}
           MODEL: ${{ matrix.model }}
         run: |
-          ./earthly.sh +all-arm --MODEL=$MODEL --FLAVOR=$FLAVOR --K3S_VERSION=${{ matrix.k3s_version }}
+          ./earthly.sh +docker-arm --MODEL=$MODEL --FLAVOR=$FLAVOR --K3S_VERSION=${{ matrix.k3s_version }}
       - name: Push  🔧
         if: startsWith(github.ref, 'refs/tags/')
         run: |
