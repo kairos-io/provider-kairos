@@ -48,10 +48,6 @@ all-arm:
   BUILD +arm-image
   DO +RELEASEVERSION
 
-docker-arm:
-  BUILD --platform=linux/arm64 +docker
-  DO +RELEASEVERSION
-
 go-deps:
     ARG GO_VERSION
     FROM golang:$GO_VERSION
