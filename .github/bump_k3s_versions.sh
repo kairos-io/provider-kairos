@@ -14,7 +14,7 @@ for index in "${!versions[@]}" ; do
 done
 versions="${versions[@]}"
 
-amd64_flavor=("opensuse" "alpine" "ubuntu" "ubuntu-20-lts" "ubuntu-22-lts" "fedora")
+amd64_flavor=("opensuse" "alpine-ubuntu" "alpine-opensuse-leap" "ubuntu" "ubuntu-20-lts" "ubuntu-22-lts" "fedora")
 arm64_flavor=("opensuse-arm-rpi" "alpine-arm-rpi")
 arm64_models=("rpi64")
 releases="[]"
