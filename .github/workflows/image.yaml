@@ -23,7 +23,8 @@ jobs:
          #- flavor: "tumbleweed"
          #- flavor: "fedora"
          #- flavor: "ubuntu"
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
+         - flavor: "alpine-ubuntu"
          - flavor: "ubuntu"
     steps:
       - uses: actions/checkout@v3
@@ -101,7 +102,7 @@ jobs:
       matrix:
        include:
          - flavor: "opensuse"
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
         # - flavor: "tumbleweed"
 #         - flavor: "ubuntu"
 #         - flavor: "fedora"
@@ -164,7 +165,7 @@ jobs:
        include:
          - flavor: "opensuse"
            node: "A" # Arbitrary field
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
            node: "B" # Arbitrary field
          #- flavor: "tumbleweed"
          #  node: "C"
@@ -281,9 +282,9 @@ jobs:
       fail-fast: true
       matrix:
        include:
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
            node: "A" # Arbitrary field
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
            node: "B"
 #         - flavor: "alpine"
 #           node: "C"
@@ -326,7 +327,7 @@ jobs:
       fail-fast: true
       matrix:
        include:
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
          - flavor: "opensuse"
     steps:
     - uses: robinraju/release-downloader@v1.6
@@ -384,7 +385,7 @@ jobs:
       fail-fast: false
       matrix:
        include:
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
            node: "A" # Arbitrary field
 #         - flavor: "alpine"
 #           node: "C"
@@ -433,7 +434,7 @@ jobs:
       fail-fast: false
       matrix:
        include:
-         - flavor: "alpine"
+         - flavor: "alpine-opensuse-leap"
            node: "A" # Arbitrary field
          - flavor: "opensuse"
            node: "B"
