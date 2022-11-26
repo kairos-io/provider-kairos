@@ -4,7 +4,7 @@ package mos_test
 import (
 	"encoding/json"
 
-	"github.com/kairos-io/kairos/tests/machine"
+	"github.com/kairos-io/kairos/pkg/machine"
 	"github.com/mudler/go-pluggable"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
