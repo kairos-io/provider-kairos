@@ -26,7 +26,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 	Context("live cd", func() {
 		It("has default service active", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -58,7 +58,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 	Context("first-boot", func() {
 
 		It("has default services on", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -77,7 +77,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		})
 
 		It("has correct grub menu entries", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				Skip("not working on alpine yet")
 			}
 
@@ -103,7 +103,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		It("configure k3s", func() {
 			_, err := Machine.Command("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred())
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				Eventually(func() string {
 					out, _ := Sudo("sudo cat /var/log/kairos/agent.log")
 					fmt.Println(out)
@@ -181,7 +181,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		})
 
 		It("can propagate dns and it is functional", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				Skip("DNS not working on alpine yet")
 			}
 			Eventually(func() string {

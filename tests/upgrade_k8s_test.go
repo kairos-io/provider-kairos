@@ -28,7 +28,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 
 	Context("live cd", func() {
 		It("has default service active", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -64,7 +64,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 	Context("first-boot", func() {
 
 		It("has default services on", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -80,7 +80,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		It("has kubeconfig", func() {
 			Eventually(func() string {
 				var out string
-				if os.Getenv("FLAVOR") == "alpine" {
+				if isFlavor("alpine") {
 					out, _ = Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
 				} else {
 					out, _ = Sudo("systemctl status kairos-agent")

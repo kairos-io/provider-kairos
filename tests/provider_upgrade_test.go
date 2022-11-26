@@ -4,7 +4,7 @@ package mos_test
 import (
 	"encoding/json"
 
-	"github.com/kairos-io/kairos/pkg/machine"
+	. "github.com/spectrocloud/peg/matcher"
 	"github.com/mudler/go-pluggable"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -13,7 +13,7 @@ import (
 
 var _ = Describe("provider upgrade test", Label("provider-upgrade"), func() {
 	BeforeEach(func() {
-		machine.EventuallyConnects()
+		EventuallyConnects()
 	})
 
 	AfterEach(func() {
@@ -24,7 +24,7 @@ var _ = Describe("provider upgrade test", Label("provider-upgrade"), func() {
 
 	Context("agent.available_releases event", func() {
 		It("returns the available versions ordered", func() {
-			resultStr, _ := machine.SSHCommand(`echo '{}' | /system/providers/agent-provider-kairos agent.available_releases`)
+			resultStr, _ := Sudo(`echo '{}' | /system/providers/agent-provider-kairos agent.available_releases`)
 
 			var result pluggable.EventResponse
 
