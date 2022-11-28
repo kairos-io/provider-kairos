@@ -95,7 +95,9 @@ func ReplaceToken(dir []string, token string) (err error) {
 			return err
 		}
 
-		return ioutil.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm())
+		if err := ioutil.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm()); err != nil {
+			return err
+		}
 	}
 
 	return nil

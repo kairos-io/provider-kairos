@@ -32,7 +32,8 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
-				Expect(out).Should(ContainSubstring("crond"))
+				out, _ = Sudo("ps aux")
+				Expect(out).Should(ContainSubstring("/usr/sbin/crond"))
 			} else {
 				// Eventually(func() string {
 				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
