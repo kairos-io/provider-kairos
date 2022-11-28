@@ -46,51 +46,57 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 }
 
 func ReplaceToken(dir []string, token string) (err error) {
-	c, err := config.Scan(config.Directories(dir...))
-	if err != nil {
-		return fmt.Errorf("no config file found: %w", err)
-	}
-
-	header := "#node-config"
-
-	if hasHeader, head := config.HasHeader(c.String(), ""); hasHeader {
-		header = head
-	}
-
-	content := map[interface{}]interface{}{}
-
-	if err := yaml.Unmarshal([]byte(c.String()), &content); err != nil {
-		return err
-	}
-
-	section, exists := content["kairos"]
-	if !exists {
-		return errors.New("no kairos section in config file")
-	}
-
-	dd, err := yaml.Marshal(section)
+	locations, err := config.FindYAMLWithKey("kairos.network_token", config.Directories(dir...))
 	if err != nil {
 		return err
 	}
+	for _, f := range locations {
+		dat, err := os.ReadFile(f)
+		if err != nil {
+			fmt.Printf("warning: could not read %s '%s'\n", f, err.Error())
+		}
 
-	piece := map[string]interface{}{}
+		header := config.DefaultHeader
+		if hasHeader, head := config.HasHeader(string(dat), ""); hasHeader {
+			header = head
+		}
+		content := map[interface{}]interface{}{}
 
-	if err := yaml.Unmarshal(dd, &piece); err != nil {
-		return err
+		if err := yaml.Unmarshal(dat, &content); err != nil {
+			return err
+		}
+
+		section, exists := content["kairos"]
+		if !exists {
+			return errors.New("no kairos section in config file")
+		}
+
+		dd, err := yaml.Marshal(section)
+		if err != nil {
+			return err
+		}
+
+		piece := map[string]interface{}{}
+
+		if err := yaml.Unmarshal(dd, &piece); err != nil {
+			return err
+		}
+
+		piece["network_token"] = token
+		content["kairos"] = piece
+
+		d, err := yaml.Marshal(content)
+		if err != nil {
+			return err
+		}
+
+		fi, err := os.Stat(f)
+		if err != nil {
+			return err
+		}
+
+		return ioutil.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm())
 	}
 
-	piece["network_token"] = token
-	content["kairos"] = piece
-
-	d, err := yaml.Marshal(content)
-	if err != nil {
-		return err
-	}
-
-	fi, err := os.Stat(c.Location())
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(c.Location(), []byte(config.AddHeader(header, string(d))), fi.Mode().Perm())
+	return nil
 }

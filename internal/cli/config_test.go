@@ -36,7 +36,7 @@ bb:
 			err := ioutil.WriteFile(filepath.Join(d, "test"), []byte(cc), os.ModePerm)
 			Expect(err).ToNot(HaveOccurred())
 			err = ioutil.WriteFile(filepath.Join(d, "b"), []byte(`
-fooz:
+fooz: "bar"
 			`), os.ModePerm)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -50,14 +50,14 @@ fooz:
 
 			err = yaml.Unmarshal(content, &res)
 			Expect(err).ToNot(HaveOccurred())
-			hasHeader, _ := config.HasHeader(string(content), "#node-config")
-			Expect(hasHeader).To(BeTrue())
 
 			Expect(res).To(Equal(map[interface{}]interface{}{
 				"kairos": map[interface{}]interface{}{"network_token": "baz"},
 				"bb":     map[interface{}]interface{}{"nothing": "foo"},
 			}))
-		})
 
+			hasHeader, _ := config.HasHeader(string(content), "#node-config")
+			Expect(hasHeader).To(BeTrue(), string(content))
+		})
 	})
 })
