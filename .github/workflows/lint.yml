@@ -1,7 +1,9 @@
 name: Lint
 on:
-  pull_request:
-  push:
+ pull_request:
+ push:
+   branches:
+     - main
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
