@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/kairos-io/kairos/pkg/utils"
@@ -21,6 +22,10 @@ import (
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "kairos Test Suite")
+}
+
+func isFlavor(flavor string) bool {
+	return strings.Contains(os.Getenv("FLAVOR"), flavor)
 }
 
 func screenshot() (string, error) {

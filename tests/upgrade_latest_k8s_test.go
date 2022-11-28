@@ -60,7 +60,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 			if containerImage == "" {
 				Fail("CONTAINER_IMAGE needs to be set")
 			}
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -92,7 +92,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 	Context("first-boot", func() {
 
 		It("has default services on", func() {
-			if os.Getenv("FLAVOR") == "alpine" {
+			if isFlavor("alpine") {
 				out, _ := Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -113,7 +113,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 		It("upgrades from kubernetes", func() {
 			Eventually(func() string {
 				var out string
-				if os.Getenv("FLAVOR") == "alpine" {
+				if isFlavor("alpine") {
 					out, _ = Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
 				} else {
 					out, _ = Sudo("systemctl status kairos-agent")

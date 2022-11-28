@@ -61,12 +61,9 @@ go-deps:
 test:
     FROM +go-deps
     WORKDIR /build
-    RUN go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.1.4
-    RUN go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.1.4
-    RUN go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.1.4
+    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
     COPY (kairos+luet/luet) /usr/bin/luet
     COPY . .
-    RUN go install github.com/onsi/ginkgo/v2/ginkgo
     RUN ginkgo run --fail-fast --slow-spec-threshold 30s --covermode=atomic --coverprofile=coverage.out -p -r ./internal
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
@@ -317,8 +314,8 @@ run-qemu-tests:
         ENV DATASOURCE=/test/datasource.iso
     END
 
-    RUN go install github.com/onsi/ginkgo/v2/ginkgo
 
+    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
     ENV CLOUD_INIT=$CLOUD_CONFIG
 
     RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/

@@ -157,7 +157,6 @@ jobs:
   upgrade-single-node-k8s-test:
     needs: 
     - prepare-test
-    - upgrade-test
     runs-on: macos-12
     strategy:
       fail-fast: true
@@ -206,7 +205,6 @@ jobs:
     needs: 
     - prepare-test
     - upgrade-single-node-k8s-test
-    - upgrade-test
     runs-on: macos-12
     strategy:
       fail-fast: true
@@ -276,7 +274,6 @@ jobs:
     needs: 
     - prepare-alpine-test
     - decentralized-k8s-test-opensuse
-    - upgrade-test
     runs-on: macos-12
     strategy:
       fail-fast: true

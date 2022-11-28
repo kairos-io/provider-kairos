@@ -49,7 +49,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (providerConfig.Kairos != nil && providerConfig.Kairos.NetworkToken == "")
 
 	if providerConfig.Kairos == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
-		return pluggable.EventResponse{State: "no kairos or k3s configuration. nothing to do"}
+		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
 	}
 
 	utils.SH("elemental run-stage kairos-agent.bootstrap")    //nolint:errcheck
