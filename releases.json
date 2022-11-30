@@ -1,31 +1,31 @@
 [
   {
     "flavor": "opensuse",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "alpine-ubuntu",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "alpine-opensuse-leap",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "ubuntu",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "ubuntu-20-lts",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "ubuntu-22-lts",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "fedora",
-    "k3s_version": "v1.25.3+k3s1"
+    "k3s_version": "v1.25.4+k3s1"
   },
   {
     "flavor": "opensuse",
