@@ -19,6 +19,10 @@ import (
 	"github.com/spectrocloud/peg/pkg/machine/types"
 )
 
+var kubectl = func(s string) (string, error) {
+	return Sudo("k3s kubectl " + s)
+}
+
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "kairos Test Suite")
