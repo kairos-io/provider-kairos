@@ -13,6 +13,7 @@ import (
 
 	"github.com/kairos-io/kairos/pkg/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/role"
 
 	service "github.com/mudler/edgevpn/api/client/service"
 )
@@ -67,7 +68,7 @@ func propagateMasterData(ip string, c *service.RoleConfig) error {
 	return nil
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 	return func(c *service.RoleConfig) error {
 
 		ip := utils.GetInterfaceIP("edgevpn0")
@@ -83,7 +84,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			}
 		}
 
-		if SentinelExist() {
+		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
 			return propagateMasterData(ip, c)
 		}
@@ -145,7 +146,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		return CreateSentinel()
+		return role.CreateSentinel()
 	}
 }
 

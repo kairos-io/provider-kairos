@@ -16,19 +16,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	rand.Seed(time.Now().Unix())
 
 	// Assign roles to nodes
-	currentRoles := map[string]string{}
-
-	existsMaster := false
-	unassignedNodes := []string{}
-	for _, a := range nodes {
-		role, _ := c.Client.Get("role", a)
-		currentRoles[a] = role
-		if role == "master" {
-			existsMaster = true
-		} else if role == "" {
-			unassignedNodes = append(unassignedNodes, a)
-		}
-	}
+	unassignedNodes, currentRoles, existsMaster := getRoles(c.Client, nodes)
 
 	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
 	c.Logger.Infof("Master already present: %t", existsMaster)

@@ -19,6 +19,8 @@ import (
 	sdk "github.com/kairos-io/kairos/sdk/bus"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
+	edgevpn "github.com/kairos-io/provider-kairos/internal/role/edgevpn"
+
 	"github.com/kairos-io/provider-kairos/internal/services"
 
 	"github.com/kairos-io/kairos/pkg/config"
@@ -120,11 +122,11 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithRoles(
 			service.RoleKey{
 				Role:        "master",
-				RoleHandler: role.Master(c, providerConfig),
+				RoleHandler: edgevpn.Master(c, providerConfig),
 			},
 			service.RoleKey{
 				Role:        "worker",
-				RoleHandler: role.Worker(c, providerConfig),
+				RoleHandler: edgevpn.Worker(c, providerConfig),
 			},
 			service.RoleKey{
 				Role:        "auto",

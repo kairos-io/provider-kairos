@@ -10,10 +10,11 @@ import (
 	"github.com/kairos-io/kairos/pkg/utils"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 	return func(c *service.RoleConfig) error {
 
 		if pconfig.Kairos.Role != "" {
@@ -24,7 +25,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			}
 		}
 
-		if SentinelExist() {
+		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
 			return nil
 		}
@@ -108,6 +109,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		return CreateSentinel()
+		return role.CreateSentinel()
 	}
 }
