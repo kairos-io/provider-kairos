@@ -104,6 +104,7 @@ var _ = BeforeSuite(func() {
 		}
 
 		opts := []types.MachineOption{
+			types.WithMemory("9000"),
 			types.WithISO(os.Getenv("ISO")),
 			types.WithSSHPort(sshPort),
 			types.WithID(machineID),
