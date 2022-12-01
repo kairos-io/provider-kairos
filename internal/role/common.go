@@ -20,18 +20,15 @@ func CreateSentinel() error {
 	return ioutil.WriteFile("/usr/local/.kairos/deployed", []byte{}, os.ModePerm)
 }
 
-func getRoles(client *service.Client, nodes []string) ([]string, map[string]string, bool) {
+func getRoles(client *service.Client, nodes []string) ([]string, map[string]string) {
 	unassignedNodes := []string{}
 	currentRoles := map[string]string{}
-	existsMaster := false
 	for _, a := range nodes {
 		role, _ := client.Get("role", a)
 		currentRoles[a] = role
-		if role == "master" {
-			existsMaster = true
-		} else if role == "" {
+		if role == "" {
 			unassignedNodes = append(unassignedNodes, a)
 		}
 	}
-	return unassignedNodes, currentRoles, existsMaster
+	return unassignedNodes, currentRoles
 }
