@@ -61,7 +61,8 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 					{
 						Files: []yip.File{{
 							Permissions: 0644,
-							Path:        "/etc/systemd/resolved.conf", Content: `
+							Path:        "/etc/systemd/resolved.conf",
+							Content: `
 [Resolve]
 DNS=127.0.0.1`,
 						}},
