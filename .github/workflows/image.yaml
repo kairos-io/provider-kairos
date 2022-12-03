@@ -106,32 +106,32 @@ jobs:
         # - flavor: "tumbleweed"
 #         - flavor: "ubuntu"
 #         - flavor: "fedora"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install deps
-        run: |
-          brew install hudochenkov/sshpass/sshpass
-          brew install qemu
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}.iso.zip
-      - run: |
-              git clone https://github.com/kairos-io/kairos
-              ls -liah
-              iso=$(ls *.iso)
-              bash kairos/scripts/build_vm.sh $iso
-      - uses: actions/upload-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
-          path: |
-            *.qcow2.tar.xz
-      - uses: actions/upload-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}.ova
-          path: |
-            *.ova
-          if-no-files-found: error
+    # steps:
+    #   - uses: actions/checkout@v3
+    #   - name: Install deps
+    #     run: |
+    #       brew install hudochenkov/sshpass/sshpass
+    #       brew install qemu
+    #   - name: Download artifacts
+    #     uses: actions/download-artifact@v3
+    #     with:
+    #       name: kairos-${{ matrix.flavor }}.iso.zip
+    #   - run: |
+    #           git clone https://github.com/kairos-io/kairos
+    #           ls -liah
+    #           iso=$(ls *.iso)
+    #           bash kairos/scripts/build_vm.sh $iso
+    #   - uses: actions/upload-artifact@v3
+    #     with:
+    #       name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
+    #       path: |
+    #         *.qcow2.tar.xz
+    #   - uses: actions/upload-artifact@v3
+    #     with:
+    #       name: kairos-${{ matrix.flavor }}.ova
+    #       path: |
+    #         *.ova
+    #       if-no-files-found: error
   prepare-test:
     needs: build
     runs-on: ubuntu-latest
@@ -341,85 +341,85 @@ jobs:
           path: last-release
           if-no-files-found: error
 
-  qrcode-test-cli:
-    needs: 
-    - build
-    - prepare-alpine-test
-    - upgrade-test
+#   qrcode-test-cli:
+#     needs: 
+#     - build
+#     - prepare-alpine-test
+#     - upgrade-test
 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:      
-          name: config.yaml
-    - name: Install Go
-      uses: actions/setup-go@v3
-      with:
-          go-version: '^1.16'
-    - run: |
-             ./earthly.sh +build-kairos-agent-provider
-             sudo cp -rfv build/agent-provider-kairos /usr/bin/kairos
-             export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-             export FLAVOR=${{ matrix.flavor }} 
-             ./.github/run_test.sh "qrcode-register"
-      env:
-       SENDKEY: 4kgpo43kphopj
-    - uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: screenshot.zip
-        path: |
-          tests/*.png
-  qrcode-test:
-    needs: 
-    - build
-    - upgrade-test
-    - prepare-alpine-test
-    runs-on: macos-12
-    strategy:
-      fail-fast: false
-      matrix:
-       include:
-         - flavor: "alpine-opensuse-leap"
-           node: "A" # Arbitrary field
-#         - flavor: "alpine"
-#           node: "C"
-    steps:
-    - uses: actions/checkout@v3
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:      
-          name: config.yaml
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-          name: kairos-${{ matrix.flavor }}.iso.zip
-    - name: Install deps
-      run: |
-        brew install cdrtools jq
-    - name: Install Go
-      uses: actions/setup-go@v3
-      with:
-          go-version: '^1.16'
-    - run: |
-            ls -liah
-            export ISO=$PWD/$(ls *.iso)
-            export GOPATH="/Users/runner/go"
-            export PATH=$PATH:$GOPATH/bin
-            export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-            export CREATE_VM=true
-            export FLAVOR=${{ matrix.flavor }} 
-            ./.github/run_test.sh "qrcode-install"
-      env:
-       SENDKEY: 4kgpo43kphopj
-    - uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: ${{ matrix.flavor }}-qrcode-test.logs.zip
-        path: tests/**/logs/*
-        if-no-files-found: warn
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Download artifacts
+#       uses: actions/download-artifact@v3
+#       with:      
+#           name: config.yaml
+#     - name: Install Go
+#       uses: actions/setup-go@v3
+#       with:
+#           go-version: '^1.16'
+#     - run: |
+#              ./earthly.sh +build-kairos-agent-provider
+#              sudo cp -rfv build/agent-provider-kairos /usr/bin/kairos
+#              export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
+#              export FLAVOR=${{ matrix.flavor }} 
+#              ./.github/run_test.sh "qrcode-register"
+#       env:
+#        SENDKEY: 4kgpo43kphopj
+#     - uses: actions/upload-artifact@v3
+#       if: failure()
+#       with:
+#         name: screenshot.zip
+#         path: |
+#           tests/*.png
+#   qrcode-test:
+#     needs: 
+#     - build
+#     - upgrade-test
+#     - prepare-alpine-test
+#     runs-on: macos-12
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#        include:
+#          - flavor: "alpine-opensuse-leap"
+#            node: "A" # Arbitrary field
+# #         - flavor: "alpine"
+# #           node: "C"
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Download artifacts
+#       uses: actions/download-artifact@v3
+#       with:      
+#           name: config.yaml
+#     - name: Download artifacts
+#       uses: actions/download-artifact@v3
+#       with:
+#           name: kairos-${{ matrix.flavor }}.iso.zip
+#     - name: Install deps
+#       run: |
+#         brew install cdrtools jq
+#     - name: Install Go
+#       uses: actions/setup-go@v3
+#       with:
+#           go-version: '^1.16'
+#     - run: |
+#             ls -liah
+#             export ISO=$PWD/$(ls *.iso)
+#             export GOPATH="/Users/runner/go"
+#             export PATH=$PATH:$GOPATH/bin
+#             export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
+#             export CREATE_VM=true
+#             export FLAVOR=${{ matrix.flavor }} 
+#             ./.github/run_test.sh "qrcode-install"
+#       env:
+#        SENDKEY: 4kgpo43kphopj
+#     - uses: actions/upload-artifact@v3
+#       if: failure()
+#       with:
+#         name: ${{ matrix.flavor }}-qrcode-test.logs.zip
+#         path: tests/**/logs/*
+#         if-no-files-found: warn
 
 
   upgrade-test:
