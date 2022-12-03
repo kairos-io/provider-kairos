@@ -60,7 +60,8 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 				"initramfs": {
 					{
 						Files: []yip.File{{
-							Path: "/etc/systemd/resolved.conf", Content: `
+							Permissions: 0644,
+							Path:        "/etc/systemd/resolved.conf", Content: `
 [Resolve]
 DNS=127.0.0.1`,
 						}},
@@ -71,13 +72,13 @@ DNS=127.0.0.1`,
 		}
 
 		dat, _ := yaml.Marshal(&dnsConfig)
-		machine.ExecuteInlineCloudConfig(string(dat), "initramfs")
+		_ = machine.ExecuteInlineCloudConfig(string(dat), "initramfs")
 		if !utils.IsOpenRCBased() {
 			svc, err := systemd.NewService(
 				systemd.WithName("systemd-resolved"),
 			)
 			if err == nil {
-				svc.Restart()
+				_ = svc.Restart()
 			}
 		}
 
