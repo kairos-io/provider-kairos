@@ -693,11 +693,11 @@ github.com/ipld/go-ipld-prime v0.16.0 h1:RS5hhjB/mcpeEPJvfyj0qbOj/QL+/j05heZ0qa9
 github.com/ipld/go-ipld-prime v0.16.0/go.mod h1:axSCuOCBPqrH+gvXr2w9uAOulJqBPhHPT2PjoiiU1qA=
 github.com/ishidawataru/sctp v0.0.0-20210707070123-9a39160e9062/go.mod h1:co9pwDoBCm1kGxawmb4sPq0cSIOOWNPT4KnHotMP1Zg=
 github.com/itchyny/gojq v0.12.8/go.mod h1:gE2kZ9fVRU0+JAksaTzjIlgnCa2akU+a1V0WXgJQN5c=
-github.com/itchyny/gojq v0.12.9 h1:biKpbKwMxVYhCU1d6mR7qMr3f0Hn9F5k5YykCVb3gmM=
-github.com/itchyny/gojq v0.12.9/go.mod h1:T4Ip7AETUXeGpD+436m+UEl3m3tokRgajd5pRfsR5oE=
+github.com/itchyny/gojq v0.12.10 h1:6TcS0VYWS6wgntpF/4tnrzwdCMjiTxRAxIqZWfDsDQU=
+github.com/itchyny/gojq v0.12.10/go.mod h1:o3FT8Gkbg/geT4pLI0tF3hvip5F3Y/uskjRz9OYa38g=
 github.com/itchyny/timefmt-go v0.1.3/go.mod h1:0osSSCQSASBJMsIZnhAaF1C2fCBTJZXrnj37mG8/c+A=
-github.com/itchyny/timefmt-go v0.1.4 h1:hFEfWVdwsEi+CY8xY2FtgWHGQaBaC3JeHd+cve0ynVM=
-github.com/itchyny/timefmt-go v0.1.4/go.mod h1:nEP7L+2YmAbT2kZ2HfSs1d8Xtw9LY8D2stDBckWakZ8=
+github.com/itchyny/timefmt-go v0.1.5 h1:G0INE2la8S6ru/ZI5JecgyzbbJNs5lG1RcBqa7Jm6GE=
+github.com/itchyny/timefmt-go v0.1.5/go.mod h1:nEP7L+2YmAbT2kZ2HfSs1d8Xtw9LY8D2stDBckWakZ8=
 github.com/jackpal/gateway v1.0.5/go.mod h1:lTpwd4ACLXmpyiCTRtfiNyVnUmqT9RivzCDQetPfnjA=
 github.com/jackpal/go-nat-pmp v1.0.1/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=
 github.com/jackpal/go-nat-pmp v1.0.2 h1:KzKSgb7qkJvOUTqYl9/Hg/me3pWgBmERKrTGD7BdWus=
@@ -749,8 +749,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/P7kNBrnL/FEQlDGN1/6WoxXEjSSXO0DV0=
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
-github.com/kairos-io/kairos v1.24.3-56.0.20221128123446-ab088839ec95 h1:dSTM/gePf/Czu7eOKwvv3J91AWMxH/Y4xOGVQNMu+OY=
-github.com/kairos-io/kairos v1.24.3-56.0.20221128123446-ab088839ec95/go.mod h1:Rgn/1YTvcTQIdtzvKT96FoMH8tdGiYI9tZwcu1CV1dI=
+github.com/kairos-io/kairos v1.3.1 h1:t9q4FnBFxAlOU8yFU/s/df+hhJyZQKAHb4944jeItHs=
+github.com/kairos-io/kairos v1.3.1/go.mod h1:HhMh4lGr5gCXRukRI1+y/P8ZwB1+VWYaUOMP1nRoa0o=
 github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d/go.mod h1:P2viExyCEfeWGU259JnaQ34Inuec4R38JCyBx2edgD0=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=

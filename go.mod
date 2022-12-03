@@ -1,6 +1,6 @@
 module github.com/kairos-io/provider-kairos
 
-go 1.19
+go 1.18
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
@@ -9,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos v1.24.3-56.0.20221128123446-ab088839ec95
+	github.com/kairos-io/kairos v1.3.1
 	github.com/mudler/edgevpn v0.15.3
 	github.com/mudler/go-nodepair v0.0.0-20220507212557-7d47aa3cc1f1
 	github.com/mudler/go-pluggable v0.0.0-20220716112424-189d463e3ff3
@@ -88,8 +88,8 @@ require (
 	github.com/ipfs/go-ipns v0.1.2 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/ipld/go-ipld-prime v0.16.0 // indirect
-	github.com/itchyny/gojq v0.12.9 // indirect
-	github.com/itchyny/timefmt-go v0.1.4 // indirect
+	github.com/itchyny/gojq v0.12.10 // indirect
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
 	github.com/jbenet/goprocess v0.1.4 // indirect
