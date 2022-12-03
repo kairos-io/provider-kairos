@@ -141,7 +141,7 @@ var _ = BeforeSuite(func() {
 
 func gatherLogs() {
 	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
-
+	Sudo("cat /oem/* > /run/oem.yaml")
 	Sudo("k3s kubectl get pods -A -o json > /run/pods.json")
 	Sudo("k3s kubectl get events -A -o json > /run/events.json")
 	Sudo("cat /proc/cmdline > /run/cmdline")
@@ -170,6 +170,7 @@ func gatherLogs() {
 			"/run/blkid",
 			"/run/events.json",
 			"/run/cmdline",
+			"/run/oem.yaml",
 		})
 }
 
