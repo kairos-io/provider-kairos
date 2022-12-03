@@ -72,6 +72,7 @@ DNS=127.0.0.1`,
 				}},
 		}
 
+		// TODO: Is this working? seems a reboot is still necessary to take changes into effect
 		dat, _ := yaml.Marshal(&dnsConfig)
 		_ = machine.ExecuteInlineCloudConfig(string(dat), "initramfs")
 		if !utils.IsOpenRCBased() {
