@@ -93,19 +93,19 @@ jobs:
           docker tag quay.io/kairos/kairos-${{ matrix.flavor }}:latest ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
           docker push ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
 # Test start
-  build-vm-images:
-    needs: 
-    - build
-    runs-on: macos-12
-    strategy:
-      fail-fast: false
-      matrix:
-       include:
-         - flavor: "opensuse"
-         - flavor: "alpine-opensuse-leap"
-        # - flavor: "tumbleweed"
-#         - flavor: "ubuntu"
-#         - flavor: "fedora"
+#   build-vm-images:
+#     needs: 
+#     - build
+#     runs-on: macos-12
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#        include:
+#          - flavor: "opensuse"
+#          - flavor: "alpine-opensuse-leap"
+#         # - flavor: "tumbleweed"
+# #         - flavor: "ubuntu"
+# #         - flavor: "fedora"
     # steps:
     #   - uses: actions/checkout@v3
     #   - name: Install deps
