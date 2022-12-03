@@ -142,6 +142,7 @@ var _ = BeforeSuite(func() {
 func gatherLogs() {
 	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
 	Sudo("cat /oem/* > /run/oem.yaml")
+	Sudo("cat /etc/resolv.conf > /run/resolv.conf")
 	Sudo("k3s kubectl get pods -A -o json > /run/pods.json")
 	Sudo("k3s kubectl get events -A -o json > /run/events.json")
 	Sudo("cat /proc/cmdline > /run/cmdline")
@@ -150,6 +151,7 @@ func gatherLogs() {
 	Sudo("df -h > /run/disk")
 	Sudo("mount > /run/mounts")
 	Sudo("blkid > /run/blkid")
+	Sudo("dmesg > /run/dmesg.log")
 
 	GatherAllLogs(
 		[]string{
@@ -157,8 +159,11 @@ func gatherLogs() {
 			"kairos-agent",
 			"cos-setup-boot",
 			"cos-setup-network",
+			"cos-setup-initramfs",
+			"cos-setup-reconcile",
 			"kairos",
 			"k3s",
+			"k3s-agent",
 		},
 		[]string{
 			"/var/log/edgevpn.log",
@@ -171,6 +176,8 @@ func gatherLogs() {
 			"/run/events.json",
 			"/run/cmdline",
 			"/run/oem.yaml",
+			"/run/resolv.conf",
+			"/run/dmesg.log",
 		})
 }
 
