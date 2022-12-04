@@ -2,11 +2,8 @@
 package mos_test
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -126,37 +123,17 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
-			kubectl := func(s string) (string, error) {
-				return Sudo("k3s kubectl " + s)
-			}
+		
 
 			currentVersion, err := Machine.Command("source /etc/os-release; echo $VERSION")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(currentVersion).To(ContainSubstring("v"))
 
-			By("installing system-upgrade-controller", func() {
-				resp, err := http.Get("https://github.com/rancher/system-upgrade-controller/releases/download/v0.9.1/system-upgrade-controller.yaml")
-				Expect(err).ToNot(HaveOccurred())
-				defer resp.Body.Close()
-				data := bytes.NewBuffer([]byte{})
-
-				_, err = io.Copy(data, resp.Body)
-				Expect(err).ToNot(HaveOccurred())
-
-				temp, err := ioutil.TempFile("", "temp")
-				Expect(err).ToNot(HaveOccurred())
-
-				defer os.RemoveAll(temp.Name())
-				err = ioutil.WriteFile(temp.Name(), data.Bytes(), os.ModePerm)
-				Expect(err).ToNot(HaveOccurred())
-
-				err = Machine.SendFile(temp.Name(), "/tmp/kubectl.yaml", "0770")
-				Expect(err).ToNot(HaveOccurred())
-
+			By("wait system-upgrade-controller", func() {
 				Eventually(func() string {
-					out, _ := kubectl("apply -f /tmp/kubectl.yaml")
+					out, _ := kubectl("get pods -A")
 					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("unchanged"))
+				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
 			})
 
 			By("triggering an upgrade", func() {

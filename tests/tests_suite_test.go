@@ -19,6 +19,10 @@ import (
 	"github.com/spectrocloud/peg/pkg/machine/types"
 )
 
+var kubectl = func(s string) (string, error) {
+	return Sudo("k3s kubectl " + s)
+}
+
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "kairos Test Suite")
@@ -100,6 +104,7 @@ var _ = BeforeSuite(func() {
 		}
 
 		opts := []types.MachineOption{
+			types.WithMemory("9000"),
 			types.WithISO(os.Getenv("ISO")),
 			types.WithSSHPort(sshPort),
 			types.WithID(machineID),
@@ -135,14 +140,18 @@ var _ = BeforeSuite(func() {
 })
 
 func gatherLogs() {
+	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
+	Sudo("cat /oem/* > /run/oem.yaml")
+	Sudo("cat /etc/resolv.conf > /run/resolv.conf")
 	Sudo("k3s kubectl get pods -A -o json > /run/pods.json")
 	Sudo("k3s kubectl get events -A -o json > /run/events.json")
 	Sudo("cat /proc/cmdline > /run/cmdline")
 	Sudo("chmod 777 /run/events.json")
-
+	Sudo("sh /tmp/logs.sh > /run/kube_logs")
 	Sudo("df -h > /run/disk")
 	Sudo("mount > /run/mounts")
 	Sudo("blkid > /run/blkid")
+	Sudo("dmesg > /run/dmesg.log")
 
 	GatherAllLogs(
 		[]string{
@@ -150,8 +159,11 @@ func gatherLogs() {
 			"kairos-agent",
 			"cos-setup-boot",
 			"cos-setup-network",
+			"cos-setup-initramfs",
+			"cos-setup-reconcile",
 			"kairos",
 			"k3s",
+			"k3s-agent",
 		},
 		[]string{
 			"/var/log/edgevpn.log",
@@ -159,9 +171,13 @@ func gatherLogs() {
 			"/run/pods.json",
 			"/run/disk",
 			"/run/mounts",
+			"/run/kube_logs",
 			"/run/blkid",
 			"/run/events.json",
 			"/run/cmdline",
+			"/run/oem.yaml",
+			"/run/resolv.conf",
+			"/run/dmesg.log",
 		})
 }
 

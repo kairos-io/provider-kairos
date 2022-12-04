@@ -184,6 +184,8 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			if isFlavor("alpine") {
 				Skip("DNS not working on alpine yet")
 			}
+			// FIXUP: DNS needs reboot to take effect
+			Reboot()
 			Eventually(func() string {
 				Machine.Command(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
 				out, _ := Machine.Command("ping -c 1 foo.bar")
