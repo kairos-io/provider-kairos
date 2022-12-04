@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/kairos-io/provider-kairos/internal/provider/assets"
+
 	"github.com/kairos-io/kairos/pkg/machine"
 	"github.com/kairos-io/kairos/pkg/machine/systemd"
 	"github.com/kairos-io/kairos/pkg/utils"
@@ -23,6 +25,10 @@ func SaveOEMCloudConfig(name string, yc yip.YipConfig) error {
 		return err
 	}
 	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("100_%s.yaml", name)), dnsYAML, 0700)
+}
+
+func SaveCloudConfig(name string, c []byte) error {
+	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
 }
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
 
@@ -54,27 +60,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 		vpnOpts["DNSADDRESS"] = "127.0.0.1:53"
 		vpnOpts["DNSFORWARD"] = "true"
 
-		dnsConfig := yip.YipConfig{
-			Name: "DNS Configuration",
-			Stages: map[string][]yip.Stage{
-				"initramfs": {
-					{
-						Files: []yip.File{{
-							Permissions: 0644,
-							Path:        "/etc/systemd/resolved.conf",
-							Content: `
-[Resolve]
-DNS=127.0.0.1`,
-						}},
-					},
-					{
-						Dns: yip.DNS{Nameservers: []string{"127.0.0.1"}}},
-				}},
-		}
-
-		// TODO: Is this working? seems a reboot is still necessary to take changes into effect
-		dat, _ := yaml.Marshal(&dnsConfig)
-		_ = machine.ExecuteInlineCloudConfig(string(dat), "initramfs")
+		_ = machine.ExecuteInlineCloudConfig(assets.LocalDNS, "initramfs")
 		if !utils.IsOpenRCBased() {
 			svc, err := systemd.NewService(
 				systemd.WithName("systemd-resolved"),
@@ -84,7 +70,7 @@ DNS=127.0.0.1`,
 			}
 		}
 
-		if err := SaveOEMCloudConfig("vpn_dns", dnsConfig); err != nil {
+		if err := SaveCloudConfig("vpn_dns", []byte(assets.LocalDNS)); err != nil {
 			return fmt.Errorf("could not create dns config: %w", err)
 		}
 	}
