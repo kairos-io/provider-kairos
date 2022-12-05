@@ -23,4 +23,4 @@ install:
 
 Upgrading can be done either via Kubernetes or manually with `kairos-agent upgrade --image <image>`, or you can list available versions with `kairos-agent upgrade list-releases`. 
 
-Container images available for upgrades are pushed to quay, you can check out the [image matrix in our documentation](https://kairos.io/reference/image_matrix).
+Container images available for upgrades are pushed to quay, you can check out the [image matrix in our documentation](https://kairos.io/docs/reference/image_matrix/).
