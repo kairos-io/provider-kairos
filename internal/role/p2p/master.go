@@ -13,6 +13,7 @@ import (
 
 	"github.com/kairos-io/kairos/pkg/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/role"
 
 	service "github.com/mudler/edgevpn/api/client/service"
 )
@@ -67,12 +68,19 @@ func propagateMasterData(ip string, c *service.RoleConfig) error {
 	return nil
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 	return func(c *service.RoleConfig) error {
 
-		ip := utils.GetInterfaceIP("edgevpn0")
-		if ip == "" {
-			return errors.New("node doesn't have an ip yet")
+		var ip string
+		iface := guessInterface(pconfig)
+		ifaceIP := utils.GetInterfaceIP(iface)
+		if pconfig.Kairos.Hybrid {
+			ip = pconfig.KubeVIP.EIP
+		} else {
+			ip = utils.GetInterfaceIP("edgevpn0")
+			if ip == "" {
+				return errors.New("node doesn't have an ip yet")
+			}
 		}
 
 		if pconfig.Kairos.Role != "" {
@@ -83,7 +91,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			}
 		}
 
-		if SentinelExist() {
+		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
 			return propagateMasterData(ip, c)
 		}
@@ -117,7 +125,16 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		args := []string{"--flannel-iface=edgevpn0"}
+		var args []string
+		if pconfig.Kairos.Hybrid {
+			args = []string{fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP)}
+			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
+				return fmt.Errorf("failed KubeVIP setup: %w", err)
+			}
+		} else {
+			args = []string{"--flannel-iface=edgevpn0"}
+		}
+
 		if k3sConfig.ReplaceArgs {
 			args = k3sConfig.Args
 		} else {
@@ -145,7 +162,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		return CreateSentinel()
+		return role.CreateSentinel()
 	}
 }
 

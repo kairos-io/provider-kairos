@@ -16,21 +16,23 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	rand.Seed(time.Now().Unix())
 
 	// Assign roles to nodes
-	currentRoles := map[string]string{}
+	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
+	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
 
 	existsMaster := false
-	unassignedNodes := []string{}
-	for _, a := range nodes {
-		role, _ := c.Client.Get("role", a)
-		currentRoles[a] = role
-		if role == "master" {
-			existsMaster = true
-		} else if role == "" {
-			unassignedNodes = append(unassignedNodes, a)
-		}
+
+	masterRole := "master"
+	workerRole := "worker"
+
+	if pconfig.Kairos.Hybrid {
+		c.Logger.Info("hybrid p2p with KubeVIP enabled")
 	}
 
-	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
+	for _, r := range currentRoles {
+		if r == masterRole {
+			existsMaster = true
+		}
+	}
 	c.Logger.Infof("Master already present: %t", existsMaster)
 	c.Logger.Infof("Unassigned nodes: %+v", unassignedNodes)
 
@@ -55,11 +57,11 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 			selected = toSelect[rand.Intn(len(toSelect)-1)]
 		}
 
-		if err := c.Client.Set("role", selected, "master"); err != nil {
+		if err := c.Client.Set("role", selected, masterRole); err != nil {
 			return err
 		}
 		c.Logger.Info("-> Set master to", selected)
-		currentRoles[selected] = "master"
+		currentRoles[selected] = masterRole
 		// Return here, so next time we get called
 		// makes sure master is set.
 		return nil
@@ -67,11 +69,11 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 
 	// cycle all empty roles and assign worker roles
 	for _, uuid := range unassignedNodes {
-		if err := c.Client.Set("role", uuid, "worker"); err != nil {
+		if err := c.Client.Set("role", uuid, workerRole); err != nil {
 			c.Logger.Error(err)
 			return err
 		}
-		c.Logger.Info("-> Set worker to", uuid)
+		c.Logger.Infof("-> Set %s to %s", workerRole, uuid)
 	}
 
 	c.Logger.Info("Done scheduling")

@@ -10,10 +10,11 @@ import (
 	"github.com/kairos-io/kairos/pkg/utils"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 	return func(c *service.RoleConfig) error {
 
 		if pconfig.Kairos.Role != "" {
@@ -24,7 +25,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			}
 		}
 
-		if SentinelExist() {
+		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
 			return nil
 		}
@@ -42,13 +43,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 		}
 
 		nodeToken = strings.TrimRight(nodeToken, "\n")
-
-		ip := utils.GetInterfaceIP("edgevpn0")
-		if ip == "" {
-			return errors.New("node doesn't have an ip yet")
-		}
-
-		c.Logger.Info("Configuring k3s-agent", ip, masterIP, nodeToken)
 
 		svc, err := machine.K3sAgent()
 		if err != nil {
@@ -74,6 +68,26 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			env = k3sConfig.Env
 		}
 
+		args := []string{
+			"--with-node-id",
+		}
+
+		if pconfig.Kairos.Hybrid {
+			iface := guessInterface(pconfig)
+			ip := utils.GetInterfaceIP(iface)
+			args = append(args,
+				fmt.Sprintf("--node-ip %s", ip))
+		} else {
+			ip := utils.GetInterfaceIP("edgevpn0")
+			if ip == "" {
+				return errors.New("node doesn't have an ip yet")
+			}
+			args = append(args,
+				fmt.Sprintf("--node-ip %s", ip),
+				"--flannel-iface=edgevpn0")
+		}
+
+		c.Logger.Info("Configuring k3s-agent", masterIP, nodeToken, args)
 		// Setup systemd unit and starts it
 		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
 			env,
@@ -81,11 +95,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		args := []string{
-			"--with-node-id",
-			fmt.Sprintf("--node-ip %s", ip),
-			"--flannel-iface=edgevpn0",
-		}
 		if k3sConfig.ReplaceArgs {
 			args = k3sConfig.Args
 		} else {
@@ -108,6 +117,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) Role {
 			return err
 		}
 
-		return CreateSentinel()
+		return role.CreateSentinel()
 	}
 }

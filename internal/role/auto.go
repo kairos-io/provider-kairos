@@ -17,15 +17,21 @@ func contains(slice []string, elem string) bool {
 	}
 	return false
 }
+
 func Auto(cc *config.Config, pconfig *providerConfig.Config) Role {
 	return func(c *service.RoleConfig) error {
 		advertizing, _ := c.Client.AdvertizingNodes()
 		actives, _ := c.Client.ActiveNodes()
 
+		minimumNodes := pconfig.Kairos.MinimumNodes
+		if minimumNodes == 0 {
+			minimumNodes = 2
+		}
+
 		c.Logger.Info("Active nodes:", actives)
 		c.Logger.Info("Advertizing nodes:", advertizing)
 
-		if len(advertizing) < 2 {
+		if len(advertizing) < minimumNodes {
 			c.Logger.Info("Not enough nodes")
 			return nil
 		}

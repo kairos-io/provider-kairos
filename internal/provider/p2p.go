@@ -30,6 +30,52 @@ func SaveOEMCloudConfig(name string, yc yip.YipConfig) error {
 func SaveCloudConfig(name string, c []byte) error {
 	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
 }
+
+func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
+	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
+		return fmt.Errorf("no network token defined")
+	}
+
+	svc, err := services.P2PAPI(rootDir)
+	if err != nil {
+		return fmt.Errorf("could not create svc: %w", err)
+	}
+
+	apiAddress = strings.ReplaceAll(apiAddress, "https://", "")
+	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
+
+	vpnOpts := map[string]string{
+		"EDGEVPNTOKEN": c.Kairos.NetworkToken,
+		"APILISTEN":    apiAddress,
+	}
+	// Override opts with user-supplied
+	for k, v := range c.VPN {
+		vpnOpts[k] = v
+	}
+
+	os.MkdirAll("/etc/systemd/system.conf.d/", 0600) //nolint:errcheck
+	// Setup edgevpn instance
+	err = utils.WriteEnv(filepath.Join(rootDir, "/etc/systemd/system.conf.d/edgevpn-kairos.env"), vpnOpts)
+	if err != nil {
+		return fmt.Errorf("could not create write env file: %w", err)
+	}
+
+	err = svc.WriteUnit()
+	if err != nil {
+		return fmt.Errorf("could not create write unit file: %w", err)
+	}
+
+	if start {
+		err = svc.Start()
+		if err != nil {
+			return fmt.Errorf("could not start svc: %w", err)
+		}
+
+		return svc.Enable()
+	}
+	return nil
+}
+
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
 
 	if c.Kairos == nil || c.Kairos.NetworkToken == "" {

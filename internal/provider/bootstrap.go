@@ -19,6 +19,8 @@ import (
 	sdk "github.com/kairos-io/kairos/sdk/bus"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
+	p2p "github.com/kairos-io/provider-kairos/internal/role/p2p"
+
 	"github.com/kairos-io/provider-kairos/internal/services"
 
 	"github.com/kairos-io/kairos/pkg/config"
@@ -95,9 +97,18 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return ErrorEvent("No network token provided, exiting")
 	}
 
-	logger.Info("Configuring VPN")
-	if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
-		return ErrorEvent("Failed setup VPN: %s", err.Error())
+	if !providerConfig.Kairos.Hybrid {
+		logger.Info("Configuring VPN")
+		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
+			return ErrorEvent("Failed setup VPN: %s", err.Error())
+		}
+
+	} else {
+		logger.Info("Configuring API")
+		if err := SetupAPI(cfg.APIAddress, "/", true, providerConfig); err != nil {
+			return ErrorEvent("Failed setup VPN: %s", err.Error())
+		}
+
 	}
 
 	networkID := "kairos"
@@ -120,11 +131,11 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithRoles(
 			service.RoleKey{
 				Role:        "master",
-				RoleHandler: role.Master(c, providerConfig),
+				RoleHandler: p2p.Master(c, providerConfig),
 			},
 			service.RoleKey{
 				Role:        "worker",
-				RoleHandler: role.Worker(c, providerConfig),
+				RoleHandler: p2p.Worker(c, providerConfig),
 			},
 			service.RoleKey{
 				Role:        "auto",
