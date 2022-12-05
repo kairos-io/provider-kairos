@@ -3,12 +3,12 @@ package role
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/provider-kairos/internal/assets"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 )
 
@@ -41,33 +41,48 @@ func downloadFromUrl(url, where string) error {
 }
 
 func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
-	os.MkdirAll("/var/lib/rancher/k3s/server/manifests/", 0650)
+	if err := os.MkdirAll("/var/lib/rancher/k3s/server/manifests/", 0650); err != nil {
+		return fmt.Errorf("could not create manifest dir")
+	}
 
 	targetFile := "/var/lib/rancher/k3s/server/manifests/kubevip.yaml"
 	targetCRDFile := "/var/lib/rancher/k3s/server/manifests/kubevipmanifest.yaml"
 
-	manifestUrl := "https://kube-vip.io/manifests/rbac.yaml"
-
 	if pconfig.KubeVIP.ManifestURL != "" {
-		manifestUrl = pconfig.KubeVIP.ManifestURL
-	}
+		err := downloadFromUrl(pconfig.KubeVIP.ManifestURL, targetCRDFile)
+		if err != nil {
+			return err
+		}
+	} else {
+		f, err := assets.GetStaticFS().Open("kube_vip_rbac.yaml")
+		if err != nil {
+			return fmt.Errorf("could not find kube_vip in assets")
+		}
+		defer f.Close()
 
-	err := downloadFromUrl(manifestUrl, targetCRDFile)
-	if err != nil {
-		return err
+		destination, err := os.Create(targetCRDFile)
+		if err != nil {
+			return err
+		}
+		defer destination.Close()
+		_, err = io.Copy(destination, f)
+		if err != nil {
+			return err
+		}
 	}
 
 	content, err := generateKubeVIP(iface, ip, pconfig.KubeVIP.Args)
-	if err == nil {
-		f, err := os.OpenFile(targetFile,
-			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Println(err)
-		}
-		defer f.Close()
-		if _, err := f.WriteString("\n" + content); err != nil {
-			log.Println(err)
-		}
+	if err != nil {
+		return fmt.Errorf("could not generate kubevip %s", err.Error())
+	}
+
+	f, err := os.Create(targetFile)
+	if err != nil {
+		return fmt.Errorf("could not open %s: %w", f.Name(), err)
+	}
+	defer f.Close()
+	if _, err := f.WriteString("\n" + content); err != nil {
+		return fmt.Errorf("could not write to %s: %w", f.Name(), err)
 	}
 
 	return err
