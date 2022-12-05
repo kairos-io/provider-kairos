@@ -128,7 +128,9 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 		var args []string
 		if pconfig.Kairos.Hybrid {
 			args = []string{fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP)}
-			deployKubeVIP(iface, ip, pconfig)
+			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
+				return fmt.Errorf("failed KubeVIP setup: %w", err)
+			}
 		} else {
 			args = []string{"--flannel-iface=edgevpn0"}
 		}

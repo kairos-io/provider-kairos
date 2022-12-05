@@ -22,7 +22,7 @@ func generateKubeVIP(iface, ip string, args []string) (string, error) {
 	return out, nil
 }
 
-func downloadFromUrl(url, where string) error {
+func downloadFromURL(url, where string) error {
 	output, err := os.Create(where)
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	targetCRDFile := "/var/lib/rancher/k3s/server/manifests/kubevipmanifest.yaml"
 
 	if pconfig.KubeVIP.ManifestURL != "" {
-		err := downloadFromUrl(pconfig.KubeVIP.ManifestURL, targetCRDFile)
+		err := downloadFromURL(pconfig.KubeVIP.ManifestURL, targetCRDFile)
 		if err != nil {
 			return err
 		}
@@ -81,9 +81,9 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 		return fmt.Errorf("could not open %s: %w", f.Name(), err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString("\n" + content); err != nil {
+	if _, err := f.WriteString(content); err != nil {
 		return fmt.Errorf("could not write to %s: %w", f.Name(), err)
 	}
 
-	return err
+	return nil
 }
