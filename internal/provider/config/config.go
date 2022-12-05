@@ -7,6 +7,7 @@ type Kairos struct {
 	DNS          bool   `yaml:"dns,omitempty"`
 	LogLevel     string `yaml:"loglevel,omitempty"`
 	Hybrid       bool   `yaml:"hybrid,omitempty"`
+	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
 }
 
 type Config struct {
