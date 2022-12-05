@@ -44,13 +44,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 
 		nodeToken = strings.TrimRight(nodeToken, "\n")
 
-		ip := utils.GetInterfaceIP("edgevpn0")
-		if ip == "" {
-			return errors.New("node doesn't have an ip yet")
-		}
-
-		c.Logger.Info("Configuring k3s-agent", ip, masterIP, nodeToken)
-
 		svc, err := machine.K3sAgent()
 		if err != nil {
 			return err
@@ -75,6 +68,26 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			env = k3sConfig.Env
 		}
 
+		args := []string{
+			"--with-node-id",
+		}
+
+		if pconfig.Kairos.Hybrid {
+			iface := guessInterface(pconfig)
+			ip := utils.GetInterfaceIP(iface)
+			args = append(args,
+				fmt.Sprintf("--node-ip %s", ip))
+		} else {
+			ip := utils.GetInterfaceIP("edgevpn0")
+			if ip == "" {
+				return errors.New("node doesn't have an ip yet")
+			}
+			args = append(args,
+				fmt.Sprintf("--node-ip %s", ip),
+				"--flannel-iface=edgevpn0")
+		}
+
+		c.Logger.Info("Configuring k3s-agent", masterIP, nodeToken, args)
 		// Setup systemd unit and starts it
 		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
 			env,
@@ -82,11 +95,6 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			return err
 		}
 
-		args := []string{
-			"--with-node-id",
-			fmt.Sprintf("--node-ip %s", ip),
-			"--flannel-iface=edgevpn0",
-		}
 		if k3sConfig.ReplaceArgs {
 			args = k3sConfig.Args
 		} else {
