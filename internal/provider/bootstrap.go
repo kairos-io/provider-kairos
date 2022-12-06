@@ -97,18 +97,16 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return ErrorEvent("No network token provided, exiting")
 	}
 
-	if !providerConfig.Kairos.Hybrid {
+	if !providerConfig.Kairos.Hybrid || providerConfig.Kairos.HybridVPN {
 		logger.Info("Configuring VPN")
 		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
-
 	} else {
 		logger.Info("Configuring API")
 		if err := SetupAPI(cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
-
 	}
 
 	networkID := "kairos"
@@ -131,7 +129,15 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithRoles(
 			service.RoleKey{
 				Role:        "master",
-				RoleHandler: p2p.Master(c, providerConfig),
+				RoleHandler: p2p.Master(c, providerConfig, false, false),
+			},
+			service.RoleKey{
+				Role:        "master/clusterinit",
+				RoleHandler: p2p.Master(c, providerConfig, true, true),
+			},
+			service.RoleKey{
+				Role:        "master/ha",
+				RoleHandler: p2p.Master(c, providerConfig, false, true),
 			},
 			service.RoleKey{
 				Role:        "worker",

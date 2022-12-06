@@ -7,6 +7,7 @@ type Kairos struct {
 	DNS          bool   `yaml:"dns,omitempty"`
 	LogLevel     string `yaml:"loglevel,omitempty"`
 	Hybrid       bool   `yaml:"hybrid,omitempty"`
+	HybridVPN    bool   `yaml:"hybrid_vpn,omitempty"`
 	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
 }
 
@@ -25,10 +26,18 @@ type KubeVIP struct {
 	Interface   string   `yaml:"interface,omitempty"`
 }
 
+type HA struct {
+	Enable      bool   `yaml:"enable,omitempty"`
+	EmbeddedDB  bool   `yaml:"embedded,omitempty"`
+	ExternalDB  string `yaml:"external_db,omitempty"`
+	MasterNodes int    `yaml:"master_nodes,omitempty"`
+}
+
 type K3s struct {
 	Env         map[string]string `yaml:"env,omitempty"`
 	ReplaceEnv  bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
 	Args        []string          `yaml:"args,omitempty"`
 	Enabled     bool              `yaml:"enabled,omitempty"`
+	HA          HA                `yaml:"ha,omitempty"`
 }

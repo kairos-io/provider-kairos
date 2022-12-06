@@ -1,6 +1,7 @@
 package role
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -11,9 +12,13 @@ import (
 )
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders
-// TODO: HA-Auto.
+// TODO: External DB
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error {
 	rand.Seed(time.Now().Unix())
+
+	if pconfig.Kairos.Hybrid {
+		c.Logger.Info("hybrid p2p with KubeVIP enabled")
+	}
 
 	// Assign roles to nodes
 	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
@@ -23,16 +28,22 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 
 	masterRole := "master"
 	workerRole := "worker"
+	masterHA := "master/ha"
 
-	if pconfig.Kairos.Hybrid {
-		c.Logger.Info("hybrid p2p with KubeVIP enabled")
+	if pconfig.K3s.HA.Enable {
+		masterRole = "master/clusterinit"
 	}
+	mastersHA := 0
 
 	for _, r := range currentRoles {
 		if r == masterRole {
 			existsMaster = true
 		}
+		if r == masterHA {
+			mastersHA++
+		}
 	}
+
 	c.Logger.Infof("Master already present: %t", existsMaster)
 	c.Logger.Infof("Unassigned nodes: %+v", unassignedNodes)
 
@@ -60,11 +71,23 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		if err := c.Client.Set("role", selected, masterRole); err != nil {
 			return err
 		}
-		c.Logger.Info("-> Set master to", selected)
+		c.Logger.Infof("-> Set %s to %s", masterRole, selected)
 		currentRoles[selected] = masterRole
 		// Return here, so next time we get called
 		// makes sure master is set.
 		return nil
+	}
+
+	if pconfig.K3s.HA.Enable && pconfig.K3s.HA.MasterNodes != mastersHA {
+		if len(unassignedNodes) > 0 {
+			if err := c.Client.Set("role", unassignedNodes[0], masterHA); err != nil {
+				c.Logger.Error(err)
+				return err
+			}
+			return nil
+		} else {
+			return fmt.Errorf("not enough nodes to create ha control plane")
+		}
 	}
 
 	// cycle all empty roles and assign worker roles

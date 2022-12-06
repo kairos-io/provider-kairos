@@ -18,7 +18,7 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func propagateMasterData(ip string, c *service.RoleConfig) error {
+func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool) error {
 	defer func() {
 		// Avoid polluting the API.
 		// The ledger already retries in the background to update the blockchain, but it has
@@ -29,9 +29,29 @@ func propagateMasterData(ip string, c *service.RoleConfig) error {
 	}()
 
 	// If we are configured as master, always signal our role
-	if err := c.Client.Set("role", c.UUID, "master"); err != nil {
-		c.Logger.Error(err)
-		return err
+	// if err := c.Client.Set("role", c.UUID, "master"); err != nil {
+	// 	c.Logger.Error(err)
+	// 	return err
+	// }
+
+	// if ha && clusterInit {
+	// 	tokenB, err := ioutil.ReadFile("/var/lib/rancher/k3s/server/generated-token")
+	// 	if err != nil {
+	// 		c.Logger.Error(err)
+	// 		return err
+	// 	}
+
+	// 	nodeToken := string(tokenB)
+	// 	nodeToken = strings.TrimRight(nodeToken, "\n")
+	// 	if nodeToken != "" {
+	// 		err := c.Client.Set("generatedtoken", "token", nodeToken)
+	// 		if err != nil {
+	// 			c.Logger.Error(err)
+	// 		}
+	// 	}
+	// }
+	if ha && !clusterInit {
+		return nil
 	}
 
 	tokenB, err := ioutil.ReadFile("/var/lib/rancher/k3s/server/node-token")
@@ -68,7 +88,7 @@ func propagateMasterData(ip string, c *service.RoleConfig) error {
 	return nil
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
+func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool) role.Role {
 	return func(c *service.RoleConfig) error {
 
 		var ip string
@@ -93,7 +113,21 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 
 		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
-			return propagateMasterData(ip, c)
+			return propagateMasterData(ip, c, clusterInit, ha)
+		}
+
+		var nodeToken, clusterInitIP string
+		if ha && !clusterInit {
+			nodeToken, _ = c.Client.Get("nodetoken", "token")
+			if nodeToken == "" {
+				c.Logger.Info("nodetoken not there still..")
+				return nil
+			}
+			clusterInitIP, _ = c.Client.Get("master", "ip")
+			if clusterInitIP == "" {
+				c.Logger.Info("clusterInitIP not there still..")
+				return nil
+			}
 		}
 
 		// Configure k3s service to start on edgevpn0
@@ -110,6 +144,15 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 		}
 
 		env := map[string]string{}
+		// if clusterInit && ha {
+		// 	token := utils.RandStringRunes(36)
+		// 	env["K3S_TOKEN"] = token
+		// 	os.WriteFile("/var/lib/rancher/k3s/server/generated-token", []byte(token), 0600)
+		// }
+		if ha && !clusterInit {
+			env["K3S_TOKEN"] = nodeToken
+		}
+
 		if !k3sConfig.ReplaceEnv {
 			// Override opts with user-supplied
 			for k, v := range k3sConfig.Env {
@@ -131,14 +174,24 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
 				return fmt.Errorf("failed KubeVIP setup: %w", err)
 			}
+			if pconfig.Kairos.HybridVPN {
+				args = append(args, "--flannel-iface=edgevpn0")
+			}
 		} else {
 			args = []string{"--flannel-iface=edgevpn0"}
+		}
+		if ha && !clusterInit {
+			args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 		}
 
 		if k3sConfig.ReplaceArgs {
 			args = k3sConfig.Args
 		} else {
 			args = append(args, k3sConfig.Args...)
+		}
+
+		if clusterInit && ha {
+			args = append(args, "--cluster-init")
 		}
 
 		k3sbin := utils.K3sBin()
@@ -158,15 +211,10 @@ func Master(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			return err
 		}
 
-		if err := propagateMasterData(ip, c); err != nil {
+		if err := propagateMasterData(ip, c, clusterInit, ha); err != nil {
 			return err
 		}
 
 		return role.CreateSentinel()
 	}
-}
-
-// TODO: https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/
-func HAMaster(c *service.RoleConfig) {
-	c.Logger.Info("HA Role not implemented yet")
 }

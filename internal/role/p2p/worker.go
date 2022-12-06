@@ -37,8 +37,8 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 		}
 
 		nodeToken, _ := c.Client.Get("nodetoken", "token")
-		if masterIP == "" {
-			c.Logger.Info("nodetoken not there still..")
+		if nodeToken == "" {
+			c.Logger.Info("node token not there still..")
 			return nil
 		}
 
