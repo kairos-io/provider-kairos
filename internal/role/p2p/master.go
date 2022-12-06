@@ -180,6 +180,11 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		} else {
 			args = []string{"--flannel-iface=edgevpn0"}
 		}
+
+		if pconfig.K3s.HA.ExternalDB != "" {
+			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.K3s.HA.ExternalDB)}
+		}
+
 		if ha && !clusterInit {
 			args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 		}
@@ -190,7 +195,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			args = append(args, k3sConfig.Args...)
 		}
 
-		if clusterInit && ha {
+		if clusterInit && ha && pconfig.K3s.HA.ExternalDB == "" {
 			args = append(args, "--cluster-init")
 		}
 
