@@ -28,7 +28,6 @@ type KubeVIP struct {
 
 type HA struct {
 	Enable      bool   `yaml:"enable,omitempty"`
-	EmbeddedDB  bool   `yaml:"embedded,omitempty"`
 	ExternalDB  string `yaml:"external_db,omitempty"`
 	MasterNodes int    `yaml:"master_nodes,omitempty"`
 }
