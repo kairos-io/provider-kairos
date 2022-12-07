@@ -18,7 +18,7 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool) error {
+func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool, role string) error {
 	defer func() {
 		// Avoid polluting the API.
 		// The ledger already retries in the background to update the blockchain, but it has
@@ -29,10 +29,10 @@ func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool)
 	}()
 
 	// If we are configured as master, always signal our role
-	// if err := c.Client.Set("role", c.UUID, "master"); err != nil {
-	// 	c.Logger.Error(err)
-	// 	return err
-	// }
+	if err := c.Client.Set("role", c.UUID, role); err != nil {
+		c.Logger.Error(err)
+		return err
+	}
 
 	if ha && !clusterInit {
 		return nil
@@ -150,7 +150,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 
 		if role.SentinelExist() {
 			c.Logger.Info("Node already configured, backing off")
-			return propagateMasterData(ip, c, clusterInit, ha)
+			return propagateMasterData(ip, c, clusterInit, ha, roleName)
 		}
 
 		if ha && !clusterInit && waitForMasterHAInfo(c) {
@@ -218,7 +218,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			return err
 		}
 
-		if err := propagateMasterData(ip, c, clusterInit, ha); err != nil {
+		if err := propagateMasterData(ip, c, clusterInit, ha, roleName); err != nil {
 			return err
 		}
 
