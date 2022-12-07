@@ -9,6 +9,7 @@ type Kairos struct {
 	Hybrid       bool   `yaml:"hybrid,omitempty"`
 	HybridVPN    bool   `yaml:"hybrid_vpn,omitempty"`
 	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
+	SkipAuto     bool   `yaml:"skip_auto"`
 }
 
 type Config struct {

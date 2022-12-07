@@ -49,6 +49,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// TODO: this belong to a systemd service that is started instead
 
 	tokenNotDefined := (providerConfig.Kairos != nil && providerConfig.Kairos.NetworkToken == "")
+	skipAuto := (providerConfig.Kairos != nil && providerConfig.Kairos.SkipAuto)
 
 	if providerConfig.Kairos == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
@@ -85,7 +86,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Do onetimebootstrap if K3s or K3s-agent are enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if providerConfig.K3s.Enabled || providerConfig.K3sAgent.Enabled {
+	if (tokenNotDefined && (providerConfig.K3s.Enabled || providerConfig.K3sAgent.Enabled)) || skipAuto {
 		err := oneTimeBootstrap(log, providerConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig)
 		})
@@ -94,7 +95,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		}
 		return pluggable.EventResponse{}
 	} else if tokenNotDefined {
-		return ErrorEvent("No network token provided, exiting")
+		return ErrorEvent("No network token provided, or `k3s` block configured. Exiting")
 	}
 
 	if !providerConfig.Kairos.Hybrid || providerConfig.Kairos.HybridVPN {
