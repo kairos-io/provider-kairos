@@ -86,12 +86,47 @@ func genArgs(pconfig *providerConfig.Config, ip, ifaceIP string) (args []string)
 	return
 }
 
+func genEnv(ha, clusterInit bool, c *service.Client, k3sConfig providerConfig.K3s) (env map[string]string) {
+	env = make(map[string]string)
+
+	if ha && !clusterInit {
+		nodeToken, _ := c.Get("nodetoken", "token")
+		env["K3S_TOKEN"] = nodeToken
+	}
+
+	if !k3sConfig.ReplaceEnv {
+		// Override opts with user-supplied
+		for k, v := range k3sConfig.Env {
+			env[k] = v
+		}
+	} else {
+		env = k3sConfig.Env
+	}
+
+	return env
+}
+
 // we either return the ElasticIP or the IP from the edgevpn interface
 func guessIP(pconfig *providerConfig.Config) string {
 	if pconfig.Kairos.Hybrid {
 		return pconfig.KubeVIP.EIP
 	}
 	return utils.GetInterfaceIP("edgevpn0")
+}
+
+func waitForMasterHAInfo(c *service.RoleConfig) bool {
+	nodeToken, _ := c.Client.Get("nodetoken", "token")
+	if nodeToken == "" {
+		c.Logger.Info("nodetoken not there still..")
+		return true
+	}
+	clusterInitIP, _ := c.Client.Get("master", "ip")
+	if clusterInitIP == "" {
+		c.Logger.Info("clusterInitIP not there still..")
+		return true
+	}
+
+	return false
 }
 
 func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role {
@@ -118,19 +153,13 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			return propagateMasterData(ip, c, clusterInit, ha)
 		}
 
-		var nodeToken, clusterInitIP string
-		if ha && !clusterInit {
-			nodeToken, _ = c.Client.Get("nodetoken", "token")
-			if nodeToken == "" {
-				c.Logger.Info("nodetoken not there still..")
-				return nil
-			}
-			clusterInitIP, _ = c.Client.Get("master", "ip")
-			if clusterInitIP == "" {
-				c.Logger.Info("clusterInitIP not there still..")
-				return nil
-			}
+		if ha && !clusterInit && waitForMasterHAInfo(c) {
+			return nil
 		}
+
+		k3sConfig := pconfig.K3s
+
+		env := genEnv(ha, clusterInit, c.Client, k3sConfig)
 
 		// Configure k3s service to start on edgevpn0
 		c.Logger.Info("Configuring k3s")
@@ -138,25 +167,6 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		svc, err := machine.K3s()
 		if err != nil {
 			return err
-		}
-
-		k3sConfig := providerConfig.K3s{}
-		if pconfig.K3s.Enabled {
-			k3sConfig = pconfig.K3s
-		}
-
-		env := map[string]string{}
-		if ha && !clusterInit {
-			env["K3S_TOKEN"] = nodeToken
-		}
-
-		if !k3sConfig.ReplaceEnv {
-			// Override opts with user-supplied
-			for k, v := range k3sConfig.Env {
-				env[k] = v
-			}
-		} else {
-			env = k3sConfig.Env
 		}
 
 		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s"),
@@ -177,6 +187,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		}
 
 		if ha && !clusterInit {
+			clusterInitIP, _ := c.Client.Get("master", "ip")
 			args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 		}
 
