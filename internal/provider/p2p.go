@@ -77,9 +77,9 @@ func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) 
 }
 
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
-
-	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
-		return fmt.Errorf("no network token defined")
+	token := ""
+	if c.Kairos != nil && c.Kairos.NetworkToken != "" {
+		token = c.Kairos.NetworkToken
 	}
 
 	svc, err := services.EdgeVPN(instance, rootDir)
@@ -91,11 +91,13 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"EDGEVPNTOKEN": c.Kairos.NetworkToken,
 		"API":          "true",
 		"APILISTEN":    apiAddress,
 		"DHCP":         "true",
 		"DHCPLEASEDIR": "/usr/local/.kairos/lease",
+	}
+	if token != "" {
+		vpnOpts["EDGEVPNTOKEN"] = c.Kairos.NetworkToken
 	}
 	// Override opts with user-supplied
 	for k, v := range c.VPN {

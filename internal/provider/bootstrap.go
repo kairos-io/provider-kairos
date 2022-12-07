@@ -49,7 +49,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// TODO: this belong to a systemd service that is started instead
 
 	kairosBlockisDefined := providerConfig.Kairos != nil
-	tokenNotDefined := (kairosBlockisDefined && providerConfig.Kairos.NetworkToken == "")
+	tokenNotDefined := ((kairosBlockisDefined && providerConfig.Kairos.NetworkToken == "") || !kairosBlockisDefined)
 	skipAuto := (kairosBlockisDefined && providerConfig.Kairos.SkipAuto)
 
 	if providerConfig.Kairos == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
