@@ -105,7 +105,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
-	} else {
+	} else if kairosBlockisDefined {
 		logger.Info("Configuring API")
 		if err := SetupAPI(cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
