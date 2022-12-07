@@ -12,7 +12,6 @@ import (
 )
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders
-// TODO: External DB
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error {
 	rand.Seed(time.Now().Unix())
 
@@ -84,10 +83,10 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 				c.Logger.Error(err)
 				return err
 			}
+			// We want to keep scheduling in a second batch
 			return nil
-		} else {
-			return fmt.Errorf("not enough nodes to create ha control plane")
 		}
+		return fmt.Errorf("not enough nodes to create HA control plane")
 	}
 
 	// cycle all empty roles and assign worker roles

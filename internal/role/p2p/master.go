@@ -34,22 +34,6 @@ func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool)
 	// 	return err
 	// }
 
-	// if ha && clusterInit {
-	// 	tokenB, err := ioutil.ReadFile("/var/lib/rancher/k3s/server/generated-token")
-	// 	if err != nil {
-	// 		c.Logger.Error(err)
-	// 		return err
-	// 	}
-
-	// 	nodeToken := string(tokenB)
-	// 	nodeToken = strings.TrimRight(nodeToken, "\n")
-	// 	if nodeToken != "" {
-	// 		err := c.Client.Set("generatedtoken", "token", nodeToken)
-	// 		if err != nil {
-	// 			c.Logger.Error(err)
-	// 		}
-	// 	}
-	// }
 	if ha && !clusterInit {
 		return nil
 	}
@@ -88,19 +72,37 @@ func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool)
 	return nil
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool) role.Role {
+func genArgs(pconfig *providerConfig.Config, ip, ifaceIP string) (args []string) {
+	if pconfig.Kairos.Hybrid {
+		args = []string{fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP)}
+
+		if pconfig.Kairos.HybridVPN {
+			args = append(args, "--flannel-iface=edgevpn0")
+		}
+
+	} else {
+		args = []string{"--flannel-iface=edgevpn0"}
+	}
+	return
+}
+
+// we either return the ElasticIP or the IP from the edgevpn interface
+func guessIP(pconfig *providerConfig.Config) string {
+	if pconfig.Kairos.Hybrid {
+		return pconfig.KubeVIP.EIP
+	}
+	return utils.GetInterfaceIP("edgevpn0")
+}
+
+func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role {
 	return func(c *service.RoleConfig) error {
 
-		var ip string
 		iface := guessInterface(pconfig)
 		ifaceIP := utils.GetInterfaceIP(iface)
-		if pconfig.Kairos.Hybrid {
-			ip = pconfig.KubeVIP.EIP
-		} else {
-			ip = utils.GetInterfaceIP("edgevpn0")
-			if ip == "" {
-				return errors.New("node doesn't have an ip yet")
-			}
+		ip := guessIP(pconfig)
+		// If we don't have an IP, we sit and wait
+		if ip == "" {
+			return errors.New("node doesn't have an ip yet")
 		}
 
 		if pconfig.Kairos.Role != "" {
@@ -144,11 +146,6 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		}
 
 		env := map[string]string{}
-		// if clusterInit && ha {
-		// 	token := utils.RandStringRunes(36)
-		// 	env["K3S_TOKEN"] = token
-		// 	os.WriteFile("/var/lib/rancher/k3s/server/generated-token", []byte(token), 0600)
-		// }
 		if ha && !clusterInit {
 			env["K3S_TOKEN"] = nodeToken
 		}
@@ -168,17 +165,11 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			return err
 		}
 
-		var args []string
+		args := genArgs(pconfig, ip, ifaceIP)
 		if pconfig.Kairos.Hybrid {
-			args = []string{fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP)}
 			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
 				return fmt.Errorf("failed KubeVIP setup: %w", err)
 			}
-			if pconfig.Kairos.HybridVPN {
-				args = append(args, "--flannel-iface=edgevpn0")
-			}
-		} else {
-			args = []string{"--flannel-iface=edgevpn0"}
 		}
 
 		if pconfig.K3s.HA.ExternalDB != "" {
