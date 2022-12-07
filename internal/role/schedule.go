@@ -35,10 +35,10 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	mastersHA := 0
 
 	for _, r := range currentRoles {
-		if r == masterRole {
+		switch r {
+		case masterRole:
 			existsMaster = true
-		}
-		if r == masterHA {
+		case masterHA:
 			mastersHA++
 		}
 	}
