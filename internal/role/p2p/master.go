@@ -106,7 +106,7 @@ func genEnv(ha, clusterInit bool, c *service.Client, k3sConfig providerConfig.K3
 	return env
 }
 
-// we either return the ElasticIP or the IP from the edgevpn interface
+// we either return the ElasticIP or the IP from the edgevpn interface.
 func guessIP(pconfig *providerConfig.Config) string {
 	if pconfig.Kairos.Hybrid {
 		return pconfig.KubeVIP.EIP

@@ -11,7 +11,7 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-// scheduleRoles assigns roles to nodes. Meant to be called only by leaders
+// scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error {
 	rand.Seed(time.Now().Unix())
 
