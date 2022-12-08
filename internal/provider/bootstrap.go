@@ -95,17 +95,19 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 			return ErrorEvent("Failed setup: %s", err.Error())
 		}
 		return pluggable.EventResponse{}
-	} else if tokenNotDefined {
+	}
+
+	if tokenNotDefined {
 		return ErrorEvent("No network token provided, or `k3s` block configured. Exiting")
 	}
 
 	// We might still want a VPN, but not to route traffic into
-	if kairosBlockisDefined && (!providerConfig.Kairos.Hybrid || providerConfig.Kairos.HybridVPN) {
+	if !providerConfig.Kairos.Hybrid || providerConfig.Kairos.HybridVPN {
 		logger.Info("Configuring VPN")
 		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
-	} else if kairosBlockisDefined {
+	} else {
 		logger.Info("Configuring API")
 		if err := SetupAPI(cfg.APIAddress, "/", true, providerConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
