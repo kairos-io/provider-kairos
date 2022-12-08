@@ -53,6 +53,10 @@ func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) 
 		vpnOpts[k] = v
 	}
 
+	if c.Kairos.DisableDHT {
+		vpnOpts["EDGEVPNDHT"] = "false"
+	}
+
 	os.MkdirAll("/etc/systemd/system.conf.d/", 0600) //nolint:errcheck
 	// Setup edgevpn instance
 	err = utils.WriteEnv(filepath.Join(rootDir, "/etc/systemd/system.conf.d/edgevpn-kairos.env"), vpnOpts)
@@ -99,6 +103,11 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	if token != "" {
 		vpnOpts["EDGEVPNTOKEN"] = c.Kairos.NetworkToken
 	}
+
+	if c.Kairos.DisableDHT {
+		vpnOpts["EDGEVPNDHT"] = "false"
+	}
+
 	// Override opts with user-supplied
 	for k, v := range c.VPN {
 		vpnOpts[k] = v

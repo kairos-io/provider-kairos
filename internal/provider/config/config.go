@@ -10,6 +10,7 @@ type Kairos struct {
 	HybridVPN    bool   `yaml:"hybrid_vpn,omitempty"`
 	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
 	SkipAuto     bool   `yaml:"skip_auto"`
+	DisableDHT   bool   `yaml:"disable_dht,omitempty"`
 }
 
 type Config struct {
