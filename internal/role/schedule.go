@@ -29,7 +29,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	workerRole := "worker"
 	masterHA := "master/ha"
 
-	if pconfig.K3s.HA.Enable {
+	if pconfig.Kairos.HA.Enable {
 		masterRole = "master/clusterinit"
 	}
 	mastersHA := 0
@@ -77,7 +77,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		return nil
 	}
 
-	if pconfig.K3s.HA.Enable && pconfig.K3s.HA.MasterNodes != mastersHA {
+	if pconfig.Kairos.HA.Enable && pconfig.Kairos.HA.MasterNodes != mastersHA {
 		if len(unassignedNodes) > 0 {
 			if err := c.Client.Set("role", unassignedNodes[0], masterHA); err != nil {
 				c.Logger.Error(err)

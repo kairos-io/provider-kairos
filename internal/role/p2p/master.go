@@ -182,8 +182,8 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			}
 		}
 
-		if pconfig.K3s.HA.ExternalDB != "" {
-			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.K3s.HA.ExternalDB)}
+		if pconfig.Kairos.HA.ExternalDB != "" {
+			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.Kairos.HA.ExternalDB)}
 		}
 
 		if ha && !clusterInit {
@@ -197,7 +197,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			args = append(args, k3sConfig.Args...)
 		}
 
-		if clusterInit && ha && pconfig.K3s.HA.ExternalDB == "" {
+		if clusterInit && ha && pconfig.Kairos.HA.ExternalDB == "" {
 			args = append(args, "--cluster-init")
 		}
 

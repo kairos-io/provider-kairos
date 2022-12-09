@@ -11,6 +11,7 @@ type Kairos struct {
 	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
 	SkipAuto     bool   `yaml:"skip_auto"`
 	DisableDHT   bool   `yaml:"disable_dht,omitempty"`
+	HA           HA     `yaml:"ha,omitempty"`
 }
 
 type Config struct {
@@ -40,5 +41,4 @@ type K3s struct {
 	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
 	Args        []string          `yaml:"args,omitempty"`
 	Enabled     bool              `yaml:"enabled,omitempty"`
-	HA          HA                `yaml:"ha,omitempty"`
 }
