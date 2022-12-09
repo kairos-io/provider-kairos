@@ -23,7 +23,7 @@ func Auto(cc *config.Config, pconfig *providerConfig.Config) Role {
 		advertizing, _ := c.Client.AdvertizingNodes()
 		actives, _ := c.Client.ActiveNodes()
 
-		minimumNodes := pconfig.Kairos.MinimumNodes
+		minimumNodes := pconfig.P2P.MinimumNodes
 		if minimumNodes == 0 {
 			minimumNodes = 2
 		}

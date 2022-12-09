@@ -26,8 +26,8 @@ func Challenge(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	tk := ""
-	if cfg.Kairos != nil && cfg.Kairos.NetworkToken != "" {
-		tk = cfg.Kairos.NetworkToken
+	if cfg.P2P != nil && cfg.P2P.NetworkToken != "" {
+		tk = cfg.P2P.NetworkToken
 	}
 	if tk == "" {
 		tk = nodepair.GenerateToken()

@@ -73,16 +73,15 @@ func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool,
 }
 
 func genArgs(pconfig *providerConfig.Config, ip, ifaceIP string) (args []string) {
-	if pconfig.Kairos.Hybrid {
-		args = []string{fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP)}
 
-		if pconfig.Kairos.HybridVPN {
-			args = append(args, "--flannel-iface=edgevpn0")
-		}
-
-	} else {
-		args = []string{"--flannel-iface=edgevpn0"}
+	if pconfig.P2P.UseVPNWithKubernetes() {
+		args = append(args, "--flannel-iface=edgevpn0")
 	}
+
+	if pconfig.KubeVIP.IsEnabled() {
+		args = append(args, fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP))
+	}
+
 	return
 }
 
@@ -108,7 +107,7 @@ func genEnv(ha, clusterInit bool, c *service.Client, k3sConfig providerConfig.K3
 
 // we either return the ElasticIP or the IP from the edgevpn interface.
 func guessIP(pconfig *providerConfig.Config) string {
-	if pconfig.Kairos.Hybrid {
+	if pconfig.KubeVIP.EIP != "" {
 		return pconfig.KubeVIP.EIP
 	}
 	return utils.GetInterfaceIP("edgevpn0")
@@ -140,10 +139,10 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			return errors.New("node doesn't have an ip yet")
 		}
 
-		if pconfig.Kairos.Role != "" {
+		if pconfig.P2P.Role != "" {
 			// propagate role if we were forced by configuration
 			// This unblocks eventual auto instances to try to assign roles
-			if err := c.Client.Set("role", c.UUID, pconfig.Kairos.Role); err != nil {
+			if err := c.Client.Set("role", c.UUID, pconfig.P2P.Role); err != nil {
 				c.Logger.Error(err)
 			}
 		}
@@ -176,14 +175,14 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		}
 
 		args := genArgs(pconfig, ip, ifaceIP)
-		if pconfig.Kairos.Hybrid {
+		if pconfig.KubeVIP.IsEnabled() {
 			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
 				return fmt.Errorf("failed KubeVIP setup: %w", err)
 			}
 		}
 
-		if pconfig.Kairos.HA.ExternalDB != "" {
-			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.Kairos.HA.ExternalDB)}
+		if pconfig.P2P.AutoHA.ExternalDB != "" {
+			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.P2P.AutoHA.ExternalDB)}
 		}
 
 		if ha && !clusterInit {
@@ -197,7 +196,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			args = append(args, k3sConfig.Args...)
 		}
 
-		if clusterInit && ha && pconfig.Kairos.HA.ExternalDB == "" {
+		if clusterInit && ha && pconfig.P2P.AutoHA.ExternalDB == "" {
 			args = append(args, "--cluster-init")
 		}
 

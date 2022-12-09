@@ -329,6 +329,6 @@ test-create-config:
     RUN cat tests/assets/config.yaml >> config.yaml 
     IF [ "$WITH_DNS" == "true" ]
         RUN apk add yq
-        RUN yq -i '.kairos.dns = true' 'config.yaml'
+        RUN yq -i '.p2p.dns = true' 'config.yaml'
     END
     SAVE ARTIFACT config.yaml AS LOCAL config.yaml

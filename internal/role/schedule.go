@@ -15,10 +15,6 @@ import (
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error {
 	rand.Seed(time.Now().Unix())
 
-	if pconfig.Kairos.Hybrid {
-		c.Logger.Info("hybrid p2p with KubeVIP enabled")
-	}
-
 	// Assign roles to nodes
 	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
 	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
@@ -29,7 +25,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	workerRole := "worker"
 	masterHA := "master/ha"
 
-	if pconfig.Kairos.HA.Enable {
+	if pconfig.P2P.AutoHA.Enable {
 		masterRole = "master/clusterinit"
 	}
 	mastersHA := 0
@@ -51,7 +47,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		toSelect := unassignedNodes
 
 		// Avoid to schedule to ourselves if we have a static role
-		if pconfig.Kairos.Role != "" {
+		if pconfig.P2P.Role != "" {
 			toSelect = []string{}
 			for _, u := range unassignedNodes {
 				if u != c.UUID {
@@ -77,7 +73,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		return nil
 	}
 
-	if pconfig.Kairos.HA.Enable && pconfig.Kairos.HA.MasterNodes != mastersHA {
+	if pconfig.P2P.AutoHA.Enable && pconfig.P2P.AutoHA.MasterNodes != mastersHA {
 		if len(unassignedNodes) > 0 {
 			if err := c.Client.Set("role", unassignedNodes[0], masterHA); err != nil {
 				c.Logger.Error(err)

@@ -17,10 +17,10 @@ import (
 func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 	return func(c *service.RoleConfig) error {
 
-		if pconfig.Kairos.Role != "" {
+		if pconfig.P2P.Role != "" {
 			// propagate role if we were forced by configuration
 			// This unblocks eventual auto instances to try to assign roles
-			if err := c.Client.Set("role", c.UUID, pconfig.Kairos.Role); err != nil {
+			if err := c.Client.Set("role", c.UUID, pconfig.P2P.Role); err != nil {
 				return err
 			}
 		}
@@ -72,12 +72,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			"--with-node-id",
 		}
 
-		if pconfig.Kairos.Hybrid {
-			iface := guessInterface(pconfig)
-			ip := utils.GetInterfaceIP(iface)
-			args = append(args,
-				fmt.Sprintf("--node-ip %s", ip))
-		} else {
+		if pconfig.P2P.UseVPNWithKubernetes() {
 			ip := utils.GetInterfaceIP("edgevpn0")
 			if ip == "" {
 				return errors.New("node doesn't have an ip yet")
@@ -85,6 +80,11 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
 			args = append(args,
 				fmt.Sprintf("--node-ip %s", ip),
 				"--flannel-iface=edgevpn0")
+		} else {
+			iface := guessInterface(pconfig)
+			ip := utils.GetInterfaceIP(iface)
+			args = append(args,
+				fmt.Sprintf("--node-ip %s", ip))
 		}
 
 		c.Logger.Info("Configuring k3s-agent", masterIP, nodeToken, args)
