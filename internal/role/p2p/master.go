@@ -163,6 +163,8 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		// Configure k3s service to start on edgevpn0
 		c.Logger.Info("Configuring k3s")
 
+		utils.SH(fmt.Sprintf("elemental run-stage provider-kairos.bootstrap.before.%s", roleName)) //nolint:errcheck
+
 		svc, err := machine.K3s()
 		if err != nil {
 			return err
@@ -220,6 +222,8 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		if err := propagateMasterData(ip, c, clusterInit, ha, roleName); err != nil {
 			return err
 		}
+
+		utils.SH(fmt.Sprintf("elemental run-stage provider-kairos.bootstrap.after.%s", roleName)) //nolint:errcheck
 
 		return role.CreateSentinel()
 	}
