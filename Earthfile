@@ -332,3 +332,31 @@ test-create-config:
         RUN yq -i '.p2p.dns = true' 'config.yaml'
     END
     SAVE ARTIFACT config.yaml AS LOCAL config.yaml
+
+edgevpn:
+    ARG EDGEVPN_VERSION=latest
+    FROM quay.io/mudler/edgevpn:$EDGEVPN_VERSION
+    SAVE ARTIFACT /usr/bin/edgevpn /edgevpn
+
+# usage e.g. 
+# ./earthly.sh +run-proxmox-tests --PROXMOX_USER=root@pam --PROXMOX_PASS=xxx --PROXMOX_ENDPOINT=https://192.168.1.72:8006/api2/json --PROXMOX_ISO=/test/build/kairos-opensuse-v0.0.0-79fd363-k3s.iso --PROXMOX_NODE=proxmox
+run-proxmox-tests:
+    FROM golang:alpine
+    WORKDIR /test
+    RUN apk add xorriso
+    ARG FLAVOR
+    ARG TEST_SUITE=proxmox-ha-test
+    ARG FROM_ARTIFACTS
+    ARG PROXMOX_USER
+    ARG PROXMOX_PASS
+    ARG PROXMOX_ENDPOINT
+    ARG PROXMOX_STORAGE=local
+    ARG PROXMOX_ISO
+    ARG PROXMOX_NODE
+    ENV GOPATH="/go"
+
+    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+
+    COPY +edgevpn/edgevpn /usr/bin/edgevpn
+    COPY . .
+    RUN --privileged PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/
