@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/kairos-io/kairos/pkg/config"
-
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	service "github.com/mudler/edgevpn/api/client/service"
+	"github.com/samber/lo"
 )
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
@@ -18,6 +18,19 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	// Assign roles to nodes
 	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
 	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
+
+	// Scan for dead nodes
+	if pconfig.P2P.DynamicRoles {
+		advertizing, _ := c.Client.AdvertizingNodes()
+		for u, r := range currentRoles {
+			if !lo.Contains(advertizing, u) {
+				c.Logger.Infof("Role '%s' assigned to unreachable node '%s'. Unassigning.", u, r)
+				c.Client.Delete("role", u)
+				// Return here to propagate announces and wait until the map is pruned
+				return nil
+			}
+		}
+	}
 
 	existsMaster := false
 
