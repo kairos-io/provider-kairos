@@ -26,6 +26,13 @@ func genToken() (string, error) {
 
 var ControlVM *SSHConn
 
+func waitTask(t *proxmox.Task, err error) {
+	Expect(err).ToNot(HaveOccurred())
+	Expect(t).ToNot(BeNil())
+	err = t.Wait(1*time.Second, 10*time.Second)
+	Expect(err).ToNot(HaveOccurred())
+}
+
 func deleteVMs(node *proxmox.Node) {
 	fmt.Println("delete all")
 	vms, err := node.VirtualMachines()
@@ -42,16 +49,10 @@ func deleteVMs(node *proxmox.Node) {
 		fmt.Printf("Deleting %s\n", vm.Name)
 
 		t, err := vm.Stop()
-		Expect(err).ToNot(HaveOccurred())
-		Expect(t).ToNot(BeNil())
-		err = t.Wait(1*time.Second, 10*time.Second)
-		Expect(err).ToNot(HaveOccurred())
+		waitTask(t, err)
 
 		t, err = vm.Delete()
-		Expect(err).ToNot(HaveOccurred())
-		Expect(t).ToNot(BeNil())
-		err = t.Wait(1*time.Second, 10*time.Second)
-		Expect(err).ToNot(HaveOccurred())
+		waitTask(t, err)
 	}
 }
 
