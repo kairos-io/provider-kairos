@@ -25,7 +25,9 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		for u, r := range currentRoles {
 			if !lo.Contains(advertizing, u) {
 				c.Logger.Infof("Role '%s' assigned to unreachable node '%s'. Unassigning.", u, r)
-				c.Client.Delete("role", u)
+				if err := c.Client.Delete("role", u); err != nil {
+					c.Logger.Warnf("Error announcing deletion %+v", err)
+				}
 				// Return here to propagate announces and wait until the map is pruned
 				return nil
 			}
