@@ -48,9 +48,9 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 	// TODO: this belong to a systemd service that is started instead
 
-	kairosBlockisDefined := providerConfig.P2P != nil
-	tokenNotDefined := ((kairosBlockisDefined && providerConfig.P2P.NetworkToken == "") || !kairosBlockisDefined)
-	skipAuto := (kairosBlockisDefined && providerConfig.P2P.SkipAuto)
+	p2pBlockDefined := providerConfig.P2P != nil
+	tokenNotDefined := ((p2pBlockDefined && providerConfig.P2P.NetworkToken == "") || !p2pBlockDefined)
+	skipAuto := (p2pBlockDefined && providerConfig.P2P.SkipAuto)
 
 	if providerConfig.P2P == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
@@ -61,7 +61,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logLevel := "debug"
 
-	if providerConfig.P2P != nil && providerConfig.P2P.LogLevel != "" {
+	if p2pBlockDefined && providerConfig.P2P.LogLevel != "" {
 		logLevel = providerConfig.P2P.LogLevel
 	}
 
@@ -116,7 +116,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	networkID := "kairos"
 
-	if kairosBlockisDefined && providerConfig.P2P.NetworkID != "" {
+	if p2pBlockDefined && providerConfig.P2P.NetworkID != "" {
 		networkID = providerConfig.P2P.NetworkID
 	}
 
