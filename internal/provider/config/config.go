@@ -8,10 +8,9 @@ type P2P struct {
 	LogLevel     string `yaml:"loglevel,omitempty"`
 	VPN          VPN    `yaml:"vpn,omitempty"`
 
-	MinimumNodes int    `yaml:"minimum_nodes,omitempty"`
-	SkipAuto     bool   `yaml:"skip_auto"`
-	DisableDHT   bool   `yaml:"disable_dht,omitempty"`
-	AutoHA       AutoHA `yaml:"auto-ha,omitempty"`
+	MinimumNodes int  `yaml:"minimum_nodes,omitempty"`
+	DisableDHT   bool `yaml:"disable_dht,omitempty"`
+	Auto         Auto `yaml:"auto,omitempty"`
 
 	DynamicRoles bool `yaml:"dynamic_roles,omitempty"`
 }
@@ -45,17 +44,30 @@ type KubeVIP struct {
 	EIP         string   `yaml:"eip,omitempty"`
 	ManifestURL string   `yaml:"manifest_url,omitempty"`
 	Interface   string   `yaml:"interface,omitempty"`
-	Enable      bool     `yaml:"enable,omitempty"`
+	Enable      *bool    `yaml:"enable,omitempty"`
 }
 
 func (k KubeVIP) IsEnabled() bool {
-	return k.Enable || k.EIP != ""
+	return k.Enable == nil || k.EIP != "" || (k.Enable != nil && *k.Enable)
 }
 
-type AutoHA struct {
-	Enable      bool   `yaml:"enable,omitempty"`
+type Auto struct {
+	Enable *bool `yaml:"enable,omitempty"`
+	HA     HA    `yaml:"ha,omitempty"`
+}
+
+func (a Auto) IsEnabled() bool {
+	return a.Enable == nil || (a.Enable != nil && *a.Enable)
+}
+
+func (ha HA) IsEnabled() bool {
+	return (ha.Enable != nil && *ha.Enable) || (ha.Enable == nil && ha.MasterNodes != nil)
+}
+
+type HA struct {
+	Enable      *bool  `yaml:"enable,omitempty"`
 	ExternalDB  string `yaml:"external_db,omitempty"`
-	MasterNodes int    `yaml:"master_nodes,omitempty"`
+	MasterNodes *int   `yaml:"master_nodes,omitempty"`
 }
 
 type K3s struct {

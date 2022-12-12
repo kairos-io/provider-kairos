@@ -40,7 +40,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	workerRole := "worker"
 	masterHA := "master/ha"
 
-	if pconfig.P2P.AutoHA.Enable {
+	if pconfig.P2P.Auto.HA.IsEnabled() {
 		masterRole = "master/clusterinit"
 	}
 	mastersHA := 0
@@ -88,7 +88,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		return nil
 	}
 
-	if pconfig.P2P.AutoHA.Enable && pconfig.P2P.AutoHA.MasterNodes != mastersHA {
+	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.MasterNodes != nil && *pconfig.P2P.Auto.HA.MasterNodes != mastersHA {
 		if len(unassignedNodes) > 0 {
 			if err := c.Client.Set("role", unassignedNodes[0], masterHA); err != nil {
 				c.Logger.Error(err)

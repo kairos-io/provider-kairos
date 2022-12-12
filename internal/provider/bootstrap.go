@@ -50,7 +50,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	p2pBlockDefined := providerConfig.P2P != nil
 	tokenNotDefined := ((p2pBlockDefined && providerConfig.P2P.NetworkToken == "") || !p2pBlockDefined)
-	skipAuto := (p2pBlockDefined && providerConfig.P2P.SkipAuto)
+	skipAuto := (p2pBlockDefined && !providerConfig.P2P.Auto.IsEnabled())
 
 	if providerConfig.P2P == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
