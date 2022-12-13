@@ -139,7 +139,6 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 
 	Context("HA", func() {
 		It("setups automatically an EmbeddedDB cluster with mdns", func() {
-
 			// Get Possible IP to use for KubeVIP
 			freeIP, err := ControlVM.Command(fmt.Sprintf(`my_net=%s
 			for i in $(seq 1 254);
@@ -158,13 +157,7 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 			VMIDS = append(VMIDS, startVMS([]byte(genConfig(freeIP, pubkey, networkToken, true, false, false, true)), 4)...)
 
 			By("Waiting for HA control-plane to be available", func() {
-				Eventually(func() string {
-					out, err := ControlVM.Command(fmt.Sprintf("ping %s -c 3", freeIP))
-					if err != nil {
-						fmt.Println(err)
-					}
-					return out
-				}, time.Duration(time.Duration(650)*time.Second), time.Duration(30*time.Second)).Should(ContainSubstring("3 received"))
+				ping(freeIP)
 			})
 
 			Eventually(func() string {
@@ -187,28 +180,27 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 		})
 
 		It("setups automatically an EmbeddedDB cluster with dht", func() {
+			out, err := ControlVM.Command("sudo cat /etc/os-release")
+			Expect(err).ToNot(HaveOccurred(), out)
+			if strings.Contains(out, "alpine") {
+				Skip("test assumes systemd on the nodes")
+			}
 			networkToken, err := genToken()
 			Expect(err).ToNot(HaveOccurred())
 
 			VMIDS = append(VMIDS, startVMS([]byte(genConfig("", pubkey, networkToken, false, true, true, false)), 4)...)
 
-			// Get the controlVM on the same VPN so it can reach the EIP
-			out, err := ControlVM.Command(fmt.Sprintf("EDGEVPNTOKEN=%s sudo -E nohup edgevpn --dhcp &", networkToken))
-			Expect(err).ToNot(HaveOccurred(), out)
+			startVPN(networkToken, ControlVM)
+			defer stopVPN(ControlVM)
+			//
 
-			// 10.1.0.1 will be one of the IPs automatically assigned via DHCP.
+			// 10.1.0.1 will be our IP, and DHCP will assign then 10.1.0.2 to one of the nodes of the cluster.
 			By("Waiting for HA control-plane to be available", func() {
-				Eventually(func() string {
-					out, err := ControlVM.Command(fmt.Sprintf("ping %s -c 3", "10.1.0.1"))
-					if err != nil {
-						fmt.Println(err)
-					}
-					return out
-				}, time.Duration(time.Duration(650)*time.Second), time.Duration(30*time.Second)).Should(ContainSubstring("3 received"))
+				ping("10.1.0.2")
 			})
 
 			Eventually(func() string {
-				out, err := ControlVM.Command(fmt.Sprintf("ssh -oStrictHostKeyChecking=no kairos@%s kairos role list", "10.1.0.1"))
+				out, err := ControlVM.Command(fmt.Sprintf("ssh -oStrictHostKeyChecking=no kairos@%s kairos role list", "10.1.0.2"))
 				if err != nil {
 					fmt.Println(err, out)
 				}
@@ -221,7 +213,7 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 				HaveMinMaxRole("master/ha", 2, 2),
 			))
 
-			out, err = ControlVM.Command(fmt.Sprintf("ssh -oStrictHostKeyChecking=no kairos@%s sudo cat /etc/systemd/system.conf.d/edgevpn-kairos.env", "10.1.0.1"))
+			out, err = ControlVM.Command(fmt.Sprintf("ssh -oStrictHostKeyChecking=no kairos@%s sudo cat /etc/systemd/system.conf.d/edgevpn-kairos.env", "10.1.0.2"))
 			Expect(err).ToNot(HaveOccurred())
 			Expect(out).ToNot(ContainSubstring(`EDGEVPNDHT="false"`))
 		})

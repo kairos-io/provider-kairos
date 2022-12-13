@@ -359,4 +359,4 @@ run-proxmox-tests:
 
     COPY +edgevpn/edgevpn /usr/bin/edgevpn
     COPY . .
-    RUN --privileged PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/
+    RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/

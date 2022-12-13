@@ -172,7 +172,7 @@ func EventuallyConnects(user, pass, host string, t ...int) {
 	if len(t) > 0 {
 		dur = t[0]
 	}
-	Eventually(func() string {
+	EventuallyWithOffset(1, func() string {
 		out, err := SSHCommand(user, pass, host, "echo ping")
 		if err != nil {
 			fmt.Println(err)
@@ -183,3 +183,53 @@ func EventuallyConnects(user, pass, host string, t ...int) {
 
 // pixiecore:
 // docker run -d --name pixiecore --net=host -v $PWD:/files quay.io/pixiecore/pixiecore boot /files/kairos-opensuse-${VERSION}-kernel /files/kairos-opensuse-${VERSION}-initrd --cmdline="rd.neednet=1 ip=dhcp rd.cos.disable root=live:{{ ID \"/files/kairos-opensuse-${VERSION}.squashfs\" }} netboot nodepair.enable config_url={{ ID \"/files/config.yaml\" }} console=tty1 console=ttyS0 console=tty0"
+func stopVPN(ControlVM *SSHConn) {
+	out, err := ControlVM.Command("sudo /bin/bash -c 'systemctl stop vpn && rm -rf /etc/systemd/system/vpn.service && systemctl daemon-reload && rm -rf /usr/local/vpn.sh'")
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+	fmt.Println(out)
+}
+
+func startVPN(networkToken string, ControlVM *SSHConn) {
+	//
+	out, err := ControlVM.Command("sudo modprobe tun")
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+	// NOTE: This requires systemd
+	// Get the controlVM on the same VPN so it can reach the cluster
+	out, err = ControlVM.Command(fmt.Sprintf(`cat << EOF > /tmp/vpn.sh
+#!/bin/bash
+EDGEVPNTOKEN=%s sudo -E edgevpn --log-level debug
+EOF`, networkToken))
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+
+	out, err = ControlVM.Command("sudo mv /tmp/vpn.sh /usr/local/vpn.sh && sudo chmod +x /usr/local/vpn.sh")
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+
+	out, err = ControlVM.Command(`cat << EOF > /tmp/vpn.service
+[Unit]
+Description=vpn
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/vpn.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF`)
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+
+	out, err = ControlVM.Command("sudo /bin/bash -c 'mv /tmp/vpn.service /etc/systemd/system/vpn.service && systemctl daemon-reload && systemctl start vpn'")
+	ExpectWithOffset(1, err).ToNot(HaveOccurred(), out)
+	fmt.Println(out)
+
+}
+
+func ping(ip string) {
+	EventuallyWithOffset(1, func() string {
+		out, err := ControlVM.Command(fmt.Sprintf("ping %s -c 3", ip))
+		if err != nil {
+			fmt.Println(err)
+		}
+		return out
+	}, time.Duration(time.Duration(650)*time.Second), time.Duration(30*time.Second)).Should(ContainSubstring("3 received"))
+}
