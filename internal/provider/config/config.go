@@ -48,7 +48,7 @@ type KubeVIP struct {
 }
 
 func (k KubeVIP) IsEnabled() bool {
-	return k.Enable == nil || k.EIP != "" || (k.Enable != nil && *k.Enable)
+	return (k.Enable == nil && k.EIP != "") || (k.Enable != nil && *k.Enable)
 }
 
 type Auto struct {
