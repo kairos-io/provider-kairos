@@ -32,7 +32,7 @@ func SaveCloudConfig(name string, c []byte) error {
 }
 
 func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
-	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
+	if c.P2P == nil || c.P2P.NetworkToken == "" {
 		return fmt.Errorf("no network token defined")
 	}
 
@@ -45,12 +45,16 @@ func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) 
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"EDGEVPNTOKEN": c.Kairos.NetworkToken,
+		"EDGEVPNTOKEN": c.P2P.NetworkToken,
 		"APILISTEN":    apiAddress,
 	}
 	// Override opts with user-supplied
-	for k, v := range c.VPN {
+	for k, v := range c.P2P.VPN.Env {
 		vpnOpts[k] = v
+	}
+
+	if c.P2P.DisableDHT {
+		vpnOpts["EDGEVPNDHT"] = "false"
 	}
 
 	os.MkdirAll("/etc/systemd/system.conf.d/", 0600) //nolint:errcheck
@@ -77,9 +81,9 @@ func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) 
 }
 
 func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
-
-	if c.Kairos == nil || c.Kairos.NetworkToken == "" {
-		return fmt.Errorf("no network token defined")
+	token := ""
+	if c.P2P != nil && c.P2P.NetworkToken != "" {
+		token = c.P2P.NetworkToken
 	}
 
 	svc, err := services.EdgeVPN(instance, rootDir)
@@ -91,18 +95,25 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"EDGEVPNTOKEN": c.Kairos.NetworkToken,
 		"API":          "true",
 		"APILISTEN":    apiAddress,
 		"DHCP":         "true",
 		"DHCPLEASEDIR": "/usr/local/.kairos/lease",
 	}
+	if token != "" {
+		vpnOpts["EDGEVPNTOKEN"] = c.P2P.NetworkToken
+	}
+
+	if c.P2P.DisableDHT {
+		vpnOpts["EDGEVPNDHT"] = "false"
+	}
+
 	// Override opts with user-supplied
-	for k, v := range c.VPN {
+	for k, v := range c.P2P.VPN.Env {
 		vpnOpts[k] = v
 	}
 
-	if c.Kairos.DNS {
+	if c.P2P.DNS {
 		vpnOpts["DNSADDRESS"] = "127.0.0.1:53"
 		vpnOpts["DNSFORWARD"] = "true"
 

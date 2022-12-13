@@ -46,7 +46,7 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 }
 
 func ReplaceToken(dir []string, token string) (err error) {
-	locations, err := config.FindYAMLWithKey("kairos.network_token", config.Directories(dir...))
+	locations, err := config.FindYAMLWithKey("p2p.network_token", config.Directories(dir...))
 	if err != nil {
 		return err
 	}
@@ -66,9 +66,9 @@ func ReplaceToken(dir []string, token string) (err error) {
 			return err
 		}
 
-		section, exists := content["kairos"]
+		section, exists := content["p2p"]
 		if !exists {
-			return errors.New("no kairos section in config file")
+			return errors.New("no p2p section in config file")
 		}
 
 		dd, err := yaml.Marshal(section)
@@ -83,7 +83,7 @@ func ReplaceToken(dir []string, token string) (err error) {
 		}
 
 		piece["network_token"] = token
-		content["kairos"] = piece
+		content["p2p"] = piece
 
 		d, err := yaml.Marshal(content)
 		if err != nil {

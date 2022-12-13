@@ -15,7 +15,7 @@ import (
 type TConfig struct {
 	Kairos struct {
 		NetworkToken string `yaml:"network_token"`
-	} `yaml:"kairos"`
+	} `yaml:"p2p"`
 }
 
 var _ = Describe("Get config", func() {
@@ -24,7 +24,7 @@ var _ = Describe("Get config", func() {
 		It("replace token in config files", func() {
 
 			var cc string = `#node-config
-kairos:
+p2p:
   network_token: "foo"
 
 bb: 
@@ -52,8 +52,8 @@ fooz: "bar"
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(res).To(Equal(map[interface{}]interface{}{
-				"kairos": map[interface{}]interface{}{"network_token": "baz"},
-				"bb":     map[interface{}]interface{}{"nothing": "foo"},
+				"p2p": map[interface{}]interface{}{"network_token": "baz"},
+				"bb":  map[interface{}]interface{}{"nothing": "foo"},
 			}))
 
 			hasHeader, _ := config.HasHeader(string(content), "#node-config")

@@ -307,7 +307,7 @@ For all the example cases, see: https://docs.kairos.io .
 							l = i
 						}
 					}
-					cc := &providerConfig.Config{Kairos: &providerConfig.Kairos{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
+					cc := &providerConfig.Config{P2P: &providerConfig.P2P{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
 					y, _ := yaml.Marshal(cc)
 					fmt.Println(string(y))
 					return nil

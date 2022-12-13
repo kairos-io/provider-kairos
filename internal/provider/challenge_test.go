@@ -30,7 +30,7 @@ var _ = Describe("Challenge provider", func() {
 			defer os.RemoveAll(f.Name())
 
 			cfg := &providerConfig.Config{
-				Kairos: &providerConfig.Kairos{
+				P2P: &providerConfig.P2P{
 					NetworkToken: "foo",
 				},
 			}
@@ -53,7 +53,7 @@ var _ = Describe("Challenge provider", func() {
 			defer os.RemoveAll(f.Name())
 
 			cfg := &providerConfig.Config{
-				Kairos: &providerConfig.Kairos{
+				P2P: &providerConfig.P2P{
 					NetworkToken: "",
 				},
 			}
