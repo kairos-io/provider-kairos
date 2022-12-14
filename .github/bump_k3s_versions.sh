@@ -6,7 +6,7 @@ verlte() {
     [  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
 }
 
-versions=($(curl https://update.k3s.io/v1-release/channels | jq -rc '[ .data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest ] | unique'))
+versions=($(curl https://update.k3s.io/v1-release/channels | jq -rc '[ .data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest ] | unique | .[]'))
 
 # Filter only versions above v1.20.0 (https://stackoverflow.com/a/40375567)
 for index in "${!versions[@]}" ; do
