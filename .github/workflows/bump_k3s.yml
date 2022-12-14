@@ -14,6 +14,7 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
       with:
+        signoff: true
         token: ${{ secrets.PAT_TOKEN }}
         push-to-fork: ci-forks/provider-c3os
         commit-message: ":arrow_up: Update k3s"
