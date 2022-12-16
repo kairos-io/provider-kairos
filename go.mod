@@ -18,7 +18,7 @@ require (
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
 	github.com/mudler/yip v0.11.4
 	github.com/onsi/ginkgo/v2 v2.6.1
-	github.com/onsi/gomega v1.24.1
+	github.com/onsi/gomega v1.24.2
 	github.com/pterm/pterm v0.12.50
 	github.com/samber/lo v1.36.0
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
@@ -205,7 +205,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/exp v0.0.0-20220426173459-3bcf042a4bf5 // indirect
 	golang.org/x/image v0.0.0-20191206065243-da761ea9ff43 // indirect
-	golang.org/x/net v0.3.0 // indirect
+	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/term v0.3.0 // indirect
