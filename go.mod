@@ -23,7 +23,7 @@ require (
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
 	github.com/urfave/cli v1.22.10
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.2.0
 	golang.org/x/mod v0.7.0
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
