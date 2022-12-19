@@ -98,7 +98,7 @@ For all the example cases, see: https://docs.kairos.io .
 		
 		If the image is omitted, a screenshot will be taken and used to decode the QR code.
 		
-		See also https://docs.kairos.io/installation/device_pairing/ for documentation.
+		See also https://kairos.io/docs/getting-started/ for documentation.
 		`,
 				ArgsUsage: "Register optionally accepts an image. If nothing is passed will take a screenshot of the screen and try to decode the QR code",
 				Flags: []cli.Flag{
