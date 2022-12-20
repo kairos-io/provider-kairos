@@ -21,6 +21,17 @@ func isDirectory(path string) (bool, error) {
 	return fileInfo.IsDir(), err
 }
 
+func isReadable(fileName string) bool {
+	file, err := os.OpenFile(fileName, os.O_RDONLY, 0666)
+	defer file.Close()
+	if err != nil {
+		if os.IsPermission(err) {
+			return false
+		}
+	}
+	return true
+}
+
 func register(loglevel, arg, configFile, device string, reboot, poweroff bool) error {
 	b, _ := ioutil.ReadFile(configFile)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -32,6 +43,9 @@ func register(loglevel, arg, configFile, device string, reboot, poweroff bool) e
 			return fmt.Errorf("Cannot register with a directory, please pass a file.")
 		} else if err != nil {
 			return err
+		}
+		if !isReadable(arg) {
+			return fmt.Errorf("Cannot register with a file that is not readable.")
 		}
 	}
 	// dmesg -D to suppress tty ev
