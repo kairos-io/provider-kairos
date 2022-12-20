@@ -4,16 +4,36 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	nodepair "github.com/mudler/go-nodepair"
 	qr "github.com/mudler/go-nodepair/qrcode"
 )
+
+// isDirectory determines if a file represented
+// by `path` is a directory or not
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+
+	return fileInfo.IsDir(), err
+}
 
 func register(loglevel, arg, configFile, device string, reboot, poweroff bool) error {
 	b, _ := ioutil.ReadFile(configFile)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	if arg != "" {
+		isDir, err := isDirectory(arg)
+		if err == nil && isDir {
+			return fmt.Errorf("Cannot register with a directory, please pass a file.")
+		} else if err != nil {
+			return err
+		}
+	}
 	// dmesg -D to suppress tty ev
 	fmt.Println("Sending registration payload, please wait")
 
