@@ -234,7 +234,7 @@ func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSet
 		return err
 	}
 
-	if c.P2P.VPNNeedsCreation() {
+	if c.P2P != nil && c.P2P.VPNNeedsCreation() {
 		if err := vpnSetupFN(); err != nil {
 			return err
 		}
