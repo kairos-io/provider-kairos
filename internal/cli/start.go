@@ -107,8 +107,9 @@ For all the example cases, see: https://docs.kairos.io .
 				ArgsUsage: "Register optionally accepts an image. If nothing is passed will take a screenshot of the screen and try to decode the QR code",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:  "config",
-						Usage: "Kairos YAML configuration file",
+						Name:     "config",
+						Usage:    "Kairos YAML configuration file",
+						Required: true,
 					},
 					&cli.StringFlag{
 						Name:  "device",
