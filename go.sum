@@ -1503,6 +1503,8 @@ github.com/pterm/pterm v0.12.40/go.mod h1:ffwPLwlbXxP+rxT0GsgDTzS3y3rmpAO1NMjUkG
 github.com/pterm/pterm v0.12.41/go.mod h1:LW/G4J2A42XlTaPTAGRPvbBfF4UXvHWhC6SN7ueU4jU=
 github.com/pterm/pterm v0.12.50 h1:53nKg5lLI1kXkvLWq2IQI5rgkPkFzEQsuQjxAb39VlE=
 github.com/pterm/pterm v0.12.50/go.mod h1:79BLm4vos2z+eOoHnDG7ZWuYtLaSStyaspKjGmSoxc4=
+github.com/pterm/pterm v0.12.51 h1:iwhNG1FhQMgks+5kVyr/ClRk3WJCuL907nJN7RqmEpw=
+github.com/pterm/pterm v0.12.51/go.mod h1:79BLm4vos2z+eOoHnDG7ZWuYtLaSStyaspKjGmSoxc4=
 github.com/qeesung/image2ascii v1.0.1 h1:Fe5zTnX/v/qNC3OC4P/cfASOXS501Xyw2UUcgrLgtp4=
 github.com/qeesung/image2ascii v1.0.1/go.mod h1:kZKhyX0h2g/YXa/zdJR3JnLnJ8avHjZ3LrvEKSYyAyU=
 github.com/quasilyte/go-consistent v0.0.0-20190521200055-c6f3937de18c/go.mod h1:5STLWrekHfjyYwxBRVRXNOSewLJ3PWfDJd1VyTS21fI=
