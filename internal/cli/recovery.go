@@ -29,7 +29,6 @@ func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
 		BootstrapIface: true,
 		LogLevel:       loglevel,
 		LowProfile:     true,
-		VPNLowProfile:  true,
 		Interface:      i,
 		Concurrency:    runtime.NumCPU(),
 		PacketMTU:      1420,
@@ -56,7 +55,6 @@ func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
 
 			AutoRelay:      true,
 			MaxConnections: 100,
-			MaxStreams:     100,
 			HolePunch:      true,
 		},
 	}
