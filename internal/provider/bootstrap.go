@@ -125,6 +125,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		edgeVPNClient.NewClient(edgeVPNClient.WithHost(cfg.APIAddress)))
 
 	nodeOpts := []service.Option{
+		service.WithMinNodes(providerConfig.P2P.MinimumNodes),
 		service.WithLogger(log),
 		service.WithClient(cc),
 		service.WithUUID(machine.UUID()),
