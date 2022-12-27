@@ -10,7 +10,7 @@ import (
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v1"
 
 	"github.com/mudler/edgevpn/api/client/service"
@@ -36,8 +36,12 @@ func Start() error {
 	app := &cli.App{
 		Name:    "kairos",
 		Version: "0.1",
-		Author:  "Ettore Di Giacinto",
-		Usage:   "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
+		Authors: []*cli.Author{
+			{
+				Name: "Ettore Di Giacinto",
+			},
+		},
+		Usage: "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
 		Description: `
 The kairos CLI can be used to manage a kairos box and perform all day-two tasks, like:
 - register a node
@@ -52,7 +56,7 @@ For all the example cases, see: https://docs.kairos.io .
 `,
 		UsageText: ``,
 		Copyright: "Ettore Di Giacinto",
-		Commands: []cli.Command{
+		Commands: []*cli.Command{
 			{
 				Name:      "recovery-ssh-server",
 				UsageText: "recovery-ssh-server",
@@ -63,21 +67,21 @@ For all the example cases, see: https://docs.kairos.io .
 				ArgsUsage: "Spawn up a simple standalone ssh server over p2p",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:   "token",
-						EnvVar: "TOKEN",
+						Name:    "token",
+						EnvVars: []string{"TOKEN"},
 					},
 					&cli.StringFlag{
-						Name:   "service",
-						EnvVar: "SERVICE",
+						Name:    "service",
+						EnvVars: []string{"SERVICE"},
 					},
 					&cli.StringFlag{
-						Name:   "password",
-						EnvVar: "PASSWORD",
+						Name:    "password",
+						EnvVars: []string{"PASSWORD"},
 					},
 					&cli.StringFlag{
-						Name:   "listen",
-						EnvVar: "LISTEN",
-						Value:  recoveryAddr,
+						Name:    "listen",
+						EnvVars: []string{"LISTEN"},
+						Value:   recoveryAddr,
 					},
 				},
 				Action: func(c *cli.Context) error {
@@ -103,8 +107,9 @@ For all the example cases, see: https://docs.kairos.io .
 				ArgsUsage: "Register optionally accepts an image. If nothing is passed will take a screenshot of the screen and try to decode the QR code",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:  "config",
-						Usage: "Kairos YAML configuration file",
+						Name:     "config",
+						Usage:    "Kairos YAML configuration file",
+						Required: true,
 					},
 					&cli.StringFlag{
 						Name:  "device",
@@ -125,10 +130,9 @@ For all the example cases, see: https://docs.kairos.io .
 				},
 
 				Action: func(c *cli.Context) error {
-					args := c.Args()
 					var ref string
-					if len(args) == 1 {
-						ref = args[0]
+					if c.Args().Len() == 1 {
+						ref = c.Args().First()
 					}
 
 					return register(c.String("log-level"), ref, c.String("config"), c.String("device"), c.Bool("reboot"), c.Bool("poweroff"))
@@ -171,13 +175,13 @@ For all the example cases, see: https://docs.kairos.io .
 					&cli.StringFlag{
 						Name:     "network-token",
 						Required: false,
-						EnvVar:   "NETWORK_TOKEN",
+						EnvVars:  []string{"NETWORK_TOKEN"},
 						Usage:    "Network token to connect over",
 					},
 					&cli.StringFlag{
 						Name:     "log-level",
 						Required: false,
-						EnvVar:   "LOGLEVEL",
+						EnvVars:  []string{"LOGLEVEL"},
 						Value:    "info",
 						Usage:    "Bridge log level",
 					},
@@ -185,13 +189,13 @@ For all the example cases, see: https://docs.kairos.io .
 						Name:     "qr-code-snapshot",
 						Required: false,
 						Usage:    "Bool to take a local snapshot instead of reading from an image file for recovery",
-						EnvVar:   "QR_CODE_SNAPSHOT",
+						EnvVars:  []string{"QR_CODE_SNAPSHOT"},
 					},
 					&cli.StringFlag{
 						Name:     "qr-code-image",
 						Usage:    "Path to an image containing a valid QR code for recovery mode",
 						Required: false,
-						EnvVar:   "QR_CODE_IMAGE",
+						EnvVars:  []string{"QR_CODE_IMAGE"},
 					},
 					&cli.StringFlag{
 						Name:  "api",
@@ -199,21 +203,21 @@ For all the example cases, see: https://docs.kairos.io .
 						Usage: "Listening API url",
 					},
 					&cli.BoolFlag{
-						Name:   "dhcp",
-						EnvVar: "DHCP",
-						Usage:  "Enable DHCP",
+						Name:    "dhcp",
+						EnvVars: []string{"DHCP"},
+						Usage:   "Enable DHCP",
 					},
 					&cli.StringFlag{
-						Value:  "10.1.0.254/24",
-						Name:   "address",
-						EnvVar: "ADDRESS",
-						Usage:  "Specify an address for the bridge",
+						Value:   "10.1.0.254/24",
+						Name:    "address",
+						EnvVars: []string{"ADDRESS"},
+						Usage:   "Specify an address for the bridge",
 					},
 					&cli.StringFlag{
-						Value:  "/tmp/kairos",
-						Name:   "lease-dir",
-						EnvVar: "lease-dir",
-						Usage:  "DHCP Lease directory",
+						Value:   "/tmp/kairos",
+						Name:    "lease-dir",
+						EnvVars: []string{"lease-dir"},
+						Usage:   "DHCP Lease directory",
 					},
 				},
 				Action: bridge,
@@ -246,7 +250,7 @@ For all the example cases, see: https://docs.kairos.io .
 			{
 				Name:  "role",
 				Usage: "Set or list node roles",
-				Subcommands: []cli.Command{
+				Subcommands: []*cli.Command{
 					{
 						Flags:     networkAPI,
 						Name:      "set",
@@ -266,7 +270,7 @@ For all the example cases, see: https://docs.kairos.io .
 							cc := service.NewClient(
 								c.String("network-id"),
 								edgeVPNClient.NewClient(edgeVPNClient.WithHost(c.String("api"))))
-							return cc.Set("role", c.Args()[0], c.Args()[1])
+							return cc.Set("role", c.Args().Get(0), c.Args().Get(1))
 						},
 					},
 					{
@@ -301,9 +305,8 @@ For all the example cases, see: https://docs.kairos.io .
 
 				Action: func(c *cli.Context) error {
 					l := int(^uint(0) >> 1)
-					args := c.Args()
-					if len(args) > 0 {
-						if i, err := strconv.Atoi(args[0]); err == nil {
+					if c.Args().Present() {
+						if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
 							l = i
 						}
 					}
@@ -325,9 +328,8 @@ For all the example cases, see: https://docs.kairos.io .
 
 				Action: func(c *cli.Context) error {
 					l := int(^uint(0) >> 1)
-					args := c.Args()
-					if len(args) > 0 {
-						if i, err := strconv.Atoi(args[0]); err == nil {
+					if c.Args().Present() {
+						if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
 							l = i
 						}
 					}

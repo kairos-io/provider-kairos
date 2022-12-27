@@ -14,7 +14,7 @@ import (
 	"github.com/mudler/edgevpn/pkg/services"
 	"github.com/mudler/edgevpn/pkg/vpn"
 	qr "github.com/mudler/go-nodepair/qrcode"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // bridge is just starting a VPN with edgevpn to the given network token.
