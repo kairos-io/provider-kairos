@@ -327,7 +327,7 @@ jobs:
          - flavor: "alpine-opensuse-leap"
          - flavor: "opensuse"
     steps:
-    - uses: robinraju/release-downloader@v1.6
+    - uses: robinraju/release-downloader@v1.7
       with:     
       # A flag to set the download target as latest release
       # The default value is 'false'
