@@ -7,7 +7,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 require (
 	github.com/bramvdbogaerde/go-scp v1.2.0
 	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
-	github.com/gliderlabs/ssh v0.2.2
+	github.com/gliderlabs/ssh v0.3.5
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos v1.4.0
@@ -23,6 +23,7 @@ require (
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
 	github.com/urfave/cli v1.22.10
+	github.com/urfave/cli/v2 v2.23.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.4.0
 	golang.org/x/mod v0.7.0
@@ -34,7 +35,7 @@ require (
 require (
 	atomicgo.dev/cursor v0.1.1 // indirect
 	atomicgo.dev/keyboard v0.2.8 // indirect
-	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 // indirect
+	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
@@ -178,7 +179,6 @@ require (
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/twpayne/go-vfs v1.7.2 // indirect
-	github.com/urfave/cli/v2 v2.23.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vbatts/tar-split v0.11.2 // indirect
