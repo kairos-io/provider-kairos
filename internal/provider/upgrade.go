@@ -27,7 +27,7 @@ func ListVersions(e *pluggable.Event) pluggable.EventResponse {
 	displayTags := []string{}
 
 	for _, t := range tags {
-		if strings.Contains(t, "k3s") {
+		if strings.Contains(t, "k3s") && !strings.Contains(t, ".img") {
 			displayTags = append(displayTags, t)
 		}
 	}

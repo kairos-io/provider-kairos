@@ -272,9 +272,9 @@ linux-bench-scan:
 # Generic targets
 # usage e.g. ./earthly.sh +datasource-iso --CLOUD_CONFIG=tests/assets/qrcode.yaml
 datasource-iso:
-  ARG ELEMENTAL_IMAGE
+  ARG OSBUILDER_IMAGE
   ARG CLOUD_CONFIG
-  FROM $ELEMENTAL_IMAGE
+  FROM $OSBUILDER_IMAGE
   RUN zypper in -y mkisofs
   WORKDIR /build
   RUN touch meta-data
