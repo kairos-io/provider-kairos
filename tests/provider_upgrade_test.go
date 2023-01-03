@@ -4,10 +4,10 @@ package mos_test
 import (
 	"encoding/json"
 
-	. "github.com/spectrocloud/peg/matcher"
 	"github.com/mudler/go-pluggable"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	. "github.com/spectrocloud/peg/matcher"
 	"golang.org/x/mod/semver"
 )
 
@@ -23,7 +23,7 @@ var _ = Describe("provider upgrade test", Label("provider-upgrade"), func() {
 	})
 
 	Context("agent.available_releases event", func() {
-		It("returns the available versions ordered", func() {
+		It("returns the available versions ordered, excluding '.img' tags", func() {
 			resultStr, _ := Sudo(`echo '{}' | /system/providers/agent-provider-kairos agent.available_releases`)
 
 			var result pluggable.EventResponse
@@ -40,6 +40,10 @@ var _ = Describe("provider upgrade test", Label("provider-upgrade"), func() {
 			copy(sorted, versions)
 
 			semver.Sort(sorted)
+
+			for _, t := range sorted {
+				Expect(t).ToNot(ContainSubstring(".img"))
+			}
 
 			Expect(sorted).To(Equal(versions))
 		})
