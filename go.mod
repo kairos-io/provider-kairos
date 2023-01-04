@@ -5,7 +5,7 @@ go 1.18
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
 require (
-	github.com/bramvdbogaerde/go-scp v1.2.0
+	github.com/bramvdbogaerde/go-scp v1.2.1
 	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0
@@ -23,6 +23,7 @@ require (
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
 	github.com/urfave/cli v1.22.10
+	github.com/urfave/cli/v2 v2.23.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.4.0
 	golang.org/x/mod v0.7.0
@@ -178,7 +179,6 @@ require (
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/twpayne/go-vfs v1.7.2 // indirect
-	github.com/urfave/cli/v2 v2.23.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vbatts/tar-split v0.11.2 // indirect
