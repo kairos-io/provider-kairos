@@ -3,7 +3,7 @@ package cli
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io/ioutil" // nolint
 	"os"
 
 	config "github.com/kairos-io/kairos/pkg/config"

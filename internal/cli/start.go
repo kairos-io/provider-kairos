@@ -17,6 +17,11 @@ import (
 	"github.com/mudler/edgevpn/pkg/node"
 )
 
+// do not edit version here, it is set by LDFLAGS
+// -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'
+// see Earthlfile.
+var VERSION = "0.0.0"
+
 var networkAPI = []cli.Flag{
 	&cli.StringFlag{
 		Name:  "api",
@@ -34,8 +39,8 @@ const recoveryAddr = "127.0.0.1:2222"
 
 func Start() error {
 	app := &cli.App{
-		Name:    "kairos",
-		Version: "0.1",
+		Name:    "kairos-agent-provider",
+		Version: VERSION,
 		Authors: []*cli.Author{
 			{
 				Name: "Ettore Di Giacinto",

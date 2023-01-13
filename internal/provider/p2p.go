@@ -2,7 +2,7 @@ package provider
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io/ioutil" // nolint
 	"os"
 	"path/filepath"
 	"strings"

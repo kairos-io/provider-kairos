@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io/ioutil" // nolint
 	"os"
 
 	nodepair "github.com/mudler/go-nodepair"
