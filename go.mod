@@ -22,7 +22,7 @@ require (
 	github.com/pterm/pterm v0.12.53
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20221005172954-aa887438fafc
-	github.com/urfave/cli v1.22.10
+	github.com/urfave/cli v1.22.11
 	github.com/urfave/cli/v2 v2.23.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.4.0
