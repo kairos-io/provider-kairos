@@ -10,7 +10,7 @@ ARG FLAVOR=opensuse
 ARG K3S_VERSION
 RUN apk add git
 COPY . ./
-RUN echo $(git describe --exact-match --tags || echo "v0.0.0-$(git log --oneline -n 1 | cut -d" " -f1)") > VERSION
+RUN echo $(git describe --always --tags --dirty) > VERSION
 ARG CORE_VERSION=$(cat CORE_VERSION || echo "latest")
 ARG VERSION=$(cat VERSION)
 RUN echo "version ${VERSION}"
@@ -72,11 +72,13 @@ BUILD_GOLANG:
     WORKDIR /build
     COPY . ./
     ARG CGO_ENABLED
+    ARG VERSION
+    ARG LDFLAGS="-s -w -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'"
     ARG BIN
     ARG SRC
     ENV CGO_ENABLED=${CGO_ENABLED}
-
-    RUN go build -ldflags "-s -w" -o ${BIN} ${SRC} && upx ${BIN}
+    RUN echo $LDFLAGS
+    RUN go build -ldflags "${LDFLAGS}" -o ${BIN} ${SRC} && upx ${BIN}
     SAVE ARTIFACT ${BIN} ${BIN} AS LOCAL build/${BIN}
 
 build-kairos-agent-provider:

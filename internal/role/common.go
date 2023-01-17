@@ -1,7 +1,7 @@
 package role
 
 import (
-	"io/ioutil"
+	"io/ioutil" // nolint
 	"os"
 
 	service "github.com/mudler/edgevpn/api/client/service"
