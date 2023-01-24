@@ -4,7 +4,7 @@ IMPORT github.com/kairos-io/kairos
 
 FROM alpine
 ARG VARIANT=kairos # core, lite, framework
-ARG FLAVOR=opensuse
+ARG FLAVOR=opensuse-leap
 
 ## Versioning
 ARG K3S_VERSION
