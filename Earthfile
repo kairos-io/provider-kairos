@@ -121,6 +121,16 @@ docker:
     
     COPY repository.yaml /etc/luet/luet.yaml
 
+    IF [ "$FLAVOR" = "debian" ]
+      RUN apt-get install -y nohang
+    ELSE IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
+      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/15.4/utilities.repo && zypper ref && zypper in -y nohang
+    ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
+      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/openSUSE_Factory/utilities.repo && zypper ref && zypper in -y nohang
+    ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ]
+      RUN apt-get update && apt-get install -y nohang
+    END
+
     ENV INSTALL_K3S_BIN_DIR="/usr/bin"
     RUN curl -sfL https://get.k3s.io > installer.sh \
         && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh \
