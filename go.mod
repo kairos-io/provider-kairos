@@ -11,7 +11,7 @@ require (
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos v1.4.0
-	github.com/luthermonson/go-proxmox v0.0.0-alpha2
+	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.19.2-0.20221227163902-964d2f17c1e7
 	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb
 	github.com/mudler/go-pluggable v0.0.0-20220716112424-189d463e3ff3
@@ -57,6 +57,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
+	github.com/diskfs/go-diskfs v1.2.1-0.20211109185859-9509735ba7a4 // indirect
 	github.com/docker/cli v20.10.17+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker v20.10.17+incompatible // indirect
@@ -126,7 +127,7 @@ require (
 	github.com/lucas-clemente/quic-go v0.29.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
-	github.com/magefile/mage v1.12.1 // indirect
+	github.com/magefile/mage v1.14.0 // indirect
 	github.com/makiuchi-d/gozxing v0.1.1 // indirect
 	github.com/marten-seemann/qtls-go1-18 v0.1.2 // indirect
 	github.com/marten-seemann/qtls-go1-19 v0.1.0 // indirect
@@ -205,6 +206,7 @@ require (
 	golang.zx2c4.com/wireguard v0.0.0-20220703234212-c31a7b1ab478 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/djherbis/times.v1 v1.3.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
