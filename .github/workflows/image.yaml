@@ -19,8 +19,10 @@ jobs:
       fail-fast: false
       matrix:
        include:
-         - flavor: "opensuse"
-         #- flavor: "tumbleweed"
+         - flavor: "opensuse-leap"
+         # tumbleweed disabled until there is a new release of core images.
+         # otherwise it tries to pull from quay.io/kairos/core-${FLAVOR}:${CORE_VERSION} but there is no tumbleweed with CORE_VERSION
+         # - flavor: "opensuse-tumbleweed"
          #- flavor: "fedora"
          #- flavor: "ubuntu"
          - flavor: "alpine-opensuse-leap"
@@ -162,7 +164,7 @@ jobs:
       fail-fast: true
       matrix:
        include:
-         - flavor: "opensuse"
+         - flavor: "opensuse-leap"
            node: "A" # Arbitrary field
          - flavor: "alpine-opensuse-leap"
            node: "B" # Arbitrary field
@@ -210,9 +212,9 @@ jobs:
       fail-fast: true
       matrix:
        include:
-         - flavor: "opensuse"
+         - flavor: "opensuse-leap"
            node: "A" # Arbitrary field
-         - flavor: "opensuse"
+         - flavor: "opensuse-leap"
            node: "B"
 #         - flavor: "alpine"
 #           node: "C"
@@ -325,7 +327,7 @@ jobs:
       matrix:
        include:
          - flavor: "alpine-opensuse-leap"
-         - flavor: "opensuse"
+         - flavor: "opensuse-leap"
     steps:
     - uses: robinraju/release-downloader@v1.7
       with:     
@@ -433,7 +435,7 @@ jobs:
        include:
          - flavor: "alpine-opensuse-leap"
            node: "A" # Arbitrary field
-         - flavor: "opensuse"
+         - flavor: "opensuse-leap"
            node: "B"
 #         - flavor: "alpine"
 #           node: "C"

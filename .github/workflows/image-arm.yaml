@@ -16,8 +16,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - flavor: "opensuse-arm-rpi"
+          - flavor: "opensuse-leap-arm-rpi"
             model: rpi64
+          # tumbleweed disabled until there is a new release of core images.
+          # otherwise it tries to pull from quay.io/kairos/core-${FLAVOR}:${CORE_VERSION} but there is no tumbleweed with CORE_VERSION
+          #- flavor: "opensuse-tumbleweed-arm-rpi"
+          #  model: rpi64
           - flavor: "alpine-arm-rpi"
             model: rpi64
     steps:
