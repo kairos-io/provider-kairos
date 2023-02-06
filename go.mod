@@ -8,7 +8,7 @@ require (
 	github.com/bramvdbogaerde/go-scp v1.2.0
 	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
 	github.com/gliderlabs/ssh v0.2.2
-	github.com/google/go-containerregistry v0.11.0
+	github.com/google/go-containerregistry v0.13.0
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos v1.5.0
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
@@ -48,7 +48,7 @@ require (
 	github.com/codingsince1985/checksum v1.2.4 // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/console v1.0.3 // indirect
-	github.com/containerd/stargz-snapshotter/estargz v0.12.0 // indirect
+	github.com/containerd/stargz-snapshotter/estargz v0.12.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.4.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creachadair/otp v0.4.0 // indirect
@@ -57,10 +57,10 @@ require (
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/diskfs/go-diskfs v1.2.1-0.20230123115902-fce1828bbbfa // indirect
-	github.com/docker/cli v20.10.17+incompatible // indirect
+	github.com/docker/cli v20.10.20+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v20.10.17+incompatible // indirect
-	github.com/docker/docker-credential-helpers v0.6.4 // indirect
+	github.com/docker/docker v20.10.20+incompatible // indirect
+	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
 	github.com/eliukblau/pixterm v1.3.1 // indirect
@@ -101,7 +101,7 @@ require (
 	github.com/jinzhu/copier v0.3.4 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
-	github.com/klauspost/compress v1.15.10 // indirect
+	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.0 // indirect
 	github.com/koron/go-ssdp v0.0.3 // indirect
 	github.com/labstack/echo/v4 v4.10.0 // indirect
@@ -158,7 +158,7 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.0.3-0.20220114050600-8b9d41f48198 // indirect
+	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
 	github.com/opencontainers/runtime-spec v1.0.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
