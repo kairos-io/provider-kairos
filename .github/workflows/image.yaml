@@ -28,7 +28,7 @@ jobs:
          - flavor: "alpine-opensuse-leap"
          - flavor: "alpine-ubuntu"
          - flavor: "ubuntu"
-          - flavor: "rockylinux"
+         - flavor: "rockylinux"
     steps:
       - uses: actions/checkout@v3
       - run: |
