@@ -99,15 +99,6 @@ dist:
     RUN goreleaser build --rm-dist --skip-validate --snapshot
     SAVE ARTIFACT /build/dist/* AS LOCAL dist/
 
-lint:
-    ARG GO_VERSION
-    FROM golang:$GO_VERSION
-    ARG GOLINT_VERSION
-    RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$GOLINT_VERSION
-    WORKDIR /build
-    COPY . .
-    RUN golangci-lint run --timeout 120s
-
 docker:
     ARG FLAVOR
     ARG VARIANT
@@ -371,3 +362,21 @@ run-proxmox-tests:
     COPY +edgevpn/edgevpn /usr/bin/edgevpn
     COPY . .
     RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/
+
+lint:
+    BUILD +golint
+    BUILD +yamllint
+
+golint:
+    ARG GO_VERSION
+    FROM golang:$GO_VERSION
+    ARG GOLINT_VERSION
+    RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$GOLINT_VERSION
+    WORKDIR /build
+    COPY . .
+    RUN golangci-lint run --timeout 120s
+
+yamllint:
+    FROM cytopia/yamllint
+    COPY . .
+    RUN yamllint .github/workflows/
