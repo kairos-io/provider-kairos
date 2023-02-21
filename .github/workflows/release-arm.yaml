@@ -73,7 +73,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           COSIGN_EXPERIMENTAL: 1
-        run: | 
+        run: |
           cosign sign $(cat build/IMAGE)
       - name: Upload Image
         if: startsWith(github.ref, 'refs/tags/')

@@ -1,10 +1,10 @@
 name: Build image
 
-on: 
- push:
-   branches:
-     - main
- pull_request:
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 concurrency:
   group: ci-image-${{ github.head_ref || github.ref }}-${{ github.repository }}
@@ -18,16 +18,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-       include:
-         - flavor: "opensuse-leap"
-         # tumbleweed disabled until there is a new release of core images.
-         # otherwise it tries to pull from quay.io/kairos/core-${FLAVOR}:${CORE_VERSION} but there is no tumbleweed with CORE_VERSION
-         # - flavor: "opensuse-tumbleweed"
-         #- flavor: "fedora"
-         #- flavor: "ubuntu"
-         - flavor: "alpine-opensuse-leap"
-         - flavor: "alpine-ubuntu"
-         - flavor: "ubuntu"
+        include:
+          - flavor: "opensuse-leap"
+          # tumbleweed disabled until there is a new release of core images.
+          # otherwise it tries to pull from quay.io/kairos/core-${FLAVOR}:${CORE_VERSION} but there is no tumbleweed with CORE_VERSION
+          # - flavor: "opensuse-tumbleweed"
+          # - flavor: "fedora"
+          # - flavor: "ubuntu"
+          - flavor: "alpine-opensuse-leap"
+          - flavor: "alpine-ubuntu"
+          - flavor: "ubuntu"
     steps:
       - uses: actions/checkout@v3
       - run: |
@@ -87,16 +87,16 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           COSIGN_EXPERIMENTAL: 1
-        run: | 
+        run: |
           docker push quay.io/kairos/kairos-${{ matrix.flavor }}:latest
           cosign sign quay.io/kairos/kairos-${{ matrix.flavor }}:latest
       - name: Push to testing
-        run: | 
+        run: |
           docker tag quay.io/kairos/kairos-${{ matrix.flavor }}:latest ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
           docker push ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
 # Test start
 #   build-vm-images:
-#     needs: 
+#     needs:
 #     - build
 #     runs-on: macos-12
 #     strategy:
@@ -105,35 +105,35 @@ jobs:
 #        include:
 #          - flavor: "opensuse"
 #          - flavor: "alpine-opensuse-leap"
-#         # - flavor: "tumbleweed"
-# #         - flavor: "ubuntu"
-# #         - flavor: "fedora"
-    # steps:
-    #   - uses: actions/checkout@v3
-    #   - name: Install deps
-    #     run: |
-    #       brew install hudochenkov/sshpass/sshpass
-    #       brew install qemu
-    #   - name: Download artifacts
-    #     uses: actions/download-artifact@v3
-    #     with:
-    #       name: kairos-${{ matrix.flavor }}.iso.zip
-    #   - run: |
-    #           git clone https://github.com/kairos-io/kairos
-    #           ls -liah
-    #           iso=$(ls *.iso)
-    #           bash kairos/scripts/build_vm.sh $iso
-    #   - uses: actions/upload-artifact@v3
-    #     with:
-    #       name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
-    #       path: |
-    #         *.qcow2.tar.xz
-    #   - uses: actions/upload-artifact@v3
-    #     with:
-    #       name: kairos-${{ matrix.flavor }}.ova
-    #       path: |
-    #         *.ova
-    #       if-no-files-found: error
+#          - flavor: "tumbleweed"
+#          - flavor: "ubuntu"
+#          - flavor: "fedora"
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Install deps
+#         run: |
+#           brew install hudochenkov/sshpass/sshpass
+#           brew install qemu
+#       - name: Download artifacts
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: kairos-${{ matrix.flavor }}.iso.zip
+#       - run: |
+#               git clone https://github.com/kairos-io/kairos
+#               ls -liah
+#               iso=$(ls *.iso)
+#               bash kairos/scripts/build_vm.sh $iso
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
+#           path: |
+#             *.qcow2.tar.xz
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: kairos-${{ matrix.flavor }}.ova
+#           path: |
+#             *.ova
+#           if-no-files-found: error
   prepare-test:
     needs: build
     runs-on: ubuntu-latest
@@ -144,7 +144,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v3
         with:
-            go-version: '^1.16'
+          go-version: '^1.16'
       - name: Prepare config
         run: |
               ./earthly.sh +test-create-config --WITH_DNS=true
@@ -157,19 +157,19 @@ jobs:
 
 
   upgrade-single-node-k8s-test:
-    needs: 
-    - prepare-test
+    needs:
+      - prepare-test
     runs-on: macos-12
     strategy:
       fail-fast: true
       matrix:
-       include:
-         - flavor: "opensuse-leap"
-           node: "A" # Arbitrary field
-         - flavor: "alpine-opensuse-leap"
-           node: "B" # Arbitrary field
-         #- flavor: "tumbleweed"
-         #  node: "C"
+        include:
+          - flavor: "opensuse-leap"
+            node: "A"  # Arbitrary field
+          - flavor: "alpine-opensuse-leap"
+            node: "B"  # Arbitrary field
+            # - flavor: "tumbleweed"
+            #   node: "C"
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
@@ -186,14 +186,14 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v3
         with:
-            go-version: '^1.16'
+          go-version: '^1.16'
       - run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
               export GOPATH="/Users/runner/go"
               export PATH=$PATH:$GOPATH/bin
-              export CLOUD_INIT=$PWD/config.yaml 
-              export CREATE_VM=true 
+              export CLOUD_INIT=$PWD/config.yaml
+              export CREATE_VM=true
               export FLAVOR=${{ matrix.flavor }}
               ./.github/run_test.sh "upgrade-k8s"
       - uses: actions/upload-artifact@v3
@@ -204,20 +204,20 @@ jobs:
           if-no-files-found: warn
 
   decentralized-k8s-test-opensuse:
-    needs: 
-    - prepare-test
-    - upgrade-single-node-k8s-test
+    needs:
+      - prepare-test
+      - upgrade-single-node-k8s-test
     runs-on: macos-12
     strategy:
       fail-fast: true
       matrix:
-       include:
-         - flavor: "opensuse-leap"
-           node: "A" # Arbitrary field
-         - flavor: "opensuse-leap"
-           node: "B"
-#         - flavor: "alpine"
-#           node: "C"
+        include:
+          - flavor: "opensuse-leap"
+            node: "A"  # Arbitrary field
+          - flavor: "opensuse-leap"
+            node: "B"
+            # - flavor: "alpine"
+            #   node: "C"
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
@@ -234,7 +234,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v3
         with:
-            go-version: '^1.16'
+          go-version: '^1.16'
       - run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
@@ -261,7 +261,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v3
         with:
-            go-version: '^1.16'
+          go-version: '^1.16'
       - name: Prepare config
         run: |
               ./earthly.sh +test-create-config --WITH_DNS=true
@@ -273,20 +273,20 @@ jobs:
           if-no-files-found: error
 
   decentralized-k8s-test-alpine:
-    needs: 
-    - prepare-alpine-test
-    - decentralized-k8s-test-opensuse
+    needs:
+      - prepare-alpine-test
+      - decentralized-k8s-test-opensuse
     runs-on: macos-12
     strategy:
       fail-fast: true
       matrix:
-       include:
-         - flavor: "alpine-opensuse-leap"
-           node: "A" # Arbitrary field
-         - flavor: "alpine-opensuse-leap"
-           node: "B"
-#         - flavor: "alpine"
-#           node: "C"
+        include:
+          - flavor: "alpine-opensuse-leap"
+            node: "A"  # Arbitrary field
+          - flavor: "alpine-opensuse-leap"
+            node: "B"
+            # - flavor: "alpine"
+            #   node: "C"
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
@@ -303,7 +303,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v3
         with:
-            go-version: '^1.16'
+          go-version: '^1.16'
       - run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
@@ -325,120 +325,120 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-       include:
-         - flavor: "alpine-opensuse-leap"
-         - flavor: "opensuse-leap"
+        include:
+          - flavor: "alpine-opensuse-leap"
+          - flavor: "opensuse-leap"
     steps:
     - uses: robinraju/release-downloader@v1.7
-      with:     
-      # A flag to set the download target as latest release
-      # The default value is 'false'
+      with:
+        # A flag to set the download target as latest release
+        # The default value is 'false'
         latest: true
         repository: "kairos-io/provider-kairos"
         fileName: "kairos-${{ matrix.flavor }}-*v1.25*.iso"
         out-file-path: "last-release"
     - uses: actions/upload-artifact@v3
       with:
-          name: latest-release-${{ matrix.flavor }}.zip
-          path: last-release
-          if-no-files-found: error
+        name: latest-release-${{ matrix.flavor }}.zip
+        path: last-release
+        if-no-files-found: error
 
-#   qrcode-test-cli:
-#     needs: 
-#     - build
-#     - prepare-alpine-test
-#     - upgrade-test
+  # qrcode-test-cli:
+  #   needs:
+  #   - build
+  #   - prepare-alpine-test
+  #   - upgrade-test
 
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v3
-#     - name: Download artifacts
-#       uses: actions/download-artifact@v3
-#       with:      
-#           name: config.yaml
-#     - name: Install Go
-#       uses: actions/setup-go@v3
-#       with:
-#           go-version: '^1.16'
-#     - run: |
-#              ./earthly.sh +build-kairos-agent-provider
-#              sudo cp -rfv build/agent-provider-kairos /usr/bin/kairos
-#              export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-#              export FLAVOR=${{ matrix.flavor }} 
-#              ./.github/run_test.sh "qrcode-register"
-#       env:
-#        SENDKEY: 4kgpo43kphopj
-#     - uses: actions/upload-artifact@v3
-#       if: failure()
-#       with:
-#         name: screenshot.zip
-#         path: |
-#           tests/*.png
-#   qrcode-test:
-#     needs: 
-#     - build
-#     - upgrade-test
-#     - prepare-alpine-test
-#     runs-on: macos-12
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#        include:
-#          - flavor: "alpine-opensuse-leap"
-#            node: "A" # Arbitrary field
-# #         - flavor: "alpine"
-# #           node: "C"
-#     steps:
-#     - uses: actions/checkout@v3
-#     - name: Download artifacts
-#       uses: actions/download-artifact@v3
-#       with:      
-#           name: config.yaml
-#     - name: Download artifacts
-#       uses: actions/download-artifact@v3
-#       with:
-#           name: kairos-${{ matrix.flavor }}.iso.zip
-#     - name: Install deps
-#       run: |
-#         brew install cdrtools jq
-#     - name: Install Go
-#       uses: actions/setup-go@v3
-#       with:
-#           go-version: '^1.16'
-#     - run: |
-#             ls -liah
-#             export ISO=$PWD/$(ls *.iso)
-#             export GOPATH="/Users/runner/go"
-#             export PATH=$PATH:$GOPATH/bin
-#             export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-#             export CREATE_VM=true
-#             export FLAVOR=${{ matrix.flavor }} 
-#             ./.github/run_test.sh "qrcode-install"
-#       env:
-#        SENDKEY: 4kgpo43kphopj
-#     - uses: actions/upload-artifact@v3
-#       if: failure()
-#       with:
-#         name: ${{ matrix.flavor }}-qrcode-test.logs.zip
-#         path: tests/**/logs/*
-#         if-no-files-found: warn
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #         name: config.yaml
+  #   - name: Install Go
+  #     uses: actions/setup-go@v3
+  #     with:
+  #         go-version: '^1.16'
+  #   - run: |
+  #            ./earthly.sh +build-kairos-agent-provider
+  #            sudo cp -rfv build/agent-provider-kairos /usr/bin/kairos
+  #            export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
+  #            export FLAVOR=${{ matrix.flavor }}
+  #            ./.github/run_test.sh "qrcode-register"
+  #     env:
+  #      SENDKEY: 4kgpo43kphopj
+  #   - uses: actions/upload-artifact@v3
+  #     if: failure()
+  #     with:
+  #       name: screenshot.zip
+  #       path: |
+  #         tests/*.png
+  # qrcode-test:
+  #   needs:
+  #   - build
+  #   - upgrade-test
+  #   - prepare-alpine-test
+  #   runs-on: macos-12
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #      include:
+  #        - flavor: "alpine-opensuse-leap"
+  #          node: "A" # Arbitrary field
+  #         - flavor: "alpine"
+  #           node: "C"
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #         name: config.yaml
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #         name: kairos-${{ matrix.flavor }}.iso.zip
+  #   - name: Install deps
+  #     run: |
+  #       brew install cdrtools jq
+  #   - name: Install Go
+  #     uses: actions/setup-go@v3
+  #     with:
+  #         go-version: '^1.16'
+  #   - run: |
+  #           ls -liah
+  #           export ISO=$PWD/$(ls *.iso)
+  #           export GOPATH="/Users/runner/go"
+  #           export PATH=$PATH:$GOPATH/bin
+  #           export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
+  #           export CREATE_VM=true
+  #           export FLAVOR=${{ matrix.flavor }}
+  #           ./.github/run_test.sh "qrcode-install"
+  #     env:
+  #      SENDKEY: 4kgpo43kphopj
+  #   - uses: actions/upload-artifact@v3
+  #     if: failure()
+  #     with:
+  #       name: ${{ matrix.flavor }}-qrcode-test.logs.zip
+  #       path: tests/**/logs/*
+  #       if-no-files-found: warn
 
 
   upgrade-test:
-    needs: 
-    - build
-    - latest-release
+    needs:
+      - build
+      - latest-release
     runs-on: macos-12
     strategy:
       fail-fast: false
       matrix:
-       include:
-         - flavor: "alpine-opensuse-leap"
-           node: "A" # Arbitrary field
-         - flavor: "opensuse-leap"
-           node: "B"
-#         - flavor: "alpine"
-#           node: "C"
+        include:
+          - flavor: "alpine-opensuse-leap"
+            node: "A"  # Arbitrary field
+          - flavor: "opensuse-leap"
+            node: "B"
+            # - flavor: "alpine"
+            #   node: "C"
     steps:
     - uses: actions/checkout@v3
     - name: Download artifacts
@@ -451,7 +451,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v3
       with:
-          go-version: '^1.16'
+        go-version: '^1.16'
     - run: |
             ls -liah
             export ISO=$PWD/$(ls kairos-${{ matrix.flavor }}-*.iso | tail -n1 )
@@ -468,4 +468,3 @@ jobs:
         name: ${{ matrix.flavor }}-upgrade-test.logs.zip
         path: tests/**/logs/*
         if-no-files-found: warn
-  
