@@ -233,10 +233,11 @@ image-sbom:
     WORKDIR /build
     ARG VERSION
     ARG FLAVOR
+    ARG VARIANT
     COPY +syft/syft /usr/bin/syft
     RUN syft / -o json=sbom.syft.json -o spdx-json=sbom.spdx.json
-    SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL core-${FLAVOR}-${VERSION}-sbom.syft.json
-    SAVE ARTIFACT /build/sbom.spdx.json sbom.spdx.json AS LOCAL core-${FLAVOR}-${VERSION}-sbom.spdx.json
+    SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL build/${VARIANT}-${FLAVOR}-${VERSION}-sbom.syft.json
+    SAVE ARTIFACT /build/sbom.spdx.json sbom.spdx.json AS LOCAL build/${VARIANT}-${FLAVOR}-${VERSION}-sbom.spdx.json
 
 ipxe-iso:
     FROM ubuntu
