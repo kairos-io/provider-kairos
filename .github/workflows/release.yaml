@@ -66,13 +66,3 @@ jobs:
         with:
           files: |
             release/*
-      - run: |
-          sudo mv release/*.iso ./
-          sudo mv release/*.sha256 ./
-      - uses: actions/upload-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}${{ matrix.k3s_version }}.iso.zip
-          path: |
-            *.iso
-            *.sha256
-          if-no-files-found: error
