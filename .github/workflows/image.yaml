@@ -88,10 +88,11 @@ jobs:
       - name: Push to quay
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          COSIGN_EXPERIMENTAL: 1
+          COSIGN_YES: true
+          IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}:latest"
         run: |
-          docker push quay.io/kairos/kairos-${{ matrix.flavor }}:latest
-          cosign sign quay.io/kairos/kairos-${{ matrix.flavor }}:latest
+          docker push "$IMAGE"
+          cosign sign $(docker images "$IMAGE" --format  "{{.Digest}}")
       - name: Push to testing
         run: |
           docker tag quay.io/kairos/kairos-${{ matrix.flavor }}:latest ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
