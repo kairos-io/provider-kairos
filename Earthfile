@@ -38,6 +38,7 @@ RELEASEVERSION:
 
 all:
   BUILD +docker
+  BUILD +image-sbom
   BUILD +iso
   BUILD +netboot
   BUILD +ipxe-iso
@@ -45,6 +46,7 @@ all:
 
 all-arm:
   BUILD --platform=linux/arm64 +docker
+  BUILD +image-sbom
   BUILD +arm-image
   DO +RELEASEVERSION
 
@@ -221,6 +223,20 @@ arm-image:
   RUN xz -v /build/$IMAGE_NAME
   SAVE ARTIFACT /build/$IMAGE_NAME.xz img AS LOCAL build/$IMAGE_NAME.xz
   SAVE ARTIFACT /build/$IMAGE_NAME.sha256 img-sha256 AS LOCAL build/$IMAGE_NAME.sha256
+
+syft:
+    FROM anchore/syft:latest
+    SAVE ARTIFACT /syft syft
+
+image-sbom:
+    FROM +docker
+    WORKDIR /build
+    ARG VERSION
+    ARG FLAVOR
+    COPY +syft/syft /usr/bin/syft
+    RUN syft / -o json=sbom.syft.json -o spdx-json=sbom.spdx.json
+    SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL core-${FLAVOR}-${VERSION}-sbom.syft.json
+    SAVE ARTIFACT /build/sbom.spdx.json sbom.spdx.json AS LOCAL core-${FLAVOR}-${VERSION}-sbom.spdx.json
 
 ipxe-iso:
     FROM ubuntu
