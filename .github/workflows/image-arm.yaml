@@ -47,7 +47,13 @@ jobs:
           MODEL: ${{ matrix.model }}
         run: |
           export TAG=${GITHUB_REF##*/}
-          ./earthly.sh +all-arm --IMAGE_NAME=kairos-$FLAVOR-$TAG.img --IMAGE=quay.io/kairos/kairos-$FLAVOR:$TAG --MODEL=$MODEL --FLAVOR=$FLAVOR
+          export IMAGE=quay.io/kairos/kairos-$FLAVOR
+
+          ./earthly.sh +all-arm --IMAGE_NAME=kairos-$FLAVOR-$TAG.img --IMAGE="$IMAGE:$TAG" --MODEL=$MODEL --FLAVOR=$FLAVOR
+
+          docker push "$IMAGE:$TAG" # Otherwise .RepoDigests will be empty for some reason
+          cosign sign $(docker image inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$TAG")
+
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
