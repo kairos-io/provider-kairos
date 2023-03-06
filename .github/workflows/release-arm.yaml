@@ -84,5 +84,5 @@ jobs:
           sudo tar cvf build.tar build
           sudo luet util pack $IMG build.tar image.tar
           sudo -E docker load -i image.tar
-          sudo -E docker push $IMG
+          sudo -E docker push quay.io/kairos/kairos-${{ matrix.flavor }}-img:${{ matrix.k3s_version }}.img
           sudo rm -rf build/IMAGE build/VERSION
