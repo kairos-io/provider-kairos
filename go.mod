@@ -19,7 +19,7 @@ require (
 	github.com/mudler/yip v1.0.0
 	github.com/onsi/ginkgo/v2 v2.9.0
 	github.com/onsi/gomega v1.27.1
-	github.com/pterm/pterm v0.12.54
+	github.com/pterm/pterm v0.12.55
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20230210110137-1780ceedb1e5
 	github.com/urfave/cli/v2 v2.24.4
@@ -104,7 +104,7 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.1 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
 	github.com/koron/go-ssdp v0.0.3 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -173,7 +173,7 @@ require (
 	github.com/quic-go/quic-go v0.32.0 // indirect
 	github.com/quic-go/webtransport-go v0.5.1 // indirect
 	github.com/raulk/go-watchdog v1.3.0 // indirect
-	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
