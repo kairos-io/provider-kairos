@@ -49,18 +49,16 @@ jobs:
           FLAVOR: ${{ matrix.flavor }}
           MODEL: ${{ matrix.model }}
           IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}"
+          TAG: "latest"
         run: |
-          export TAG=${GITHUB_REF##*/}
-
           ./earthly.sh +all-arm --IMAGE_NAME=kairos-$FLAVOR-$TAG.img --IMAGE="$IMAGE:$TAG" --MODEL=$MODEL --FLAVOR=$FLAVOR
       - name: Push to quay
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           COSIGN_YES: true
           IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}"
+          TAG: "latest"
         run: |
-          export TAG=${GITHUB_REF##*/}
-
           docker push "$IMAGE:$TAG" # Otherwise .RepoDigests will be empty for some reason
           cosign sign $(docker image inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$TAG")
       - name: Upload results
