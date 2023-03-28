@@ -75,7 +75,8 @@ jobs:
           COSIGN_YES: true
         run: |
           export IMAGE=$(cat build/IMAGE)
-          cosign sign $(docker images "$IMAGE" --format  "{{.Digest}}")
+          docker push "$IMAGE" # Otherwise .RepoDigests will be empty for some reason
+          cosign sign $(docker image inspect --format='{{index .RepoDigests 0}}' "$IMAGE")
       - name: Upload Image
         if: startsWith(github.ref, 'refs/tags/')
         run: |

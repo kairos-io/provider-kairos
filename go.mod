@@ -17,14 +17,14 @@ require (
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
 	github.com/mudler/yip v1.0.0
-	github.com/onsi/ginkgo/v2 v2.8.3
+	github.com/onsi/ginkgo/v2 v2.9.0
 	github.com/onsi/gomega v1.27.1
-	github.com/pterm/pterm v0.12.54
+	github.com/pterm/pterm v0.12.55
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20230210110137-1780ceedb1e5
 	github.com/urfave/cli/v2 v2.24.4
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.6.0
+	golang.org/x/crypto v0.7.0
 	golang.org/x/mod v0.9.0
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
@@ -104,7 +104,7 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.1 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
 	github.com/koron/go-ssdp v0.0.3 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -173,7 +173,7 @@ require (
 	github.com/quic-go/quic-go v0.32.0 // indirect
 	github.com/quic-go/webtransport-go v0.5.1 // indirect
 	github.com/raulk/go-watchdog v1.3.0 // indirect
-	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
@@ -199,11 +199,11 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db // indirect
 	golang.org/x/image v0.0.0-20191206065243-da761ea9ff43 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/term v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/term v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	golang.zx2c4.com/wintun v0.0.0-20211104114900-415007cec224 // indirect
