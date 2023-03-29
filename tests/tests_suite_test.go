@@ -3,6 +3,7 @@ package mos
 import (
 	"context"
 	"fmt"
+
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -10,12 +11,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/kairos-io/kairos-sdk/utils"
 	process "github.com/mudler/go-processmanager"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/spectrocloud/peg/matcher"
-	machine "github.com/spectrocloud/peg/pkg/machine"
+	"github.com/spectrocloud/peg/pkg/machine"
 	"github.com/spectrocloud/peg/pkg/machine/types"
 )
 
@@ -49,10 +51,7 @@ func detachAndReboot() {
 	}
 }
 
-var tempDir string
 var sshPort string
-
-var machineID string = os.Getenv("MACHINE_ID")
 
 var _ = AfterSuite(func() {
 	if os.Getenv("CREATE_VM") == "true" {
@@ -85,9 +84,7 @@ func pass() string {
 
 var _ = BeforeSuite(func() {
 
-	if machineID == "" {
-		machineID = "testvm"
-	}
+	machineID := uuid.New().String()
 
 	if os.Getenv("ISO") == "" && os.Getenv("CREATE_VM") == "true" {
 		fmt.Println("ISO missing")
