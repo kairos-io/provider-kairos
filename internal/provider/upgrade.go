@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/crane"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/mudler/go-pluggable"
 	"golang.org/x/mod/semver"
 )

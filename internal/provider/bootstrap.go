@@ -6,17 +6,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kairos-io/kairos/sdk/bus"
-
 	logging "github.com/ipfs/go-log"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 	"go.uber.org/zap"
 
-	"github.com/kairos-io/kairos/pkg/machine"
-	"github.com/kairos-io/kairos/pkg/machine/openrc"
-	"github.com/kairos-io/kairos/pkg/machine/systemd"
-	"github.com/kairos-io/kairos/pkg/utils"
-	sdk "github.com/kairos-io/kairos/sdk/bus"
+	"github.com/kairos-io/kairos-sdk/bus"
+	"github.com/kairos-io/kairos-sdk/machine"
+	"github.com/kairos-io/kairos-sdk/machine/openrc"
+	"github.com/kairos-io/kairos-sdk/machine/systemd"
+	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/internal/role/p2p"
@@ -57,7 +55,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	utils.SH("elemental run-stage kairos-agent.bootstrap")    //nolint:errcheck
-	sdk.RunHookScript("/usr/bin/kairos-agent.bootstrap.hook") //nolint:errcheck
+	bus.RunHookScript("/usr/bin/kairos-agent.bootstrap.hook") //nolint:errcheck
 
 	logLevel := "debug"
 

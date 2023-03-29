@@ -1,4 +1,4 @@
-package mos_test
+package mos
 
 import (
 	"crypto/tls"
@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/bramvdbogaerde/go-scp"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/luthermonson/go-proxmox"
@@ -70,8 +70,9 @@ func datasourceISO(cc []byte, output string) error {
 // k3s:
 //   enable: true
 
-// 			`), storage,
-// 	)
+//	`), storage,
+//
+// )
 func uploadCloudInitISO(isoname string, cc []byte, storage *proxmox.Storage) error {
 
 	temp, err := os.MkdirTemp("", "datasource")

@@ -8,10 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kairos-io/kairos-sdk/machine"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/kairos-io/kairos/pkg/config"
-	"github.com/kairos-io/kairos/pkg/machine"
-
-	"github.com/kairos-io/kairos/pkg/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
 

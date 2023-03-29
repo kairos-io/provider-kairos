@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/kairos-io/provider-kairos/internal/assets"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 )

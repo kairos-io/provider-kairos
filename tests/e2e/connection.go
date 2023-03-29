@@ -1,4 +1,4 @@
-package mos_test
+package mos
 
 import (
 	"net"

@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kairos-io/kairos/sdk/bus"
-	cli "github.com/kairos-io/provider-kairos/internal/cli"
-
+	"github.com/kairos-io/kairos-sdk/bus"
+	"github.com/kairos-io/provider-kairos/internal/cli"
 	"github.com/kairos-io/provider-kairos/internal/provider"
 )
 

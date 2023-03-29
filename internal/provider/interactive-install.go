@@ -3,7 +3,7 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/kairos-io/kairos/sdk/bus"
+	"github.com/kairos-io/kairos-sdk/bus"
 
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/mudler/go-pluggable"

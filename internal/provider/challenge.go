@@ -3,7 +3,7 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/kairos-io/kairos/sdk/bus"
+	"github.com/kairos-io/kairos-sdk/bus"
 
 	"github.com/kairos-io/kairos/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
