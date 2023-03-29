@@ -127,7 +127,7 @@ func waitForMasterHAInfo(c *service.RoleConfig) bool {
 	return false
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role {
+func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 
 		iface := guessInterface(pconfig)

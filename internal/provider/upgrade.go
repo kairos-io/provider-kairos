@@ -14,7 +14,7 @@ func eventError(err error) pluggable.EventResponse {
 	return pluggable.EventResponse{Error: err.Error()}
 }
 
-func ListVersions(e *pluggable.Event) pluggable.EventResponse {
+func ListVersions(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 	registry, err := utils.OSRelease("IMAGE_REPO")
 	if err != nil {
 		return eventError(err)

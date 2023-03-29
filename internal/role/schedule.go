@@ -7,12 +7,12 @@ import (
 
 	"github.com/kairos-io/kairos/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
-	service "github.com/mudler/edgevpn/api/client/service"
+	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/samber/lo"
 )
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
-func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error {
+func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error { //nolint:revive
 	rand.Seed(time.Now().Unix())
 
 	// Assign roles to nodes

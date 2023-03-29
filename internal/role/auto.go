@@ -18,7 +18,7 @@ func contains(slice []string, elem string) bool {
 	return false
 }
 
-func Auto(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Auto(cc *config.Config, pconfig *providerConfig.Config) Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 		advertizing, _ := c.Client.AdvertizingNodes()
 		actives, _ := c.Client.ActiveNodes()

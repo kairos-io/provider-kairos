@@ -9,7 +9,7 @@ import (
 	"github.com/mudler/go-pluggable"
 )
 
-func InteractiveInstall(e *pluggable.Event) pluggable.EventResponse {
+func InteractiveInstall(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 	prompts := []bus.YAMLPrompt{
 		{
 			YAMLSection: "kairos.network_token",

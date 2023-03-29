@@ -14,7 +14,7 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
+func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 
 		if pconfig.P2P.Role != "" {
