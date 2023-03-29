@@ -133,7 +133,7 @@ var _ = BeforeSuite(func() {
 
 		Machine = m
 
-		if err := Machine.Create(context.Background()); err != nil {
+		if _, err := Machine.Create(context.Background()); err != nil {
 			Fail(err.Error())
 		}
 	}
