@@ -115,9 +115,9 @@ docker:
     COPY repository.yaml /etc/luet/luet.yaml
 
     IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
-      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/15.4/utilities.repo && zypper ref && zypper in -y nohang
+      RUN zypper ref && zypper in -y nohang
     ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
-      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/openSUSE_Factory/utilities.repo && zypper ref && zypper in -y nohang
+      RUN zypper ref && zypper in -y nohang
     ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ] || [ "$FLAVOR" = "debian" ]
       RUN apt-get update && apt-get install -y nohang
     END
