@@ -23,8 +23,8 @@ ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.3.3
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
-ARG GOLINT_VERSION=1.47.3
-ARG GO_VERSION=1.18
+ARG GOLINT_VERSION=1.52.2
+ARG GO_VERSION=1.20
 
 ARG OS_ID=kairos
 ARG CGO_ENABLED=0
