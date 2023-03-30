@@ -11,25 +11,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          git fetch --prune --unshallow
+      - id: set-matrix
+        run: |
+          content=`cat ./.github/flavors.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=matrix::{\"include\": $content }"
   build:
+    needs:
+      - get-matrix
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # OIDC support
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - flavor: "opensuse-leap"
-          # tumbleweed disabled until there is a new release of core images.
-          # otherwise it tries to pull from quay.io/kairos/core-${FLAVOR}:${CORE_VERSION} but there is no tumbleweed with CORE_VERSION
-          # - flavor: "opensuse-tumbleweed"
-          # - flavor: "fedora"
-          # - flavor: "ubuntu"
-          - flavor: "alpine-opensuse-leap"
-          - flavor: "alpine-ubuntu"
-          - flavor: "ubuntu"
-          - flavor: "rockylinux"
-          - flavor: "debian"
+      matrix: ${{fromJson(needs.get-matrix.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v3
       - run: |
