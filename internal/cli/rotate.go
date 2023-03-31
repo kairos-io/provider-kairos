@@ -3,13 +3,13 @@ package cli
 import (
 	"errors"
 	"fmt"
-	"github.com/kairos-io/kairos-sdk/unstructured"
-	"github.com/kairos-io/kairos/v2/pkg/config/collector"
 	"io/ioutil" // nolint
 	"os"
 	"path/filepath"
 
-	config "github.com/kairos-io/kairos/v2/pkg/config"
+	"github.com/kairos-io/kairos-sdk/unstructured"
+	"github.com/kairos-io/kairos/v2/pkg/config"
+	"github.com/kairos-io/kairos/v2/pkg/config/collector"
 	"github.com/kairos-io/provider-kairos/internal/provider"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/services"
@@ -32,7 +32,6 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 	}
 
 	providerCfg := &providerConfig.Config{}
-	// TODO: collector halp
 	a, _ := c.String()
 	err = yaml.Unmarshal([]byte(a), providerCfg)
 	if err != nil {
@@ -56,7 +55,6 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 }
 
 func ReplaceToken(dir []string, token string) (err error) {
-	// TODO: collector halp
 	locations, err := FindYAMLWithKey("p2p.network_token", collector.Directories(dir...))
 	if err != nil {
 		return err
@@ -114,7 +112,7 @@ func ReplaceToken(dir []string, token string) (err error) {
 	return nil
 }
 
-// FindYAMLWithKey will find and return files that contain a given key in them
+// FindYAMLWithKey will find and return files that contain a given key in them.
 func FindYAMLWithKey(s string, opts ...collector.Option) ([]string, error) {
 	o := &collector.Options{}
 
