@@ -21,7 +21,7 @@ jobs:
           git fetch --prune --unshallow
       - id: set-matrix
         run: |
-          content=`cat ./.github/flavors.json`
+          content=`curl https://raw.githubusercontent.com/kairos-io/kairos/master/.github/flavors.json`
           # the following lines are only required for multi line json
           content="${content//'%'/'%25'}"
           content="${content//$'\n'/'%0A'}"
