@@ -3,11 +3,12 @@ package mos
 import (
 	"context"
 	"fmt"
-
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -95,7 +96,8 @@ var _ = BeforeSuite(func() {
 		t, err := ioutil.TempDir("", "")
 		Expect(err).ToNot(HaveOccurred())
 
-		sshPort = "2222"
+		p, _ := getFreePort()
+		sshPort = strconv.Itoa(p)
 		if os.Getenv("SSH_PORT") != "" {
 			sshPort = os.Getenv("SSH_PORT")
 		}
@@ -111,6 +113,7 @@ var _ = BeforeSuite(func() {
 				out, _ := ioutil.ReadFile(p.StdoutPath())
 				err, _ := ioutil.ReadFile(p.StderrPath())
 				status, _ := p.ExitCode()
+				fmt.Printf("VM Aborted: %s %s Exit status: %s", out, err, status)
 				Fail(fmt.Sprintf("VM Aborted: %s %s Exit status: %s", out, err, status))
 			}),
 			types.WithStateDir(t),
@@ -135,6 +138,18 @@ var _ = BeforeSuite(func() {
 		}
 	}
 })
+
+func getFreePort() (port int, err error) {
+	var a *net.TCPAddr
+	if a, err = net.ResolveTCPAddr("tcp", "localhost:0"); err == nil {
+		var l *net.TCPListener
+		if l, err = net.ListenTCP("tcp", a); err == nil {
+			defer l.Close()
+			return l.Addr().(*net.TCPAddr).Port, nil
+		}
+	}
+	return
+}
 
 func gatherLogs() {
 	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
