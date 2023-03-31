@@ -1,7 +1,7 @@
 package role
 
 import (
-	"github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/kairos/v2/pkg/config"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	utils "github.com/mudler/edgevpn/pkg/utils"
@@ -18,7 +18,7 @@ func contains(slice []string, elem string) bool {
 	return false
 }
 
-func Auto(cc *config.Config, pconfig *providerConfig.Config) Role {
+func Auto(cc *config.Config, pconfig *providerConfig.Config) Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 		advertizing, _ := c.Client.AdvertizingNodes()
 		actives, _ := c.Client.ActiveNodes()

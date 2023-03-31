@@ -8,10 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kairos-io/kairos/pkg/config"
-	"github.com/kairos-io/kairos/pkg/machine"
-
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/machine"
+	"github.com/kairos-io/kairos-sdk/utils"
+	"github.com/kairos-io/kairos/v2/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
 
@@ -128,7 +127,7 @@ func waitForMasterHAInfo(c *service.RoleConfig) bool {
 	return false
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role {
+func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 
 		iface := guessInterface(pconfig)

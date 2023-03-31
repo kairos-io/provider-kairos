@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io/ioutil" // nolint
 	"os"
+	"path/filepath"
 
-	config "github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/kairos-sdk/unstructured"
+	"github.com/kairos-io/kairos/v2/pkg/config"
+	"github.com/kairos-io/kairos/v2/pkg/config/collector"
 	"github.com/kairos-io/provider-kairos/internal/provider"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/services"
@@ -18,13 +21,19 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 		return err
 	}
 
-	c, err := config.Scan(config.Directories(configDir...))
+	o := &collector.Options{}
+	if err := o.Apply(collector.Directories(configDir...)); err != nil {
+		return err
+	}
+	c, err := collector.Scan(o)
+
 	if err != nil {
 		return err
 	}
 
 	providerCfg := &providerConfig.Config{}
-	err = c.Unmarshal(providerCfg)
+	a, _ := c.String()
+	err = yaml.Unmarshal([]byte(a), providerCfg)
 	if err != nil {
 		return err
 	}
@@ -46,7 +55,7 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 }
 
 func ReplaceToken(dir []string, token string) (err error) {
-	locations, err := config.FindYAMLWithKey("p2p.network_token", config.Directories(dir...))
+	locations, err := FindYAMLWithKey("p2p.network_token", collector.Directories(dir...))
 	if err != nil {
 		return err
 	}
@@ -101,4 +110,63 @@ func ReplaceToken(dir []string, token string) (err error) {
 	}
 
 	return nil
+}
+
+// FindYAMLWithKey will find and return files that contain a given key in them.
+func FindYAMLWithKey(s string, opts ...collector.Option) ([]string, error) {
+	o := &collector.Options{}
+
+	var result []string
+	if err := o.Apply(opts...); err != nil {
+		return result, err
+	}
+
+	files := allFiles(o.ScanDir)
+
+	for _, f := range files {
+		dat, err := os.ReadFile(f)
+		if err != nil {
+			fmt.Printf("warning: skipping file '%s' - %s\n", f, err.Error())
+		}
+
+		found, err := unstructured.YAMLHasKey(s, dat)
+		if err != nil {
+			fmt.Printf("warning: skipping file '%s' - %s\n", f, err.Error())
+		}
+
+		if found {
+			result = append(result, f)
+		}
+
+	}
+
+	return result, nil
+}
+
+func allFiles(dir []string) []string {
+	var files []string
+	for _, d := range dir {
+		if f, err := listFiles(d); err == nil {
+			files = append(files, f...)
+		}
+	}
+	return files
+}
+
+func listFiles(dir string) ([]string, error) {
+	var content []string
+
+	err := filepath.Walk(dir,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return nil
+			}
+			if !info.IsDir() {
+				content = append(content, path)
+			}
+
+			return nil
+		})
+
+	return content, err
 }

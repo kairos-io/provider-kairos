@@ -10,7 +10,8 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos v1.6.0
+	github.com/kairos-io/kairos-sdk v0.0.2-0.20230329114600-77ed7ba29815
+	github.com/kairos-io/kairos/v2 v2.0.0-alpha3.0.20230331065133-d04de9101232
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.20.0
 	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb
@@ -19,10 +20,10 @@ require (
 	github.com/mudler/yip v1.0.0
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.6
-	github.com/pterm/pterm v0.12.55
+	github.com/pterm/pterm v0.12.57
 	github.com/samber/lo v1.37.0
-	github.com/spectrocloud/peg v0.0.0-20230210110137-1780ceedb1e5
-	github.com/urfave/cli/v2 v2.24.4
+	github.com/spectrocloud/peg v0.0.0-20230301170947-e1afc769ab73
+	github.com/urfave/cli/v2 v2.25.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.7.0
 	golang.org/x/mod v0.9.0
@@ -30,6 +31,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require github.com/google/uuid v1.3.0
 
 require (
 	atomicgo.dev/cursor v0.1.1 // indirect
@@ -77,9 +80,8 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
-	github.com/google/pprof v0.0.0-20221203041831-ce31453925ec // indirect
+	github.com/google/pprof v0.0.0-20230228050547-1710fef4ab10 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/gookit/color v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -87,14 +89,14 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect
 	github.com/huin/goupnp v1.0.3 // indirect
-	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/imdario/mergo v0.3.15 // indirect
 	github.com/ipfs/go-cid v0.3.2 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
 	github.com/ipfs/go-ipfs-util v0.0.2 // indirect
 	github.com/ipfs/go-ipns v0.2.0 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/ipld/go-ipld-prime v0.18.0 // indirect
-	github.com/itchyny/gojq v0.12.11 // indirect
+	github.com/itchyny/gojq v0.12.12 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
@@ -180,7 +182,7 @@ require (
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/songgao/packets v0.0.0-20160404182456-549a10cd4091 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/swaggest/jsonschema-go v0.3.47 // indirect
+	github.com/swaggest/jsonschema-go v0.3.48 // indirect
 	github.com/swaggest/refl v1.1.0 // indirect
 	github.com/twpayne/go-vfs v1.7.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

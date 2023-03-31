@@ -3,9 +3,9 @@ package provider
 import (
 	"encoding/json"
 
-	"github.com/kairos-io/kairos/sdk/bus"
+	"github.com/kairos-io/kairos-sdk/bus"
 
-	"github.com/kairos-io/kairos/pkg/config"
+	"github.com/kairos-io/kairos/v2/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 
 	"github.com/mudler/go-nodepair"

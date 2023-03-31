@@ -1,4 +1,4 @@
-package mos_test
+package mos
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/luthermonson/go-proxmox"
 	process "github.com/mudler/go-processmanager"
 	. "github.com/onsi/ginkgo/v2"

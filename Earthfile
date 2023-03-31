@@ -23,8 +23,8 @@ ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.3.3
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
-ARG GOLINT_VERSION=1.47.3
-ARG GO_VERSION=1.18
+ARG GOLINT_VERSION=1.52.2
+ARG GO_VERSION=1.20
 
 ARG OS_ID=kairos
 ARG CGO_ENABLED=0
@@ -115,9 +115,9 @@ docker:
     COPY repository.yaml /etc/luet/luet.yaml
 
     IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
-      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/15.4/utilities.repo && zypper ref && zypper in -y nohang
+      RUN zypper ref && zypper in -y nohang
     ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
-      RUN zypper ar -G https://download.opensuse.org/repositories/utilities/openSUSE_Factory/utilities.repo && zypper ref && zypper in -y nohang
+      RUN zypper ref && zypper in -y nohang
     ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ] || [ "$FLAVOR" = "debian" ]
       RUN apt-get update && apt-get install -y nohang
     END

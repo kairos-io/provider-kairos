@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 
 	nodepair "github.com/mudler/go-nodepair"
 	"github.com/mudler/go-pluggable"
@@ -14,7 +14,7 @@ import (
 const recoveryAddr = "127.0.0.1:2222"
 const sshStateDir = "/tmp/.ssh_recovery"
 
-func Recovery(e *pluggable.Event) pluggable.EventResponse {
+func Recovery(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 
 	resp := &pluggable.EventResponse{}
 
@@ -47,7 +47,7 @@ func Recovery(e *pluggable.Event) pluggable.EventResponse {
 	return *resp
 }
 
-func RecoveryStop(e *pluggable.Event) pluggable.EventResponse {
+func RecoveryStop(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 	resp := &pluggable.EventResponse{}
 
 	sshServer := process.New(

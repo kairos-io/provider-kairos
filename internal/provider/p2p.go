@@ -9,9 +9,9 @@ import (
 
 	"github.com/kairos-io/provider-kairos/internal/provider/assets"
 
-	"github.com/kairos-io/kairos/pkg/machine"
-	"github.com/kairos-io/kairos/pkg/machine/systemd"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/machine"
+	"github.com/kairos-io/kairos-sdk/machine/systemd"
+	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/services"
 	"gopkg.in/yaml.v3"

@@ -1,5 +1,5 @@
 // nolint
-package mos_test
+package mos
 
 import (
 	"fmt"
@@ -122,8 +122,6 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				out, _ := Sudo("cat /etc/rancher/k3s/k3s.yaml")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
-
-		
 
 			currentVersion, err := Machine.Command("source /etc/os-release; echo $VERSION")
 			Expect(err).ToNot(HaveOccurred())

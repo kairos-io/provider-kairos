@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ipfs/go-log"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/mudler/edgevpn/api"
 	"github.com/mudler/edgevpn/pkg/logger"
 	"github.com/mudler/edgevpn/pkg/node"

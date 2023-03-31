@@ -1,21 +1,24 @@
-package mos_test
+package mos
 
 import (
 	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/google/uuid"
+	"github.com/kairos-io/kairos-sdk/utils"
 	process "github.com/mudler/go-processmanager"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/spectrocloud/peg/matcher"
-	machine "github.com/spectrocloud/peg/pkg/machine"
+	"github.com/spectrocloud/peg/pkg/machine"
 	"github.com/spectrocloud/peg/pkg/machine/types"
 )
 
@@ -49,10 +52,7 @@ func detachAndReboot() {
 	}
 }
 
-var tempDir string
 var sshPort string
-
-var machineID string = os.Getenv("MACHINE_ID")
 
 var _ = AfterSuite(func() {
 	if os.Getenv("CREATE_VM") == "true" {
@@ -85,9 +85,7 @@ func pass() string {
 
 var _ = BeforeSuite(func() {
 
-	if machineID == "" {
-		machineID = "testvm"
-	}
+	machineID := uuid.New().String()
 
 	if os.Getenv("ISO") == "" && os.Getenv("CREATE_VM") == "true" {
 		fmt.Println("ISO missing")
@@ -98,7 +96,8 @@ var _ = BeforeSuite(func() {
 		t, err := ioutil.TempDir("", "")
 		Expect(err).ToNot(HaveOccurred())
 
-		sshPort = "2222"
+		p, _ := getFreePort()
+		sshPort = strconv.Itoa(p)
 		if os.Getenv("SSH_PORT") != "" {
 			sshPort = os.Getenv("SSH_PORT")
 		}
@@ -114,6 +113,7 @@ var _ = BeforeSuite(func() {
 				out, _ := ioutil.ReadFile(p.StdoutPath())
 				err, _ := ioutil.ReadFile(p.StderrPath())
 				status, _ := p.ExitCode()
+				fmt.Printf("VM Aborted: %s %s Exit status: %s", out, err, status)
 				Fail(fmt.Sprintf("VM Aborted: %s %s Exit status: %s", out, err, status))
 			}),
 			types.WithStateDir(t),
@@ -133,11 +133,23 @@ var _ = BeforeSuite(func() {
 
 		Machine = m
 
-		if err := Machine.Create(context.Background()); err != nil {
+		if _, err := Machine.Create(context.Background()); err != nil {
 			Fail(err.Error())
 		}
 	}
 })
+
+func getFreePort() (port int, err error) {
+	var a *net.TCPAddr
+	if a, err = net.ResolveTCPAddr("tcp", "localhost:0"); err == nil {
+		var l *net.TCPListener
+		if l, err = net.ListenTCP("tcp", a); err == nil {
+			defer l.Close()
+			return l.Addr().(*net.TCPAddr).Port, nil
+		}
+	}
+	return
+}
 
 func gatherLogs() {
 	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")

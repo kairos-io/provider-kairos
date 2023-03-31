@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/crane"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/mudler/go-pluggable"
 	"golang.org/x/mod/semver"
 )
@@ -14,7 +14,7 @@ func eventError(err error) pluggable.EventResponse {
 	return pluggable.EventResponse{Error: err.Error()}
 }
 
-func ListVersions(e *pluggable.Event) pluggable.EventResponse {
+func ListVersions(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 	registry, err := utils.OSRelease("IMAGE_REPO")
 	if err != nil {
 		return eventError(err)

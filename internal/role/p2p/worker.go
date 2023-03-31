@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kairos-io/kairos/pkg/config"
-	"github.com/kairos-io/kairos/pkg/machine"
-	"github.com/kairos-io/kairos/pkg/utils"
+	"github.com/kairos-io/kairos-sdk/machine"
+	"github.com/kairos-io/kairos-sdk/utils"
+	"github.com/kairos-io/kairos/v2/pkg/config"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role {
+func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 
 		if pconfig.P2P.Role != "" {
