@@ -10,8 +10,8 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos v1.24.3-56.0.20230329094520-f185ffa25d39 // ignore the v1.24.3-56 part, go is dumb. This is v2.0.0-alpha3
 	github.com/kairos-io/kairos-sdk v0.0.2-0.20230329114600-77ed7ba29815
+	github.com/kairos-io/kairos/v2 v2.0.0-alpha3.0.20230331065133-d04de9101232
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.20.0
 	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb
@@ -19,7 +19,7 @@ require (
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
 	github.com/mudler/yip v1.0.0
 	github.com/onsi/ginkgo/v2 v2.9.2
-	github.com/onsi/gomega v1.27.5
+	github.com/onsi/gomega v1.27.6
 	github.com/pterm/pterm v0.12.57
 	github.com/samber/lo v1.37.0
 	github.com/spectrocloud/peg v0.0.0-20230301170947-e1afc769ab73
@@ -31,6 +31,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require github.com/google/uuid v1.3.0
 
 require (
 	atomicgo.dev/cursor v0.1.1 // indirect
@@ -80,7 +82,6 @@ require (
 	github.com/google/gopacket v1.1.19 // indirect
 	github.com/google/pprof v0.0.0-20230228050547-1710fef4ab10 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/gookit/color v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

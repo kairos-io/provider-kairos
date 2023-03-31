@@ -3,10 +3,11 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"github.com/kairos-io/kairos/v2/pkg/config/collector"
 	"io/ioutil" // nolint
 	"os"
 
-	config "github.com/kairos-io/kairos/pkg/config"
+	config "github.com/kairos-io/kairos/v2/pkg/config"
 	"github.com/kairos-io/provider-kairos/internal/provider"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/internal/services"
@@ -18,12 +19,13 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 		return err
 	}
 
-	c, err := config.Scan(config.Directories(configDir...))
+	c, err := config.Scan(collector.Directories(configDir...))
 	if err != nil {
 		return err
 	}
 
 	providerCfg := &providerConfig.Config{}
+	// TODO: collector halp
 	err = c.Unmarshal(providerCfg)
 	if err != nil {
 		return err
@@ -46,7 +48,8 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 }
 
 func ReplaceToken(dir []string, token string) (err error) {
-	locations, err := config.FindYAMLWithKey("p2p.network_token", config.Directories(dir...))
+	// TODO: collector halp
+	locations, err := config.FindYAMLWithKey("p2p.network_token", collector.Directories(dir...))
 	if err != nil {
 		return err
 	}
