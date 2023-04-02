@@ -598,8 +598,8 @@ github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
 github.com/kairos-io/kairos-sdk v0.0.2-0.20230329114600-77ed7ba29815 h1:ctajEavUaSX1KbD11DUEJjEr0af1VcpJhvylMPU/7G4=
 github.com/kairos-io/kairos-sdk v0.0.2-0.20230329114600-77ed7ba29815/go.mod h1:Wg/jfAQe8seka5VUXtcPvg+sA6GmQEy+DYlJmgKM8Zs=
-github.com/kairos-io/kairos/v2 v2.0.0-alpha3.0.20230331065133-d04de9101232 h1:lKfpRx01q+n0TEcUDA1dMeze8bd/ZGqjwKRLHEdYNYM=
-github.com/kairos-io/kairos/v2 v2.0.0-alpha3.0.20230331065133-d04de9101232/go.mod h1:WLenjGQuwq7ytKbXAGoo6sdKM6lYsZbSxj7DH5lq+2s=
+github.com/kairos-io/kairos/v2 v2.0.0-rc1 h1:e+Ru+zaJDkLgZoVgLskmnEsJTl/ke7ALyRKjDri1Nss=
+github.com/kairos-io/kairos/v2 v2.0.0-rc1/go.mod h1:WLenjGQuwq7ytKbXAGoo6sdKM6lYsZbSxj7DH5lq+2s=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
