@@ -3,6 +3,7 @@ package mos
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/mudler/go-pluggable"
 	. "github.com/onsi/ginkgo/v2"
@@ -12,19 +13,24 @@ import (
 )
 
 var _ = Describe("provider upgrade test", Label("provider-upgrade"), func() {
+	var vm VM
+
 	BeforeEach(func() {
-		EventuallyConnects()
+		iso := os.Getenv("ISO")
+		_, vm = startVM(iso)
+		vm.EventuallyConnects(1200)
 	})
 
 	AfterEach(func() {
 		if CurrentGinkgoTestDescription().Failed {
-			gatherLogs()
+			gatherLogs(vm)
 		}
+		vm.Destroy(nil)
 	})
 
 	Context("agent.available_releases event", func() {
 		It("returns the available versions ordered, excluding '.img' tags", func() {
-			resultStr, _ := Sudo(`echo '{}' | /system/providers/agent-provider-kairos agent.available_releases`)
+			resultStr, _ := vm.Sudo(`echo '{}' | /system/providers/agent-provider-kairos agent.available_releases`)
 
 			var result pluggable.EventResponse
 

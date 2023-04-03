@@ -1,4 +1,3 @@
----
 name: 'Build arm images'
 
 on:

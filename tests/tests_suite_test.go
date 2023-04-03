@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
@@ -22,8 +23,8 @@ import (
 	"github.com/spectrocloud/peg/pkg/machine/types"
 )
 
-var kubectl = func(s string) (string, error) {
-	return Sudo("k3s kubectl " + s)
+var kubectl = func(vm VM, s string) (string, error) {
+	return vm.Sudo("k3s kubectl " + s)
 }
 
 var getVersionCmd = ". /etc/os-release; [ ! -z \"$KAIROS_VERSION\" ] && echo $KAIROS_VERSION || echo $VERSION"
@@ -37,13 +38,6 @@ func isFlavor(flavor string) bool {
 	return strings.Contains(os.Getenv("FLAVOR"), flavor)
 }
 
-func screenshot() (string, error) {
-	vbox, ok := Machine.(*machine.VBox)
-	if ok {
-		return vbox.Screenshot()
-	}
-	return "", fmt.Errorf("screenshot not implemented")
-}
 func detachAndReboot() {
 	vbox, ok := Machine.(*machine.VBox)
 	if ok {
@@ -55,18 +49,6 @@ func detachAndReboot() {
 }
 
 var sshPort string
-
-var _ = AfterSuite(func() {
-	if os.Getenv("CREATE_VM") == "true" {
-		if Machine != nil {
-			Machine.Stop()
-			Machine.Clean()
-		}
-	}
-	if !CurrentSpecReport().Failure.IsZero() {
-		gatherLogs()
-	}
-})
 
 func user() string {
 	user := os.Getenv("SSH_USER")
@@ -85,61 +67,88 @@ func pass() string {
 	return pass
 }
 
-var _ = BeforeSuite(func() {
+func startVM(iso string) (context.Context, VM) {
+	var sshPort, spicePort int
 
-	machineID := uuid.New().String()
+	vmName := uuid.New().String()
 
-	if os.Getenv("ISO") == "" && os.Getenv("CREATE_VM") == "true" {
-		fmt.Println("ISO missing")
-		os.Exit(1)
+	stateDir, err := os.MkdirTemp("", "stateDir-*")
+	Expect(err).ToNot(HaveOccurred())
+
+	sshPort, err = getFreePort()
+	Expect(err).ToNot(HaveOccurred())
+
+	memory := os.Getenv("MEMORY")
+	if memory == "" {
+		memory = "9000"
+	}
+	cpus := os.Getenv("CPUS")
+	if cpus == "" {
+		cpus = "2"
 	}
 
-	if os.Getenv("CREATE_VM") == "true" {
-		t, err := ioutil.TempDir("", "")
-		Expect(err).ToNot(HaveOccurred())
+	opts := []types.MachineOption{
+		types.QEMUEngine,
+		types.WithISO(iso),
+		types.WithMemory(memory),
+		types.WithCPU(cpus),
+		types.WithSSHPort(strconv.Itoa(sshPort)),
+		types.WithID(vmName),
+		types.WithSSHUser(user()),
+		types.WithSSHPass(pass()),
+		types.OnFailure(func(p *process.Process) {
+			out, _ := os.ReadFile(p.StdoutPath())
+			err, _ := os.ReadFile(p.StderrPath())
+			status, _ := p.ExitCode()
 
-		p, _ := getFreePort()
-		sshPort = strconv.Itoa(p)
-		if os.Getenv("SSH_PORT") != "" {
-			sshPort = os.Getenv("SSH_PORT")
-		}
-
-		opts := []types.MachineOption{
-			types.WithMemory("9000"),
-			types.WithISO(os.Getenv("ISO")),
-			types.WithSSHPort(sshPort),
-			types.WithID(machineID),
-			types.WithSSHUser(user()),
-			types.WithSSHPass(pass()),
-			types.OnFailure(func(p *process.Process) {
-				out, _ := ioutil.ReadFile(p.StdoutPath())
-				err, _ := ioutil.ReadFile(p.StderrPath())
-				status, _ := p.ExitCode()
-				fmt.Printf("VM Aborted: %s %s Exit status: %s", out, err, status)
-				Fail(fmt.Sprintf("VM Aborted: %s %s Exit status: %s", out, err, status))
-			}),
-			types.WithStateDir(t),
-			types.WithDataSource(os.Getenv("DATASOURCE")),
-		}
-
-		if os.Getenv("USE_QEMU") == "true" {
-			opts = append(opts, types.QEMUEngine)
-		} else {
-			opts = append(opts, types.VBoxEngine)
-		}
-
-		m, err := machine.New(opts...)
-		if err != nil {
-			Fail(err.Error())
-		}
-
-		Machine = m
-
-		if _, err := Machine.Create(context.Background()); err != nil {
-			Fail(err.Error())
-		}
+			// We are explicitly killing the qemu process. We don't treat that as an error
+			// but we just print the output just in case.
+			fmt.Printf("\nVM Aborted: %s %s Exit status: %s\n", out, err, status)
+		}),
+		types.WithStateDir(stateDir),
+		types.WithDataSource(os.Getenv("DATASOURCE")),
 	}
-})
+	if os.Getenv("KVM") != "" {
+		opts = append(opts, func(m *types.MachineConfig) error {
+			m.Args = append(m.Args,
+				"-enable-kvm",
+			)
+			return nil
+		})
+	}
+
+	if os.Getenv("USE_QEMU") == "true" {
+		opts = append(opts, types.QEMUEngine)
+
+		// You can connect to it with "spicy" or other tool.
+		// DISPLAY is already taken on Linux X sessions
+		if os.Getenv("MACHINE_SPICY") != "" {
+			spicePort, _ = getFreePort()
+			for spicePort == sshPort { // avoid collision
+				spicePort, _ = getFreePort()
+			}
+			display := fmt.Sprintf("-spice port=%d,addr=127.0.0.1,disable-ticketing=yes", spicePort)
+			opts = append(opts, types.WithDisplay(display))
+
+			cmd := exec.Command("spicy",
+				"-h", "127.0.0.1",
+				"-p", strconv.Itoa(spicePort))
+			err = cmd.Start()
+			Expect(err).ToNot(HaveOccurred())
+		}
+	} else {
+		opts = append(opts, types.VBoxEngine)
+	}
+	m, err := machine.New(opts...)
+	Expect(err).ToNot(HaveOccurred())
+
+	vm := NewVM(m, stateDir)
+
+	ctx, err := vm.Start(context.Background())
+	Expect(err).ToNot(HaveOccurred())
+
+	return ctx, vm
+}
 
 func getFreePort() (port int, err error) {
 	var a *net.TCPAddr
@@ -153,21 +162,21 @@ func getFreePort() (port int, err error) {
 	return
 }
 
-func gatherLogs() {
-	Machine.SendFile("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
-	Sudo("cat /oem/* > /run/oem.yaml")
-	Sudo("cat /etc/resolv.conf > /run/resolv.conf")
-	Sudo("k3s kubectl get pods -A -o json > /run/pods.json")
-	Sudo("k3s kubectl get events -A -o json > /run/events.json")
-	Sudo("cat /proc/cmdline > /run/cmdline")
-	Sudo("chmod 777 /run/events.json")
-	Sudo("sh /tmp/logs.sh > /run/kube_logs")
-	Sudo("df -h > /run/disk")
-	Sudo("mount > /run/mounts")
-	Sudo("blkid > /run/blkid")
-	Sudo("dmesg > /run/dmesg.log")
+func gatherLogs(vm VM) {
+	vm.Scp("assets/kubernetes_logs.sh", "/tmp/logs.sh", "0770")
+	vm.Sudo("cat /oem/* > /run/oem.yaml")
+	vm.Sudo("cat /etc/resolv.conf > /run/resolv.conf")
+	vm.Sudo("k3s kubectl get pods -A -o json > /run/pods.json")
+	vm.Sudo("k3s kubectl get events -A -o json > /run/events.json")
+	vm.Sudo("cat /proc/cmdline > /run/cmdline")
+	vm.Sudo("chmod 777 /run/events.json")
+	vm.Sudo("sh /tmp/logs.sh > /run/kube_logs")
+	vm.Sudo("df -h > /run/disk")
+	vm.Sudo("mount > /run/mounts")
+	vm.Sudo("blkid > /run/blkid")
+	vm.Sudo("dmesg > /run/dmesg.log")
 
-	GatherAllLogs(
+	vm.GatherAllLogs(
 		[]string{
 			"edgevpn@kairos",
 			"kairos-agent",
@@ -210,4 +219,18 @@ func download(s string) {
 	out, err := utils.SH("tar xvf " + f2.Name())
 	fmt.Println(out)
 	Expect(err).ToNot(HaveOccurred(), out)
+}
+
+// kairosCli can be used to issue commands to the kairos-provider cli as if
+// it was compiled and put in the PATH. This is running the CLI using `go run`
+// to ensure we are running the same code that is being tested (and not some
+// previously compiled binary).
+// This makes the tests self-contained so that they don't rely on previous steps
+// to have been run.
+func kairosCli(cmd string) (string, error) {
+	return utils.SH(fmt.Sprintf("go run ../main.go -- %s", cmd))
+}
+
+func kairosCtlCli(cmd string) (string, error) {
+	return utils.SH(fmt.Sprintf("go run ../cli/kairosctl/main.go -- %s", cmd))
 }

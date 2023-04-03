@@ -8,7 +8,7 @@ import (
 	"github.com/kairos-io/kairos/v2/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 
-	"github.com/mudler/go-nodepair"
+	"github.com/kairos-io/go-nodepair"
 	"github.com/mudler/go-pluggable"
 )
 
