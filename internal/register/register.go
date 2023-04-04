@@ -121,7 +121,7 @@ func isReadable(fileName string) bool {
 	return true
 }
 
-// Register is only exposed while the register sub-command is deprecated
+// Register is only exposed while the register sub-command is deprecated.
 func Register(loglevel, arg, configFile, device string, reboot, poweroff bool) error {
 	b, _ := os.ReadFile(configFile)
 	ctx, cancel := context.WithCancel(context.Background())
