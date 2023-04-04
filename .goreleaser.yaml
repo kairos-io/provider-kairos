@@ -13,12 +13,36 @@ builds:
     main: ./
     id: "kairos-cli"
     binary: "kairos-cli"
+  - ldflags:
+      - -w -s
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - 386
+    main: ./cmd/register
+    id: "kairos-register"
+    binary: "kairos-register"
 source:
   enabled: true
   name_template: 'kairos-cli-{{ .Tag }}-source'
 archives:
   # Default template uses underscores instead of -
   - name_template: "kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    builds:
+      - "kairos-id"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+  - name_template: "kairos-register-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    builds:
+      - "kairos-register"
     replacements:
       darwin: Darwin
       linux: Linux
