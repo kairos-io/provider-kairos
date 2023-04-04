@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kairos-io/provider-kairos/internal/register"
+
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
 	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
@@ -49,7 +51,7 @@ func Start() error {
 		Usage: "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
 		Description: `
 The kairos CLI can be used to manage a kairos box and perform all day-two tasks, like:
-- register a node
+- register a node (WARNING: this command will be deprecated in the next release, use the kairos-register binary instead)
 - connect to a node in recovery mode
 - to establish a VPN connection
 - set, list roles
@@ -93,56 +95,7 @@ For all the example cases, see: https://docs.kairos.io .
 					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
 				},
 			},
-			{
-				Name:      "register",
-				UsageText: "register --reboot --device /dev/sda /image/snapshot.png",
-				Usage:     "Registers and bootstraps a node",
-				Description: `
-		Bootstraps a node which is started in pairing mode. It can send over a configuration file used to install the kairos node.
-		
-		For example:
-		$ kairos register --config config.yaml --device /dev/sda ~/Downloads/screenshot.png
-		
-		will decode the QR code from ~/Downloads/screenshot.png and bootstrap the node remotely.
-		
-		If the image is omitted, a screenshot will be taken and used to decode the QR code.
-		
-		See also https://kairos.io/docs/getting-started/ for documentation.
-		`,
-				ArgsUsage: "Register optionally accepts an image. If nothing is passed will take a screenshot of the screen and try to decode the QR code",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "config",
-						Usage:    "Kairos YAML configuration file",
-						Required: true,
-					},
-					&cli.StringFlag{
-						Name:  "device",
-						Usage: "Device used for the installation target",
-					},
-					&cli.BoolFlag{
-						Name:  "reboot",
-						Usage: "Reboot node after installation",
-					},
-					&cli.BoolFlag{
-						Name:  "poweroff",
-						Usage: "Shutdown node after installation",
-					},
-					&cli.StringFlag{
-						Name:  "log-level",
-						Usage: "Set log level",
-					},
-				},
-
-				Action: func(c *cli.Context) error {
-					var ref string
-					if c.Args().Len() == 1 {
-						ref = c.Args().First()
-					}
-
-					return register(c.String("log-level"), ref, c.String("config"), c.String("device"), c.Bool("reboot"), c.Bool("poweroff"))
-				},
-			},
+			register.Command(true),
 			{
 				Name:      "bridge",
 				UsageText: "bridge --network-token XXX",

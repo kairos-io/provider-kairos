@@ -76,7 +76,7 @@ BUILD_GOLANG:
     COPY . ./
     ARG CGO_ENABLED
     ARG VERSION
-    ARG LDFLAGS="-s -w -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'"
+    ARG LDFLAGS
     ARG BIN
     ARG SRC
     ENV CGO_ENABLED=${CGO_ENABLED}
@@ -86,7 +86,7 @@ BUILD_GOLANG:
 
 build-kairos-agent-provider:
     FROM +go-deps
-    DO +BUILD_GOLANG --BIN=agent-provider-kairos --SRC=./ --CGO_ENABLED=$CGO_ENABLED
+    DO +BUILD_GOLANG --BIN=agent-provider-kairos --SRC=./ --CGO_ENABLED=$CGO_ENABLED --LDFLAGS="-s -w -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'"
 
 build:
     BUILD +build-kairos-agent-provider
