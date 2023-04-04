@@ -23,6 +23,7 @@ import (
 // -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'
 // see Earthlfile.
 var VERSION = "0.0.0"
+var Author = "Ettore Di Giacinto"
 
 var networkAPI = []cli.Flag{
 	&cli.StringFlag{
@@ -45,7 +46,7 @@ func Start() error {
 		Version: VERSION,
 		Authors: []*cli.Author{
 			{
-				Name: "Ettore Di Giacinto",
+				Name: Author,
 			},
 		},
 		Usage: "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
@@ -62,7 +63,7 @@ and much more.
 For all the example cases, see: https://docs.kairos.io .
 `,
 		UsageText: ``,
-		Copyright: "Ettore Di Giacinto",
+		Copyright: Author,
 		Commands: []*cli.Command{
 			{
 				Name:      "recovery-ssh-server",
@@ -95,7 +96,7 @@ For all the example cases, see: https://docs.kairos.io .
 					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
 				},
 			},
-			register.Command(true),
+			register.Command(),
 			{
 				Name:      "bridge",
 				UsageText: "bridge --network-token XXX",
