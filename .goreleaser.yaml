@@ -27,28 +27,29 @@ builds:
     id: "kairos-register"
     binary: "kairos-register"
 source:
+  rlcp: true
   enabled: true
   name_template: 'kairos-cli-{{ .Tag }}-source'
 archives:
   # Default template uses underscores instead of -
-  - name_template: "kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  - name_template: >-
+      kairos-cli-
+      {{ .Tag }}-
+      {{ .Os }}-
+      {{ .Arch }}
+      {{ if .Arm }}v{{ .Arm }}{{ end }}
+    id: kairos-id
     builds:
       - "kairos-id"
-    replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
-  - name_template: "kairos-register-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  - name_template: >-
+      kairos-register-
+      {{ .Tag }}-
+      {{ .Os }}-
+      {{ .Arch }}
+      {{ if .Arm }}v{{ .Arm }}{{ end }}
+    id: kairos-register
     builds:
       - "kairos-register"
-    replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
 checksum:
   name_template: 'kairos-cli-{{ .Tag }}-checksums.txt'
 snapshot:
