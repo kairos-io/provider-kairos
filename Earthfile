@@ -90,6 +90,17 @@ build-kairos-agent-provider:
 build:
     BUILD +build-kairos-agent-provider
 
+version:
+    FROM alpine
+    RUN apk add git
+
+    COPY . ./
+
+    RUN --no-cache echo $(git describe --always --tags --dirty) > VERSION
+
+    ARG VERSION=$(cat VERSION)
+    SAVE ARTIFACT VERSION VERSION
+
 dist:
     ARG GO_VERSION
     FROM golang:$GO_VERSION
