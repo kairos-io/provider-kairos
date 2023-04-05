@@ -1,7 +1,7 @@
 # Make sure to check the documentation at http://goreleaser.com
 builds:
   - ldflags:
-      - -w -s "github.com/kairos-io/provider-kairos/internal/cli.VERSION={{.Env.VERSION}}"
+      - -w -s -X "github.com/kairos-io/provider-kairos/internal/cli.VERSION={{.Env.VERSION}}"
     env:
       - CGO_ENABLED=0
     goos:

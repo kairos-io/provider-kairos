@@ -98,7 +98,9 @@ dist:
     RUN apt install -y goreleaser
     WORKDIR /build
     COPY . .
-    RUN goreleaser build --rm-dist --skip-validate --snapshot
+    COPY +version/VERSION ./
+    RUN echo $(cat VERSION)
+    RUN VERSION=$(cat VERSION) goreleaser build --rm-dist --skip-validate --snapshot
     SAVE ARTIFACT /build/dist/* AS LOCAL dist/
 
 docker:
