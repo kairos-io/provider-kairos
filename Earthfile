@@ -90,6 +90,17 @@ build-kairos-agent-provider:
 build:
     BUILD +build-kairos-agent-provider
 
+version:
+    FROM alpine
+    RUN apk add git
+
+    COPY . ./
+
+    RUN --no-cache echo $(git describe --always --tags --dirty) > VERSION
+
+    ARG VERSION=$(cat VERSION)
+    SAVE ARTIFACT VERSION VERSION
+
 dist:
     ARG GO_VERSION
     FROM golang:$GO_VERSION
@@ -98,7 +109,9 @@ dist:
     RUN apt install -y goreleaser
     WORKDIR /build
     COPY . .
-    RUN goreleaser build --rm-dist --skip-validate --snapshot
+    COPY +version/VERSION ./
+    RUN echo $(cat VERSION)
+    RUN VERSION=$(cat VERSION) goreleaser build --rm-dist --skip-validate --snapshot
     SAVE ARTIFACT /build/dist/* AS LOCAL dist/
 
 docker:
