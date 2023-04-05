@@ -12,7 +12,7 @@ jobs:
       run: |
            sudo -E bash ./.github/bump_k3s_versions.sh
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v5
       with:
         signoff: true
         token: ${{ secrets.PAT_TOKEN }}

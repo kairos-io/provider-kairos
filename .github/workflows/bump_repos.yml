@@ -16,7 +16,7 @@ jobs:
            sudo -E bash ./.github/bump_repositories.sh
            rm -rf yq
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.PAT_TOKEN }}
         push-to-fork: ci-forks/provider-c3os
