@@ -202,7 +202,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		})
 
 		It("upgrades to a specific version", func() {
-			version, _ := Machine.Command("source /etc/os-release; echo $VERSION")
+			version, _ := Machine.Command("source /etc/os-release; echo $KAIROS_VERSION")
 
 			out, _ := Sudo("kairos-agent upgrade --image quay.io/kairos/kairos-opensuse:v1.0.0-rc2-k3sv1.21.14-k3s1")
 			Expect(out).To(ContainSubstring("Upgrade completed"))
@@ -212,7 +212,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 			EventuallyConnects(700)
 
-			version2, _ := Machine.Command("source /etc/os-release; echo $VERSION")
+			version2, _ := Machine.Command("source /etc/os-release; echo $KAIROS_VERSION")
 			Expect(version).ToNot(Equal(version2))
 		})
 	})
