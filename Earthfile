@@ -129,6 +129,8 @@ docker:
 
     IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
       RUN zypper ref && zypper in -y nohang
+    ELSE IF [ "$FLAVOR" = "alpine-ubuntu" ] || [ "$FLAVOR" = "alpine-opensuse-leap" ] || [ "$FLAVOR" = "alpine-arm-rpi" ]
+      RUN apk add grep
     ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
       RUN zypper ref && zypper in -y nohang
     ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ] || [ "$FLAVOR" = "debian" ]
