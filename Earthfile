@@ -404,7 +404,7 @@ golint:
     RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$GOLINT_VERSION
     WORKDIR /build
     COPY . .
-    RUN golangci-lint run --timeout 120s
+    RUN golangci-lint run --timeout 360s
 
 yamllint:
     FROM cytopia/yamllint
