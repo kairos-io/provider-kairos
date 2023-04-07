@@ -25,7 +25,7 @@ func RotateToken(configDir []string, newToken, apiAddress, rootDir string, resta
 	if err := o.Apply(collector.Directories(configDir...)); err != nil {
 		return err
 	}
-	c, err := collector.Scan(o)
+	c, err := collector.Scan(o, config.FilterKeys)
 
 	if err != nil {
 		return err
