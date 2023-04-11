@@ -68,7 +68,6 @@ jobs:
         run: |
           ./earthly.sh +all-arm --MODEL=$MODEL --FLAVOR=$FLAVOR --K3S_VERSION=${{ matrix.k3s_version }}
       - name: Push  🔧
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           docker push $(cat build/IMAGE)
       - name: Sign image
@@ -80,7 +79,6 @@ jobs:
           docker push "$IMAGE" # Otherwise .RepoDigests will be empty for some reason
           cosign sign $(docker image inspect --format='{{index .RepoDigests 0}}' "$IMAGE")
       - name: Upload Image
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           curl https://luet.io/install.sh | sudo sh
           IMG=$(cat build/IMAGE).img
