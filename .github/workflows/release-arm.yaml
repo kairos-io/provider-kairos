@@ -81,9 +81,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           curl https://luet.io/install.sh | sudo sh
-          IMG=$(cat build/IMAGE).img
+          IMAGE=$(cat build/IMAGE).img
           sudo tar cvf build.tar build
-          sudo luet util pack $IMG build.tar image.tar
+          sudo luet util pack $IMAGE build.tar image.tar
           sudo -E docker load -i image.tar
-          sudo -E docker push quay.io/kairos/kairos-${{ matrix.flavor }}-img:${{ matrix.k3s_version }}.img
+          sudo -E docker push "$IMAGE"
           sudo rm -rf build/IMAGE build/VERSION

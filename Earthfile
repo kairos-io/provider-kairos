@@ -16,7 +16,8 @@ ARG VERSION=$(cat VERSION)
 RUN echo "version ${VERSION}"
 ARG K3S_VERSION_TAG=$(echo $K3S_VERSION | sed s/+/-/)
 ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
-ARG IMAGE=quay.io/kairos/${VARIANT}-${FLAVOR}:$TAG
+ARG BASE_REPO=quay.io/kairos
+ARG IMAGE=${BASE_REPO}/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
 ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.3.3
