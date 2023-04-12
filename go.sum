@@ -608,6 +608,8 @@ github.com/kairos-io/kairos/v2 v2.0.0-rc4 h1:fyoEv2jygIMyTaFFU4R2qPzmaDdPCxV0R7P
 github.com/kairos-io/kairos/v2 v2.0.0-rc4/go.mod h1:obMOyXuKc9sbCAXdTW3e/wU0EgLrO+AUBtN3TQ4LTdg=
 github.com/kairos-io/kairos/v2 v2.0.0-rc5 h1:R86K8o070GKVqkO9gmtOBawRmQHcU2Vw/uEtGnwyqXw=
 github.com/kairos-io/kairos/v2 v2.0.0-rc5/go.mod h1:rkLho/Pq3L5mralVX0vA5dCfUBQ84fybVvV8ctQc0Ro=
+github.com/kairos-io/kairos/v2 v2.0.0-rc6 h1:KRb8RAwZeOta/DW4uabq9Nc53q+8moRt4MZYZbb1V3E=
+github.com/kairos-io/kairos/v2 v2.0.0-rc6/go.mod h1:rkLho/Pq3L5mralVX0vA5dCfUBQ84fybVvV8ctQc0Ro=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
