@@ -115,7 +115,7 @@ jobs:
           TAG: "latest"
         run: |
           earthly --platform=linux/arm64 +docker --BASE_IMAGE="$BASE_IMAGE" --IMAGE="$IMAGE:$TAG" --FLAVOR=$FLAVOR
-          earthly --platform=linux/arm64 +iso --IMAGE="$IMAGE:$TAG" --FLAVOR=$FLAVOR
+          earthly --platform=linux/arm64 +iso --IMAGE="$IMAGE:$TAG" --FLAVOR=${{ matrix.flavor }}
       - name: Push to quay
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
