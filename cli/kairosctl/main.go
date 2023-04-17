@@ -42,6 +42,7 @@ func Start() error {
 		Commands: []*cli.Command{
 			register.Command(false),
 			iCli.BridgeCmd(false),
+			&iCli.GetKubeConfigCMD,
 		},
 	}
 
