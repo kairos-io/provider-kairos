@@ -41,6 +41,7 @@ func Start() error {
 		Copyright: iCli.Author,
 		Commands: []*cli.Command{
 			register.Command(false),
+			iCli.BridgeCmd(false),
 		},
 	}
 
