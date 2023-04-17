@@ -43,6 +43,7 @@ func Start() error {
 			register.Command(false),
 			iCli.BridgeCmd(false),
 			&iCli.GetKubeConfigCMD,
+			&iCli.RoleCMD,
 		},
 	}
 
