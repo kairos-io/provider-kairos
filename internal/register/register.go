@@ -81,16 +81,22 @@ func Description(name string) string {
 		`, name)
 }
 
-// Command is only used temporarily to avoid duplication while the register sub-command is deprecated.
-func Command() *cli.Command {
+// Command is only used temporarily to avoid duplication while the kairosctl sub-command is deprecated.
+func Command(warn bool) *cli.Command {
 	subCommandName := "register"
 	fullName := "kairos " + subCommandName
+	usage := Usage()
+	description := Description(fullName)
+	if warn {
+		usage += " (WARNING: this command will be deprecated in the next release, use the kairosctl binary instead)"
+		description = "\t\tWARNING: This command will be deprecated in the next release. Please use the new kairosctl binary to register your nodes.\n" + description
+	}
 
 	var command = cli.Command{
 		Name:        subCommandName,
 		UsageText:   UsageText(fullName),
-		Usage:       Usage() + " (WARNING: this command will be deprecated in the next release, use the kairos-register binary instead)",
-		Description: "\t\tWARNING: This command will be deprecated in the next release. Please use the new kairos-register binary to register your nodes.\n" + Description(fullName),
+		Usage:       usage,
+		Description: description,
 		ArgsUsage:   ArgsUsage(),
 		Flags:       Flags(),
 		Action:      Action(),

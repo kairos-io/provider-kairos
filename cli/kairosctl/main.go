@@ -29,7 +29,7 @@ func main() {
 }
 
 func Start() error {
-	name := "kairos-register"
+	name := "kairosctl"
 	app := &cli.App{
 		Name:    name,
 		Version: iCli.VERSION,
@@ -38,13 +38,10 @@ func Start() error {
 				Name: iCli.Author,
 			},
 		},
-		Copyright:   iCli.Author,
-		UsageText:   register.UsageText(name),
-		Usage:       register.Usage(),
-		Description: register.Description(name),
-		ArgsUsage:   register.ArgsUsage(),
-		Flags:       register.Flags(),
-		Action:      register.Action(),
+		Copyright: iCli.Author,
+		Commands: []*cli.Command{
+			register.Command(false),
+		},
 	}
 
 	return app.Run(os.Args)

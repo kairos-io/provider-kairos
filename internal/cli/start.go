@@ -96,7 +96,7 @@ For all the example cases, see: https://docs.kairos.io .
 					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
 				},
 			},
-			register.Command(),
+			register.Command(true),
 			{
 				Name:      "bridge",
 				UsageText: "bridge --network-token XXX",

@@ -23,9 +23,9 @@ builds:
     goarch:
       - amd64
       - 386
-    main: ./cmd/register
-    id: "kairos-register"
-    binary: "kairos-register"
+    main: ./cli/kairosctl
+    id: "kairosctl"
+    binary: "kairosctl"
 source:
   rlcp: true
   enabled: true
@@ -47,9 +47,9 @@ archives:
       {{ .Os }}-
       {{ .Arch }}
       {{ if .Arm }}v{{ .Arm }}{{ end }}
-    id: kairos-register
+    id: kairosctl
     builds:
-      - "kairos-register"
+      - "kairosctl"
 checksum:
   name_template: 'kairos-cli-{{ .Tag }}-checksums.txt'
 snapshot:
