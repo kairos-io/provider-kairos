@@ -17,7 +17,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func BridgeCmd(warn bool) *cli.Command {
+func BridgeCMD(toolName string) *cli.Command {
 	usage := "Connect to a kairos VPN network"
 	description := `
 		Starts a bridge with a kairos network or a node.
@@ -28,7 +28,7 @@ func BridgeCmd(warn bool) *cli.Command {
 
 		For example:
 
-		$ sudo kairos bridge --network-token <TOKEN>
+		$ sudo %s bridge --network-token <TOKEN>
 
 		Will start a VPN, which local ip is fixed to 10.1.0.254 (tweakable with --address).
 
@@ -36,29 +36,29 @@ func BridgeCmd(warn bool) *cli.Command {
 
 		# With a node
 
-		"kairos bridge" can be used also to connect over to a node in recovery mode. When operating in this modality kairos bridge requires no specific permissions, indeed a tunnel
+		"%s bridge" can be used also to connect over to a node in recovery mode. When operating in this modality kairos bridge requires no specific permissions, indeed a tunnel
 		will be created locally to connect to the machine remotely.
 
 		For example:
 
-		$ kairos bridge --qr-code-image /path/to/image.png
+		$ %s bridge --qr-code-image /path/to/image.png
 
 		Will scan the QR code in the image and connect over. Further instructions on how to connect over will be printed out to the screen.
 
-		See also: https://docs.kairos.io/after_install/troubleshooting/#connect-to-the-cluster-network and https://docs.kairos.io/after_install/recovery_mode/
+		See also: https://kairos.io/docs/reference/recovery_mode/
 
 		`
 
-	if warn {
+	if toolName != "kairosctl" {
 		usage += " (WARNING: this command will be deprecated in the next release, use the kairosctl binary instead)"
 		description = "\t\tWARNING: This command will be deprecated in the next release. Please use the new kairosctl binary instead.\n" + description
 	}
 
 	return &cli.Command{
 		Name:        "bridge",
-		UsageText:   "bridge --network-token XXX",
+		UsageText:   fmt.Sprintf("%s %s", toolName, "bridge --network-token XXX"),
 		Usage:       usage,
-		Description: description,
+		Description: fmt.Sprintf(description, toolName, toolName, toolName),
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "network-token",

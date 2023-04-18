@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"github.com/kairos-io/provider-kairos/internal/register"
 	"os"
 	"strconv"
 
@@ -35,8 +34,9 @@ var networkAPI = []cli.Flag{
 const recoveryAddr = "127.0.0.1:2222"
 
 func Start() error {
+	toolName := "kairos"
 	app := &cli.App{
-		Name:    "kairos-agent-provider",
+		Name:    toolName,
 		Version: VERSION,
 		Authors: []*cli.Author{
 			{
@@ -54,7 +54,7 @@ The kairos CLI can be used to manage a kairos box and perform all day-two tasks,
 
 and much more.
 
-For all the example cases, see: https://docs.kairos.io .
+For all the example cases, see: https://kairos.io/docs/
 `,
 		UsageText: ``,
 		Copyright: Author,
@@ -90,8 +90,8 @@ For all the example cases, see: https://docs.kairos.io .
 					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
 				},
 			},
-			register.Command(true),
-			BridgeCmd(true),
+			RegisterCMD(toolName),
+			BridgeCMD(toolName),
 			&GetKubeConfigCMD,
 			&RoleCMD,
 			{

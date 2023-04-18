@@ -7,8 +7,6 @@ import (
 	"github.com/kairos-io/kairos-sdk/bus"
 	iCli "github.com/kairos-io/provider-kairos/internal/cli"
 	"github.com/kairos-io/provider-kairos/internal/provider"
-	"github.com/kairos-io/provider-kairos/internal/register"
-
 	"github.com/urfave/cli/v2"
 )
 
@@ -29,7 +27,8 @@ func main() {
 }
 
 func Start() error {
-	name := "kairosctl"
+	toolName := "kairosctl"
+	name := toolName
 	app := &cli.App{
 		Name:    name,
 		Version: iCli.VERSION,
@@ -40,8 +39,8 @@ func Start() error {
 		},
 		Copyright: iCli.Author,
 		Commands: []*cli.Command{
-			register.Command(false),
-			iCli.BridgeCmd(false),
+			iCli.RegisterCMD(""),
+			iCli.BridgeCMD(toolName),
 			&iCli.GetKubeConfigCMD,
 			&iCli.RoleCMD,
 		},
