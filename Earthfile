@@ -37,6 +37,12 @@ RELEASEVERSION:
     SAVE ARTIFACT VERSION AS LOCAL build/VERSION
     SAVE ARTIFACT IMAGE AS LOCAL build/IMAGE
 
+all-arm-generic:
+  BUILD --platform=linux/arm64 +docker
+  BUILD --platform=linux/arm64 +image-sbom
+  BUILD --platform=linux/arm64 +iso
+  DO +RELEASEVERSION
+
 all:
   BUILD +docker
   BUILD +image-sbom
