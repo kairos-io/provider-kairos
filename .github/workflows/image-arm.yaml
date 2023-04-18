@@ -85,7 +85,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor:
-          - "opensuse-leap"
+          - "opensuse-leap-arm-generic"
     steps:
       - uses: actions/checkout@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -110,17 +110,15 @@ jobs:
       - name: Build  🔧
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}-arm-generic"
-          BASE_IMAGE: "quay.io/kairos/core-${{ matrix.flavor }}-arm-generic"
-          TAG: "latest"
+          IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}"
+          TAG: "master"
         run: |
-          earthly --platform=linux/arm64 +docker --BASE_IMAGE="$BASE_IMAGE" --IMAGE="$IMAGE:$TAG" --FLAVOR=$FLAVOR
-          earthly --platform=linux/arm64 +iso --IMAGE="$IMAGE:$TAG" --FLAVOR=${{ matrix.flavor }}
+          earthly -P +all-arm-generic --IMAGE="$IMAGE:$TAG" --FLAVOR=${{ matrix.flavor }} --CORE_VERSION=master
       - name: Push to quay
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}-arm-generic"
-          TAG: "latest"
+          IMAGE: "quay.io/kairos/kairos-${{ matrix.flavor }}"
+          TAG: "master"
         run: |
           docker push "$IMAGE:$TAG"
       - uses: actions/upload-artifact@v3
