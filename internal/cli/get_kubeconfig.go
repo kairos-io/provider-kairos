@@ -3,10 +3,11 @@ package cli
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
+
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/urfave/cli/v2"
-	"strings"
 )
 
 var GetKubeConfigCMD = cli.Command{

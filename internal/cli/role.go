@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/urfave/cli/v2"
