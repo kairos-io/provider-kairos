@@ -129,7 +129,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 				Eventually(func() string {
 					out, _ := kubectl("get pods -A")
 					fmt.Println(out)
-					version, _ := Machine.Command("source /etc/os-release; echo $KAIROS_VERSION")
+					version, _ := Machine.Command(getVersionCmd)
 					return version
 				}, 30*time.Minute, 10*time.Second).Should(ContainSubstring("v"))
 			})

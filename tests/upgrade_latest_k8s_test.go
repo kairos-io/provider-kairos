@@ -123,7 +123,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
-			currentVersion, err := Machine.Command("source /etc/os-release; echo $KAIROS_VERSION")
+			currentVersion, err := Machine.Command(getVersionCmd)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(currentVersion).To(ContainSubstring("v"))
 
@@ -159,7 +159,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				Eventually(func() string {
 					out, _ := kubectl("get pods -A")
 					fmt.Println(out)
-					version, err := Machine.Command("source /etc/os-release; echo $KAIROS_VERSION")
+					version, err := Machine.Command(getVersionCmd)
 					if err != nil || !strings.Contains(version, "v") {
 						// If we met error, keep going with the Eventually
 						return currentVersion

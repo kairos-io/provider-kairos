@@ -26,6 +26,8 @@ var kubectl = func(s string) (string, error) {
 	return Sudo("k3s kubectl " + s)
 }
 
+var getVersionCmd = ". /etc/os-release; [ ! -z \"$KAIROS_VERSION\" ] && echo $KAIROS_VERSION || echo $VERSION"
+
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "kairos Test Suite")
