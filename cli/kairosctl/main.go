@@ -39,7 +39,7 @@ func Start() error {
 		},
 		Copyright: iCli.Author,
 		Commands: []*cli.Command{
-			iCli.RegisterCMD(""),
+			iCli.RegisterCMD(toolName),
 			iCli.BridgeCMD(toolName),
 			&iCli.GetKubeConfigCMD,
 			&iCli.RoleCMD,

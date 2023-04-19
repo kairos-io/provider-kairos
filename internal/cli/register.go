@@ -14,7 +14,7 @@ import (
 // RegisterCMD is only used temporarily to avoid duplication while the kairosctl sub-command is deprecated.
 func RegisterCMD(toolName string) *cli.Command {
 	subCommandName := "register"
-	fullName := "kairos " + subCommandName
+	fullName := fmt.Sprintf("%s %s", toolName, subCommandName)
 	usage := "Registers and bootstraps a node"
 	description := fmt.Sprintf(` 
 		Bootstraps a node which is started in pairing mode. It can send over a configuration file used to install the kairos node.
@@ -34,7 +34,7 @@ func RegisterCMD(toolName string) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:        "register",
+		Name:        subCommandName,
 		UsageText:   fmt.Sprintf("%s --reboot --device /dev/sda /image/snapshot.png", fullName),
 		Usage:       usage,
 		Description: description,
