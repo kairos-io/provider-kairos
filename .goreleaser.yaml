@@ -42,7 +42,7 @@ archives:
     builds:
       - "kairos-id"
   - name_template: >-
-      kairos-register-
+      kairosctl-
       {{ .Tag }}-
       {{ .Os }}-
       {{ .Arch }}

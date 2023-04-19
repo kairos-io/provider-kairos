@@ -46,7 +46,7 @@ func Start() error {
 		Usage: "kairos CLI to bootstrap, upgrade, connect and manage a kairos network",
 		Description: `
 The kairos CLI can be used to manage a kairos box and perform all day-two tasks, like:
-- register a node (WARNING: this command will be deprecated in the next release, use the kairos-register binary instead)
+- register a node (WARNING: this command will be deprecated in the next release, use the kairosctl binary instead)
 - connect to a node in recovery mode
 - to establish a VPN connection
 - set, list roles
