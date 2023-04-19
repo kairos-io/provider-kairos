@@ -10,8 +10,8 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos-sdk v0.0.2-0.20230329114600-77ed7ba29815
-	github.com/kairos-io/kairos/v2 v2.0.0
+	github.com/kairos-io/kairos-sdk v0.0.2-0.20230414094028-0c9d2bd9e6ae
+	github.com/kairos-io/kairos/v2 v2.0.1-0.20230419203700-2e1ff888c3a9
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.20.0
 	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb
@@ -22,7 +22,7 @@ require (
 	github.com/onsi/gomega v1.27.6
 	github.com/pterm/pterm v0.12.59
 	github.com/samber/lo v1.37.0
-	github.com/spectrocloud/peg v0.0.0-20230301170947-e1afc769ab73
+	github.com/spectrocloud/peg v0.0.0-20230407121159-2e15270c4a46
 	github.com/urfave/cli/v2 v2.25.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.8.0
@@ -177,7 +177,7 @@ require (
 	github.com/raulk/go-watchdog v1.3.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0 // indirect
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/songgao/packets v0.0.0-20160404182456-549a10cd4091 // indirect
