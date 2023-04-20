@@ -16,7 +16,7 @@ jobs:
       with:
         token: ${{ secrets.PAT_TOKEN }}
         push-to-fork: ci-forks/provider-c3os
-        commit-message: ":arrow_up: Update k3s"
+        commit-message: ":arrow_up: Update core images"
         branch: core-images-bump
         signoff: true
         title: ":arrow_up: Kairos core image bump"
