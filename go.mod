@@ -11,7 +11,7 @@ require (
 	github.com/google/go-containerregistry v0.11.0
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-sdk v0.0.2-0.20230414094028-0c9d2bd9e6ae
-	github.com/kairos-io/kairos/v2 v2.0.1-0.20230419203700-2e1ff888c3a9
+	github.com/kairos-io/kairos/v2 v2.0.1-0.20230420111059-744c85b845e3
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.20.0
 	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb

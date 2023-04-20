@@ -604,6 +604,8 @@ github.com/kairos-io/kairos/v2 v2.0.0 h1:yBDSxtI9hcztCT+6fAsziR2ld88lrHliBuIVIlZ
 github.com/kairos-io/kairos/v2 v2.0.0/go.mod h1:wYqZ87VgZdHhqANfxyLSq1abdLY8NS2qE+TVRU8RNqs=
 github.com/kairos-io/kairos/v2 v2.0.1-0.20230419203700-2e1ff888c3a9 h1:2tf6zC1/rjX3NjqjZuJoyEvSoTmDTcWpvBlUnfrlMuw=
 github.com/kairos-io/kairos/v2 v2.0.1-0.20230419203700-2e1ff888c3a9/go.mod h1:x8pP64MCgQi/yRt3mkj3Sb1dYPtZik6O0HwctgqLM6Q=
+github.com/kairos-io/kairos/v2 v2.0.1-0.20230420111059-744c85b845e3 h1:vNTapY3cQf0Q9h8DDqtSHCjz7FXcBsWWru0wydpTrbc=
+github.com/kairos-io/kairos/v2 v2.0.1-0.20230420111059-744c85b845e3/go.mod h1:aOSyZXW+pO0gAlgOFt8epC1FoqnqgoymKaIfWv8se7o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
