@@ -23,7 +23,7 @@ var _ = Describe("kairos qr code register", Label("qrcode-register"), func() {
 					return err
 				}
 
-				out, err = utils.SH(fmt.Sprintf("kairos register --device /dev/sda --config %s %s", os.Getenv("CLOUD_INIT"), "screenshot.png"))
+				out, err = utils.SH(fmt.Sprintf("kairosctl register--device /dev/sda --config %s %s", os.Getenv("CLOUD_INIT"), "screenshot.png"))
 				fmt.Println(out)
 				return err
 

@@ -17,6 +17,101 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func BridgeCMD(toolName string) *cli.Command {
+	usage := "Connect to a kairos VPN network"
+	description := `
+		Starts a bridge with a kairos network or a node.
+
+		# With a network
+
+		By default, "bridge" will create a VPN network connection to the node with the token supplied, thus it requires elevated permissions in order to work.
+
+		For example:
+
+		$ sudo %s bridge --network-token <TOKEN>
+
+		Will start a VPN, which local ip is fixed to 10.1.0.254 (tweakable with --address).
+
+		The API will also be accessible at http://127.0.0.1:8080
+
+		# With a node
+
+		"%s bridge" can be used also to connect over to a node in recovery mode. When operating in this modality kairos bridge requires no specific permissions, indeed a tunnel
+		will be created locally to connect to the machine remotely.
+
+		For example:
+
+		$ %s bridge --qr-code-image /path/to/image.png
+
+		Will scan the QR code in the image and connect over. Further instructions on how to connect over will be printed out to the screen.
+
+		See also: https://kairos.io/docs/reference/recovery_mode/
+
+		`
+
+	if toolName != "kairosctl" {
+		usage += " (WARNING: this command will be deprecated in the next release, use the kairosctl binary instead)"
+		description = "\t\tWARNING: This command will be deprecated in the next release. Please use the new kairosctl binary instead.\n" + description
+	}
+
+	return &cli.Command{
+		Name:        "bridge",
+		UsageText:   fmt.Sprintf("%s %s", toolName, "bridge --network-token XXX"),
+		Usage:       usage,
+		Description: fmt.Sprintf(description, toolName, toolName, toolName),
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "network-token",
+				Required: false,
+				EnvVars:  []string{"NETWORK_TOKEN"},
+				Usage:    "Network token to connect over",
+			},
+			&cli.StringFlag{
+				Name:     "log-level",
+				Required: false,
+				EnvVars:  []string{"LOGLEVEL"},
+				Value:    "info",
+				Usage:    "Bridge log level",
+			},
+			&cli.BoolFlag{
+				Name:     "qr-code-snapshot",
+				Required: false,
+				Usage:    "Bool to take a local snapshot instead of reading from an image file for recovery",
+				EnvVars:  []string{"QR_CODE_SNAPSHOT"},
+			},
+			&cli.StringFlag{
+				Name:     "qr-code-image",
+				Usage:    "Path to an image containing a valid QR code for recovery mode",
+				Required: false,
+				EnvVars:  []string{"QR_CODE_IMAGE"},
+			},
+			&cli.StringFlag{
+				Name:  "api",
+				Value: "127.0.0.1:8080",
+				Usage: "Listening API url",
+			},
+			&cli.BoolFlag{
+				Name:    "dhcp",
+				EnvVars: []string{"DHCP"},
+				Usage:   "Enable DHCP",
+			},
+			&cli.StringFlag{
+				Value:   "10.1.0.254/24",
+				Name:    "address",
+				EnvVars: []string{"ADDRESS"},
+				Usage:   "Specify an address for the bridge",
+			},
+			&cli.StringFlag{
+				Value:   "/tmp/kairos",
+				Name:    "lease-dir",
+				EnvVars: []string{"lease-dir"},
+				Usage:   "DHCP Lease directory",
+			},
+		},
+		Action: bridge,
+	}
+}
+
 // bridge is just starting a VPN with edgevpn to the given network token.
 func bridge(c *cli.Context) error {
 	qrCodePath := ""

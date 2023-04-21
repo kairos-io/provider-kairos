@@ -94,8 +94,13 @@ build-kairos-agent-provider:
     FROM +go-deps
     DO +BUILD_GOLANG --BIN=agent-provider-kairos --SRC=./ --CGO_ENABLED=$CGO_ENABLED
 
+build-kairosctl:
+    FROM +go-deps
+    DO +BUILD_GOLANG --BIN=kairosctl --SRC=./cli/kairosctl --CGO_ENABLED=$CGO_ENABLED
+
 build:
     BUILD +build-kairos-agent-provider
+    BUILD +build-kairosctl
 
 version:
     FROM alpine
