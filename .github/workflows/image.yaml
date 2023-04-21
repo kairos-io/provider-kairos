@@ -128,9 +128,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
-      - name: Install deps
-        run: |
-          brew install cdrtools jq
       - name: Install Go
         uses: actions/setup-go@v4
         with:
@@ -165,9 +162,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: latest-release-${{ matrix.flavor }}.zip
-      - name: Install deps
-        run: |
-          brew install cdrtools jq
       - name: Install Go
         uses: actions/setup-go@v4
         with:
