@@ -1042,8 +1042,8 @@ github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e/go.mod
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0bLI=
 github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
-github.com/spectrocloud/peg v0.0.0-20230407121159-2e15270c4a46 h1:q2T2RnISqPdZWvUpBQw0n7QWtF4cNo5RpCDTZmV732M=
-github.com/spectrocloud/peg v0.0.0-20230407121159-2e15270c4a46/go.mod h1:L2fIdtZqbQEagjOOXwkwH3t7MjJUd7fbt52cLSQGDBg=
+github.com/spectrocloud/peg v0.0.0-20230424135336-eff2a49d4309 h1:u9XrCKQAuTfbv2CyMe9Jrlr3oUPSsC0fyXibWwy6Hps=
+github.com/spectrocloud/peg v0.0.0-20230424135336-eff2a49d4309/go.mod h1:L2fIdtZqbQEagjOOXwkwH3t7MjJUd7fbt52cLSQGDBg=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/afero v1.6.0/go.mod h1:Ai8FlHk4v/PARR026UzYexafAt9roJ7LcLMAmO6Z93I=
 github.com/spf13/cast v1.3.0/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
