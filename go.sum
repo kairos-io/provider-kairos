@@ -590,6 +590,8 @@ github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
 github.com/kairos-io/go-nodepair v0.0.0-20230421082019-18a5ec8e6e9e h1:QQ/lFVjGGZSmHSJD6nibPKjFCu606d2pzLL0EOtqqLQ=
 github.com/kairos-io/go-nodepair v0.0.0-20230421082019-18a5ec8e6e9e/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
+github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3 h1:HlHW1DfV/WcCphzR5uZh+NyECDLb1KlIbzbzVYvFG5Y=
+github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
 github.com/kairos-io/kairos-sdk v0.0.2-0.20230414094028-0c9d2bd9e6ae h1:u/1QiU5IAJNDPxsBWBQFKQxLJKcDog1aMrN0unaP18w=
 github.com/kairos-io/kairos-sdk v0.0.2-0.20230414094028-0c9d2bd9e6ae/go.mod h1:Wg/jfAQe8seka5VUXtcPvg+sA6GmQEy+DYlJmgKM8Zs=
 github.com/kairos-io/kairos/v2 v2.0.3 h1:IOgK+bKklERQpU+ZQ1j/tX2qmKD4CFTQ0vzlMymQvno=
