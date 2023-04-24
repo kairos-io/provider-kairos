@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"strconv"
 	"strings"
 	"testing"
@@ -144,7 +145,19 @@ func startVM(iso string) (context.Context, VM) {
 
 	vm := NewVM(m, stateDir)
 
+	fmt.Printf("stateDir = %+v\n", stateDir)
 	ctx, err := vm.Start(context.Background())
+	if err != nil {
+		so, e := os.ReadFile(path.Join(stateDir, "stdout"))
+		if e != nil {
+			fmt.Printf("Error reading stdout after process failing %s\n", e.Error())
+		}
+		se, e := os.ReadFile(path.Join(stateDir, "stderr"))
+		if e != nil {
+			fmt.Printf("Error reading stderr after process failing %s\n", e.Error())
+		}
+		fmt.Printf("An error occured.\nStderr = %+v\nStdout = %+v\n", string(se), string(so))
+	}
 	Expect(err).ToNot(HaveOccurred())
 
 	return ctx, vm
