@@ -145,7 +145,9 @@ func startVM(iso string) (context.Context, VM) {
 
 	vm := NewVM(m, stateDir)
 
-	fmt.Printf("stateDir = %+v\n", stateDir)
+	out, _ := utils.SH("df -h")
+	fmt.Printf("df -h = %+v\n", out)
+
 	ctx, err := vm.Start(context.Background())
 	if err != nil {
 		so, e := os.ReadFile(path.Join(stateDir, "stdout"))
