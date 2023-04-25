@@ -14,7 +14,7 @@ require (
 	github.com/kairos-io/kairos/v2 v2.0.1-0.20230420111059-744c85b845e3
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.20.0
-	github.com/mudler/go-nodepair v0.0.0-20221223092639-ba399a66fdfb
+	github.com/mudler/go-nodepair 85d7096c99e3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
 	github.com/mudler/yip v1.0.0
