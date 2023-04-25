@@ -132,13 +132,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '^1.20'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: all
       - run: |
-          # install qemu-img
-          sudo apt install -y qemu-utils
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt install -y qemu-system-x86 qemu-utils
       - env:
           USE_QEMU: true
         run: |
@@ -173,13 +169,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '^1.20'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: all
       - run: |
-          # install qemu-img
-          sudo apt install -y qemu-utils
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt install -y qemu-system-x86 qemu-utils
       - env:
           USE_QEMU: true
         run: |
@@ -209,13 +201,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '^1.20'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: all
       - run: |
-          # install qemu-img
-          sudo apt install -y qemu-utils
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt install -y qemu-system-x86 qemu-utils
       - env:
           USE_QEMU: true
         run: |
@@ -238,13 +226,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '^1.20'
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@master
-      with:
-        platforms: all
     - run: |
-        # install qemu-img
-        sudo apt install -y qemu-utils
+        # install qemu-system-x86_64 and qemu-img
+        sudo apt install -y qemu-system-x86 qemu-utils
     - env:
         USE_QEMU: true
       run: |
