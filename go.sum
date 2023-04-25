@@ -588,8 +588,6 @@ github.com/juju/ratelimit v1.0.1/go.mod h1:qapgC/Gy+xNh9UxzV13HGGl/6UXNN+ct+vwSg
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/julz/importas v0.0.0-20210419104244-841f0c0fe66d/go.mod h1:oSFU2R4XK/P7kNBrnL/FEQlDGN1/6WoxXEjSSXO0DV0=
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
-github.com/kairos-io/go-nodepair v0.0.0-20230421082019-18a5ec8e6e9e h1:QQ/lFVjGGZSmHSJD6nibPKjFCu606d2pzLL0EOtqqLQ=
-github.com/kairos-io/go-nodepair v0.0.0-20230421082019-18a5ec8e6e9e/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3 h1:HlHW1DfV/WcCphzR5uZh+NyECDLb1KlIbzbzVYvFG5Y=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
 github.com/kairos-io/kairos-sdk v0.0.2-0.20230414094028-0c9d2bd9e6ae h1:u/1QiU5IAJNDPxsBWBQFKQxLJKcDog1aMrN0unaP18w=
@@ -1044,8 +1042,8 @@ github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e/go.mod
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0bLI=
 github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
-github.com/spectrocloud/peg v0.0.0-20230424135336-eff2a49d4309 h1:u9XrCKQAuTfbv2CyMe9Jrlr3oUPSsC0fyXibWwy6Hps=
-github.com/spectrocloud/peg v0.0.0-20230424135336-eff2a49d4309/go.mod h1:L2fIdtZqbQEagjOOXwkwH3t7MjJUd7fbt52cLSQGDBg=
+github.com/spectrocloud/peg v0.0.0-20230425074400-294b704d146a h1:7JDzPDWDIkecQ49cuIx9LXS/u/Mt7vHcVBf6gmrEwIk=
+github.com/spectrocloud/peg v0.0.0-20230425074400-294b704d146a/go.mod h1:L2fIdtZqbQEagjOOXwkwH3t7MjJUd7fbt52cLSQGDBg=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/afero v1.6.0/go.mod h1:Ai8FlHk4v/PARR026UzYexafAt9roJ7LcLMAmO6Z93I=
 github.com/spf13/cast v1.3.0/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=

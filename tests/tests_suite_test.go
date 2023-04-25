@@ -92,6 +92,7 @@ func startVM(iso string) (context.Context, VM) {
 		types.QEMUEngine,
 		types.WithISO(iso),
 		types.WithMemory(memory),
+		types.WithDriveSize("25000"),
 		types.WithCPU(cpus),
 		types.WithSSHPort(strconv.Itoa(sshPort)),
 		types.WithID(vmName),
