@@ -81,7 +81,7 @@ func startVM(iso string) (context.Context, VM) {
 
 	memory := os.Getenv("MEMORY")
 	if memory == "" {
-		memory = "9000"
+		memory = "4000"
 	}
 	cpus := os.Getenv("CPUS")
 	if cpus == "" {
