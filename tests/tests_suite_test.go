@@ -81,11 +81,11 @@ func startVM(iso string) (context.Context, VM) {
 
 	memory := os.Getenv("MEMORY")
 	if memory == "" {
-		memory = "4000"
+		memory = "2000"
 	}
 	cpus := os.Getenv("CPUS")
 	if cpus == "" {
-		cpus = "2"
+		cpus = "1"
 	}
 
 	opts := []types.MachineOption{
@@ -145,9 +145,6 @@ func startVM(iso string) (context.Context, VM) {
 	Expect(err).ToNot(HaveOccurred())
 
 	vm := NewVM(m, stateDir)
-
-	out, _ := utils.SH("df -h")
-	fmt.Printf("df -h = %+v\n", out)
 
 	ctx, err := vm.Start(context.Background())
 	if err != nil {
