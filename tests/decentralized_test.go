@@ -73,8 +73,8 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					out, _ := vm.Sudo("rc-status")
 					return out
 				}, 30*time.Second, 10*time.Second).Should(And(
-					ContainSubstring("kairos")),
-					ContainSubstring("kairos-agent"))
+					ContainSubstring("kairos"),
+					ContainSubstring("kairos-agent")))
 			} else {
 				Eventually(func() string {
 					out, _ := vm.Sudo("systemctl status kairos-agent")
@@ -188,15 +188,11 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
 					out, _ = vm.Sudo("ping -c 1 foo.bar")
 					return out
-				}, 900*time.Second, 10*time.Second).Should(And(
-					ContainSubstring("2.2.2.2"),
-				), out)
+				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("2.2.2.2"), out)
 				Eventually(func() string {
 					out, _ = vm.Sudo("ping -c 1 google.com")
 					return out
-				}, 900*time.Second, 10*time.Second).Should(And(
-					ContainSubstring("64 bytes from"),
-				), out)
+				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("64 bytes from"), out)
 			}
 		})
 

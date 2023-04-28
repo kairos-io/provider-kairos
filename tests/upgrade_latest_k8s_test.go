@@ -99,8 +99,8 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 				out, _ := vm.Sudo("rc-status")
 				return out
 			}, 30*time.Second, 10*time.Second).Should(And(
-				ContainSubstring("kairos")),
-				ContainSubstring("kairos-agent"))
+				ContainSubstring("kairos"),
+				ContainSubstring("kairos-agent")))
 		} else {
 			Eventually(func() string {
 				out, _ := vm.Sudo("systemctl status kairos-agent")
