@@ -145,7 +145,6 @@ jobs:
   upgrade_latest_k8s:
     needs:
       - build
-      - decentralized-and-upgrade_k8s
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -189,7 +188,6 @@ jobs:
   provider_upgrade:
     needs:
       - build
-      - upgrade_latest_k8s
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -214,7 +212,6 @@ jobs:
   install_qrcode:
     needs:
     - build
-    - provider_upgrade
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
