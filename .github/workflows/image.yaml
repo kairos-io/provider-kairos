@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   get-matrix:
-    runs-on: self-hosted
+    runs-on: [self-hosted, ubuntu-latest]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
