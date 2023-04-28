@@ -29,7 +29,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 
 	It("installs to disk with custom config", func() {
 		By("checking if it has default service active")
-		if isFlavor("alpine") {
+		if isFlavor(vm, "alpine") {
 			out, _ := vm.Sudo("rc-status")
 			Expect(out).Should(ContainSubstring("kairos"))
 			Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -61,7 +61,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		vm.Reboot()
 
 		By("checking default services are on after first boot")
-		if isFlavor("alpine") {
+		if isFlavor(vm, "alpine") {
 			Eventually(func() string {
 				out, _ := vm.Sudo("rc-status")
 				return out
@@ -85,7 +85,7 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 		By("checking if it has a working kubeconfig")
 		Eventually(func() string {
 			var out string
-			if isFlavor("alpine") {
+			if isFlavor(vm, "alpine") {
 				out, _ = vm.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
 			} else {
 				out, _ = vm.Sudo("systemctl status kairos-agent")

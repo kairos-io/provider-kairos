@@ -45,7 +45,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 	It("installs to disk with custom config", func() {
 		vmForEach(vms, func(vm VM) {
 			By("checking if it has default service active")
-			if isFlavor("alpine") {
+			if isFlavor(vm, "alpine") {
 				out, _ := vm.Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
@@ -68,7 +68,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			vm.Reboot()
 
 			By("checking default services are on after first boot")
-			if isFlavor("alpine") {
+			if isFlavor(vm, "alpine") {
 				Eventually(func() string {
 					out, _ := vm.Sudo("rc-status")
 					return out
@@ -89,7 +89,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					"loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 			}
 
-			if !isFlavor("alpine") {
+			if !isFlavor(vm, "alpine") {
 				By("checking if it has correct grub menu entries")
 				state, _ := vm.Sudo("blkid -L COS_STATE")
 				state = strings.TrimSpace(state)
@@ -116,7 +116,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			By("checking if k3s was configured")
 			out, err = vm.Sudo("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred(), out)
-			if isFlavor("alpine") {
+			if isFlavor(vm, "alpine") {
 				Eventually(func() string {
 					out, _ = vm.Sudo("sudo cat /var/log/kairos/agent.log")
 					return out
@@ -180,7 +180,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			), out)
 
 			By("checking if it can propagate dns and it is functional")
-			if !isFlavor("alpine") {
+			if !isFlavor(vm, "alpine") {
 				// FIXUP: DNS needs reboot to take effect
 				vm.Reboot()
 				out := ""

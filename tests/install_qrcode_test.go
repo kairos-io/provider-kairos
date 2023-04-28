@@ -36,7 +36,7 @@ var _ = Describe("kairos qr code install", Label("qrcode-install"), func() {
 
 	It("installs to disk with custom config", func() {
 		By("checking if is has default service active")
-		if isFlavor("alpine") {
+		if isFlavor(vm, "alpine") {
 			out, _ := vm.Sudo("rc-status")
 			Expect(out).Should(ContainSubstring("kairos"))
 			Expect(out).Should(ContainSubstring("kairos-agent"))

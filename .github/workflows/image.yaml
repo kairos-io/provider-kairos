@@ -234,7 +234,7 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v3
       with:
-        name: kairos-alpine-opensuse-leap.iso.zip
+        name: kairos-opensuse-leap.iso.zip
     - name: Install Go
       uses: actions/setup-go@v4
       with:
@@ -258,6 +258,6 @@ jobs:
     - uses: actions/upload-artifact@v3
       if: failure()
       with:
-        name: ${{ matrix.flavor }}-qrcode-test.logs.zip
+        name: opensuse-leap-qrcode-test.logs.zip
         path: tests/**/logs/*
         if-no-files-found: warn

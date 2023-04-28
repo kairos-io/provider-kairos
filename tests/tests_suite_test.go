@@ -11,7 +11,6 @@ import (
 	"os/exec"
 	"path"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -35,8 +34,9 @@ func TestSuite(t *testing.T) {
 	RunSpecs(t, "kairos Test Suite")
 }
 
-func isFlavor(flavor string) bool {
-	return strings.Contains(os.Getenv("FLAVOR"), flavor)
+func isFlavor(vm VM, flavor string) bool {
+	out, err := vm.Sudo(fmt.Sprintf("cat /etc/os-release | grep ID=%s", flavor))
+	return err == nil && out != ""
 }
 
 func detachAndReboot() {
