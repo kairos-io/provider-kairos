@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: ci-image-${{ github.head_ref || github.ref }}-${{ github.repository }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.repository }}
   cancel-in-progress: true
 
 jobs:
