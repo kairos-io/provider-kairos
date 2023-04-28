@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   get-matrix:
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -31,7 +31,7 @@ jobs:
   build:
     needs:
       - get-matrix
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     permissions:
       id-token: write  # OIDC support
     strategy:
@@ -42,11 +42,6 @@ jobs:
       - run: |
           git fetch --prune --unshallow
       - name: setup-docker
-        # Hack to run only on shared workers.
-        # Our self-hosted ones are running in Kubernetes and have that env variable set.
-        # We don't need to setup docker on our self-hosted runner, it's already setup
-        # plus the action expects systemd and wouldn't work.
-        if: ${{ !env.KUBERNETES_SERVICE_HOST }}
         uses: docker-practice/actions-setup-docker@master
       - name: Release space from worker
         run: |
