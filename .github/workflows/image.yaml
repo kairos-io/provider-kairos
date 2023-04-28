@@ -42,7 +42,11 @@ jobs:
       - run: |
           git fetch --prune --unshallow
       - name: setup-docker
-        if: runner.os == 'ubuntu-latest'
+        # Hack to run only on shared workers.
+        # Our self-hosted ones are running in Kubernetes and have that env variable set.
+        # We don't need to setup docker on our self-hosted runner, it's already setup
+        # plus the action expects systemd and wouldn't work.
+        if: ${{ $([[ -z KUBERNETES_SERVICE_HOST ]]) }}
         uses: docker-practice/actions-setup-docker@master
       - name: Release space from worker
         run: |
