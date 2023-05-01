@@ -65,7 +65,8 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			out, err = vm.Sudo("sync")
 			Expect(err).ToNot(HaveOccurred(), out)
 
-			vm.Reboot()
+			By("rebooting after installation")
+			vm.Reboot(1200)
 
 			By("checking default services are on after first boot")
 			if isFlavor(vm, "alpine") {
@@ -182,7 +183,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			By("checking if it can propagate dns and it is functional")
 			if !isFlavor(vm, "alpine") {
 				// FIXUP: DNS needs reboot to take effect
-				vm.Reboot()
+				vm.Reboot(1200)
 				out := ""
 				Eventually(func() string {
 					vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
