@@ -209,6 +209,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			out, err = vm.Sudo("sync")
 			Expect(err).ToNot(HaveOccurred(), out)
 
+			By("rebooting to the upgraded system")
 			vm.Reboot(1200)
 
 			version2, err := vm.Sudo(getVersionCmd)
