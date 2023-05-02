@@ -239,8 +239,8 @@ func vmForEach(vms []VM, action func(vm VM)) {
 	for _, vm := range vms {
 		wg.Add(1)
 		go func(actionVM VM) {
-			defer GinkgoRecover()
 			defer wg.Done()
+			defer GinkgoRecover()
 			action(actionVM)
 		}(vm)
 	}
