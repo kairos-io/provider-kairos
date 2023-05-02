@@ -87,12 +87,16 @@ func startVM(iso string) (context.Context, VM) {
 	if cpus == "" {
 		cpus = "1"
 	}
+	driveSize := os.Getenv("DRIVE_SIZE")
+	if driveSize == "" {
+		driveSize = "25000"
+	}
 
 	opts := []types.MachineOption{
 		types.QEMUEngine,
 		types.WithISO(iso),
 		types.WithMemory(memory),
-		types.WithDriveSize("25000"),
+		types.WithDriveSize(driveSize),
 		types.WithCPU(cpus),
 		types.WithSSHPort(strconv.Itoa(sshPort)),
 		types.WithID(vmName),

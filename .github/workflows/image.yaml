@@ -144,6 +144,9 @@ jobs:
       - env:
           USE_QEMU: true
           KVM: true
+          MEMORY: 3000
+          CPUS: 2
+          DRIVE_SIZE: 30000
         run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
