@@ -4,8 +4,8 @@ package mos
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -26,8 +26,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 		configPath = cloudConfig()
 
-		vmForEach(vms, func(vm VM) {
-			By("waiting until ssh is possible")
+		vmForEach("waiting until ssh is possible", vms, func(vm VM) {
 			vm.EventuallyConnects(1200)
 		})
 	})
@@ -36,15 +35,14 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		if CurrentGinkgoTestDescription().Failed {
 			gatherLogs(vms[0])
 		}
-		vmForEach(vms, func(vm VM) {
+		vmForEach("destroying vm", vms, func(vm VM) {
 			vm.Destroy(nil)
 		})
 		os.RemoveAll(configPath)
 	})
 
 	It("installs to disk with custom config", func() {
-		vmForEach(vms, func(vm VM) {
-			By("checking if it has default service active")
+		vmForEach("checking if it has default service active", vms, func(vm VM) {
 			if isFlavor(vm, "alpine") {
 				out, _ := vm.Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
@@ -53,8 +51,9 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				out, _ := vm.Sudo("systemctl status kairos")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 			}
+		})
 
-			By("installing")
+		vmForEach("installing", vms, func(vm VM) {
 			err := vm.Scp(configPath, "/tmp/config.yaml", "0770")
 			Expect(err).ToNot(HaveOccurred())
 
@@ -64,11 +63,13 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 
 			out, err = vm.Sudo("sync")
 			Expect(err).ToNot(HaveOccurred(), out)
+		})
 
-			By("rebooting after installation")
+		vmForEach("rebooting after installation", vms, func(vm VM) {
 			vm.Reboot(1200)
+		})
 
-			By("checking default services are on after first boot")
+		vmForEach("checking default services are on after first boot", vms, func(vm VM) {
 			if isFlavor(vm, "alpine") {
 				Eventually(func() string {
 					out, _ := vm.Sudo("rc-status")
@@ -89,9 +90,10 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				}, 30*time.Second, 10*time.Second).Should(ContainSubstring(
 					"loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 			}
+		})
 
+		vmForEach("checking if it has correct grub menu entries", vms, func(vm VM) {
 			if !isFlavor(vm, "alpine") {
-				By("checking if it has correct grub menu entries")
 				state, _ := vm.Sudo("blkid -L COS_STATE")
 				state = strings.TrimSpace(state)
 				out, err := vm.Sudo("blkid")
@@ -113,9 +115,10 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				out, err = vm.Sudo("umount /tmp/mnt/STATE")
 				Expect(err).ToNot(HaveOccurred(), out)
 			}
+		})
 
-			By("checking if k3s was configured")
-			out, err = vm.Sudo("cat /run/cos/live_mode")
+		vmForEach("checking if k3s was configured", vms, func(vm VM) {
+			out, err := vm.Sudo("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred(), out)
 			if isFlavor(vm, "alpine") {
 				Eventually(func() string {
@@ -136,15 +139,18 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 						ContainSubstring("Configuring k3s"),
 					), out)
 			}
+		})
 
-			By("checking if it has default image sizes")
+		vmForEach("checking if it has default image sizes", vms, func(vm VM) {
 			for _, p := range []string{"active.img", "passive.img"} {
 				out, err := vm.Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
 				Expect(err).ToNot(HaveOccurred(), out)
 				Expect(out).Should(ContainSubstring("3145728000"))
 			}
+		})
 
-			By("checking if it has a working kubeconfig")
+		vmForEach("checking if it has a working kubeconfig", vms, func(vm VM) {
+			var out string
 			Eventually(func() string {
 				out, _ = vm.Sudo("kairos get-kubeconfig")
 				return out
@@ -155,8 +161,10 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				out, _ = vm.Sudo("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("Ready"), out)
+		})
 
-			By("checking roles")
+		vmForEach("checking roles", vms, func(vm VM) {
+			var out string
 			uuid, err := vm.Sudo("kairos-agent uuid")
 			Expect(err).ToNot(HaveOccurred(), uuid)
 			Expect(uuid).ToNot(Equal(""))
@@ -170,8 +178,10 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				HaveMinMaxRole("master", 1, 1),
 				HaveMinMaxRole("worker", 1, 1),
 			), out)
+		})
 
-			By("checking if it has machines with different IPs")
+		vmForEach("checking if it has machines with different IPs", vms, func(vm VM) {
+			var out string
 			Eventually(func() string {
 				out, _ = vm.Sudo(`curl http://localhost:8080/api/machines`)
 				return out
@@ -179,8 +189,9 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				ContainSubstring("10.1.0.1"),
 				ContainSubstring("10.1.0.2"),
 			), out)
+		})
 
-			By("checking if it can propagate dns and it is functional")
+		vmForEach("checking if it can propagate dns and it is functional", vms, func(vm VM) {
 			if !isFlavor(vm, "alpine") {
 				// FIXUP: DNS needs reboot to take effect
 				vm.Reboot(1200)
@@ -197,9 +208,7 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			}
 		})
 
-		// Now that both VMs are in the same state, try the upgrade
-		vmForEach(vms, func(vm VM) {
-			By("checking if it upgrades to a specific version")
+		vmForEach("checking if it upgrades to a specific version", vms, func(vm VM) {
 			version, err := vm.Sudo("source /etc/os-release; echo $VERSION")
 			Expect(err).ToNot(HaveOccurred(), version)
 
@@ -234,18 +243,11 @@ func HaveMinMaxRole(name string, min, max int) types.GomegaMatcher {
 			BeNumerically("<=", max)))
 }
 
-func vmForEach(vms []VM, action func(vm VM)) {
-	var wg sync.WaitGroup
-	for _, vm := range vms {
-		wg.Add(1)
-		go func(actionVM VM) {
-			defer wg.Done()
-			defer GinkgoRecover()
-			action(actionVM)
-		}(vm)
+func vmForEach(description string, vms []VM, action func(vm VM)) {
+	for i, vm := range vms {
+		By(fmt.Sprintf("%s [%s]", description, strconv.Itoa(i+1)))
+		action(vm)
 	}
-
-	wg.Wait()
 }
 
 func cloudConfig() string {
