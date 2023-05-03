@@ -245,6 +245,11 @@ func download(s string) {
 // This makes the tests self-contained so that they don't rely on previous steps
 // to have been run.
 func kairosCli(cmd string) (string, error) {
+	// Ignore "go: downloading <package_here>" output
+	_, err := utils.SH("go mod tidy")
+	Expect(err).ToNot(HaveOccurred())
+
+	// Now run the actual command to get the output
 	return utils.SH(fmt.Sprintf("go run ../main.go -- %s", cmd))
 }
 
