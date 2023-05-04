@@ -40,133 +40,136 @@ spec:
 }
 
 var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kubernetes"), func() {
-	containerImage := os.Getenv("CONTAINER_IMAGE")
+	var containerImage string
+	var vm VM
 
 	BeforeEach(func() {
-		EventuallyConnects()
+		containerImage = os.Getenv("CONTAINER_IMAGE")
+		iso := os.Getenv("ISO")
+		_, vm = startVM(iso)
+		vm.EventuallyConnects(1200)
 	})
 
 	AfterEach(func() {
 		if CurrentGinkgoTestDescription().Failed {
-			gatherLogs()
+			gatherLogs(vm)
 		}
+		vm.Destroy(nil)
 	})
 
-	Context("live cd", func() {
-		It("has default service active", func() {
-			if containerImage == "" {
-				Fail("CONTAINER_IMAGE needs to be set")
-			}
-			if isFlavor("alpine") {
-				out, _ := Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("kairos"))
-				Expect(out).Should(ContainSubstring("kairos-agent"))
-			} else {
-				// Eventually(func() string {
-				// 	out, _ := Machine.Command("sudo systemctl status kairos-agent")
-				// 	return out
-				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
+	It("installs to disk with custom config", func() {
+		By("checking if it has default service active")
+		if containerImage == "" {
+			Fail("CONTAINER_IMAGE needs to be set")
+		}
+		if isFlavor(vm, "alpine") {
+			out, _ := vm.Sudo("rc-status")
+			Expect(out).Should(ContainSubstring("kairos"))
+			Expect(out).Should(ContainSubstring("kairos-agent"))
+		} else {
+			// Eventually(func() string {
+			// 	out, _ := vm.Sudo("sudo systemctl status kairos-agent")
+			// 	return out
+			// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
 
-				out, _ := Sudo("systemctl status kairos")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
-			}
-		})
-	})
+			out, _ := vm.Sudo("systemctl status kairos")
+			Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
+		}
 
-	Context("install", func() {
-		It("to disk with custom config", func() {
-			err := Machine.SendFile("assets/single.yaml", "/tmp/config.yaml", "0770")
-			Expect(err).ToNot(HaveOccurred())
+		By("copy the config")
+		err := vm.Scp("assets/single.yaml", "/tmp/config.yaml", "0770")
+		Expect(err).ToNot(HaveOccurred())
 
-			out, _ := Sudo("elemental install --cloud-init /tmp/config.yaml /dev/sda")
-			Expect(out).Should(ContainSubstring("Running after-install hook"))
-			fmt.Println(out)
-			Sudo("sync")
-			detachAndReboot()
-		})
-	})
+		By("find the correct device (qemu vs vbox)")
+		device, err := vm.Sudo(`[[ -e /dev/sda ]] && echo "/dev/sda" || echo "/dev/vda"`)
+		Expect(err).ToNot(HaveOccurred(), device)
 
-	Context("first-boot", func() {
+		By("installing")
+		out, _ := vm.Sudo(fmt.Sprintf("elemental install --cloud-init /tmp/config.yaml %s", device))
+		Expect(out).Should(ContainSubstring("Running after-install hook"))
 
-		It("has default services on", func() {
-			if isFlavor("alpine") {
-				out, _ := Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("kairos"))
-				Expect(out).Should(ContainSubstring("kairos-agent"))
-			} else {
-				// Eventually(func() string {
-				// 	out, _ := Machine.Command("sudo systemctl status kairos-agent")
-				// 	return out
-				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
+		out, err = vm.Sudo("sync")
+		Expect(err).ToNot(HaveOccurred(), out)
 
-				out, _ := Sudo("systemctl status kairos-agent")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
+		vm.Reboot()
 
-				out, _ = Sudo("systemctl status systemd-timesyncd")
-				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
-			}
-		})
-
-		It("upgrades from kubernetes", func() {
+		By("checking default services are on after first boot")
+		if isFlavor(vm, "alpine") {
 			Eventually(func() string {
-				var out string
-				if isFlavor("alpine") {
-					out, _ = Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
-				} else {
-					out, _ = Sudo("systemctl status kairos-agent")
-				}
+				out, _ := vm.Sudo("rc-status")
 				return out
-			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
+			}, 30*time.Second, 10*time.Second).Should(And(
+				ContainSubstring("kairos"),
+				ContainSubstring("kairos-agent")))
+		} else {
+			Eventually(func() string {
+				out, _ := vm.Sudo("systemctl status kairos-agent")
+				return out
+			}, 30*time.Second, 10*time.Second).Should(ContainSubstring(
+				"loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
 			Eventually(func() string {
-				out, _ := Sudo("cat /etc/rancher/k3s/k3s.yaml")
+				out, _ := vm.Sudo("systemctl status systemd-timesyncd")
 				return out
-			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
+			}, 30*time.Second, 10*time.Second).Should(ContainSubstring(
+				"loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
+		}
 
-			currentVersion, err := Machine.Command(getVersionCmd)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(currentVersion).To(ContainSubstring("v"))
+		Eventually(func() string {
+			var out string
+			if isFlavor(vm, "alpine") {
+				out, _ = vm.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
+			} else {
+				out, _ = vm.Sudo("systemctl status kairos-agent")
+			}
+			return out
+		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
 
-			By("wait system-upgrade-controller", func() {
-				Eventually(func() string {
-					out, _ := kubectl("get pods -A")
-					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
-			})
+		By("checking kubeconfig")
+		Eventually(func() string {
+			out, _ := vm.Sudo("cat /etc/rancher/k3s/k3s.yaml")
+			return out
+		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
 
-			By("triggering an upgrade", func() {
-				suc := sucYAML(strings.ReplaceAll(containerImage, ":8h", ""), "8h")
+		By("checking current version")
+		currentVersion, err := vm.Sudo(getVersionCmd)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(currentVersion).To(ContainSubstring("v"))
 
-				err := ioutil.WriteFile("assets/generated.yaml", []byte(suc), os.ModePerm)
-				Expect(err).ToNot(HaveOccurred())
+		By("wait system-upgrade-controller")
+		Eventually(func() string {
+			out, _ := kubectl(vm, "get pods -A")
+			return out
+		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
 
-				err = Machine.SendFile("assets/generated.yaml", "./suc.yaml", "0770")
-				Expect(err).ToNot(HaveOccurred())
-				fmt.Println(suc)
+		By("triggering an upgrade")
+		suc := sucYAML(strings.ReplaceAll(containerImage, ":8h", ""), "8h")
 
-				Eventually(func() string {
-					out, _ := kubectl("apply -f suc.yaml")
-					fmt.Println(out)
-					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("created"))
+		err = ioutil.WriteFile("assets/generated.yaml", []byte(suc), os.ModePerm)
+		Expect(err).ToNot(HaveOccurred())
 
-				Eventually(func() string {
-					out, _ := kubectl("get pods -A")
-					fmt.Println(out)
-					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("apply-os-upgrade-on-"))
+		err = vm.Scp("assets/generated.yaml", "./suc.yaml", "0770")
+		Expect(err).ToNot(HaveOccurred())
 
-				Eventually(func() string {
-					out, _ := kubectl("get pods -A")
-					fmt.Println(out)
-					version, err := Machine.Command(getVersionCmd)
-					if err != nil || !strings.Contains(version, "v") {
-						// If we met error, keep going with the Eventually
-						return currentVersion
-					}
-					return version
-				}, 50*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion))
-			})
-		})
+		Eventually(func() string {
+			out, _ = kubectl(vm, "apply -f suc.yaml")
+			return out
+		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("created"), out)
+
+		Eventually(func() string {
+			out, _ = kubectl(vm, "get pods -A")
+			return out
+		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("apply-os-upgrade-on-"), out)
+
+		By("checking upgraded version")
+		Eventually(func() string {
+			out, _ = kubectl(vm, "get pods -A")
+			version, err := vm.Sudo(getVersionCmd)
+			if err != nil || !strings.Contains(version, "v") {
+				// If we met error, keep going with the Eventually
+				return currentVersion
+			}
+			return version
+		}, 50*time.Minute, 10*time.Second).ShouldNot(Equal(currentVersion), out)
 	})
 })

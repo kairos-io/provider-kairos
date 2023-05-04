@@ -364,19 +364,6 @@ run-qemu-tests:
 
     RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/
 
-test-create-config:
-    FROM alpine
-    ARG WITH_DNS
-    COPY +build-kairos-agent-provider/agent-provider-kairos agent-provider-kairos
-    COPY . .
-    RUN ./agent-provider-kairos create-config > config.yaml
-    RUN cat tests/assets/config.yaml >> config.yaml 
-    IF [ "$WITH_DNS" == "true" ]
-        RUN apk add yq
-        RUN yq -i '.p2p.dns = true' 'config.yaml'
-    END
-    SAVE ARTIFACT config.yaml AS LOCAL config.yaml
-
 edgevpn:
     ARG EDGEVPN_VERSION=latest
     FROM quay.io/mudler/edgevpn:$EDGEVPN_VERSION

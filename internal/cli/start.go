@@ -114,7 +114,7 @@ For all the example cases, see: https://kairos.io/docs/
 					}
 					cc := &providerConfig.Config{P2P: &providerConfig.P2P{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
 					y, _ := yaml.Marshal(cc)
-					fmt.Println(string(y))
+					fmt.Printf("#cloud-config\n\n%s", string(y))
 					return nil
 				},
 			},

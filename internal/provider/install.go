@@ -6,7 +6,7 @@ import (
 
 	"github.com/kairos-io/kairos-sdk/bus"
 
-	"github.com/mudler/go-nodepair"
+	"github.com/kairos-io/go-nodepair"
 	"github.com/mudler/go-pluggable"
 )
 

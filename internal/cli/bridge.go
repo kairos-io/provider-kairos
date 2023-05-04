@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/ipfs/go-log"
+	qr "github.com/kairos-io/go-nodepair/qrcode"
 	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/mudler/edgevpn/api"
 	"github.com/mudler/edgevpn/pkg/logger"
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/mudler/edgevpn/pkg/services"
 	"github.com/mudler/edgevpn/pkg/vpn"
-	qr "github.com/mudler/go-nodepair/qrcode"
 	"github.com/urfave/cli/v2"
 )
 

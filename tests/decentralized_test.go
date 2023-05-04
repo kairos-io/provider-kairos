@@ -4,6 +4,7 @@ package mos
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,152 +15,161 @@ import (
 )
 
 var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), func() {
+	var vms []VM
+	var configPath string
+
 	BeforeEach(func() {
-		EventuallyConnects()
+		iso := os.Getenv("ISO")
+		_, vm1 := startVM(iso)
+		_, vm2 := startVM(iso)
+		vms = append(vms, vm1, vm2)
+
+		configPath = cloudConfig()
+
+		vmForEach("waiting until ssh is possible", vms, func(vm VM) {
+			vm.EventuallyConnects(1200)
+		})
 	})
 
 	AfterEach(func() {
 		if CurrentGinkgoTestDescription().Failed {
-			gatherLogs()
+			gatherLogs(vms[0])
 		}
+		vmForEach("destroying vm", vms, func(vm VM) {
+			vm.Destroy(nil)
+		})
+		os.RemoveAll(configPath)
 	})
 
-	Context("live cd", func() {
-		It("has default service active", func() {
-			if isFlavor("alpine") {
-				out, _ := Sudo("rc-status")
+	It("installs to disk with custom config", func() {
+		vmForEach("checking if it has default service active", vms, func(vm VM) {
+			if isFlavor(vm, "alpine") {
+				out, _ := vm.Sudo("rc-status")
 				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
-				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
-				// 	return out
-				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
-
-				out, _ := Sudo("systemctl status kairos")
+				out, _ := vm.Sudo("systemctl status kairos")
 				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos.service; enabled; vendor preset: disabled)"))
 			}
 		})
-	})
 
-	Context("install", func() {
-		It("to disk with custom config", func() {
-			err := Machine.SendFile(os.Getenv("CLOUD_INIT"), "/tmp/config.yaml", "0770")
+		vmForEach("installing", vms, func(vm VM) {
+			err := vm.Scp(configPath, "/tmp/config.yaml", "0770")
 			Expect(err).ToNot(HaveOccurred())
 
-			out, _ := Sudo("kairos-agent manual-install --device auto /tmp/config.yaml")
-			Expect(out).Should(ContainSubstring("Running after-install hook"))
-			fmt.Println(out)
-			Sudo("sync")
-			detachAndReboot()
+			out, err := vm.Sudo("kairos-agent manual-install --device auto /tmp/config.yaml")
+			Expect(err).ToNot(HaveOccurred(), out)
+			Expect(out).Should(ContainSubstring("Running after-install hook"), out)
+
+			out, err = vm.Sudo("sync")
+			Expect(err).ToNot(HaveOccurred(), out)
 		})
-	})
 
-	Context("first-boot", func() {
+		vmForEach("rebooting after installation", vms, func(vm VM) {
+			vm.Reboot(1200)
+		})
 
-		It("has default services on", func() {
-			if isFlavor("alpine") {
-				out, _ := Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("kairos"))
-				Expect(out).Should(ContainSubstring("kairos-agent"))
+		vmForEach("checking default services are on after first boot", vms, func(vm VM) {
+			if isFlavor(vm, "alpine") {
+				Eventually(func() string {
+					out, _ := vm.Sudo("rc-status")
+					return out
+				}, 30*time.Second, 10*time.Second).Should(And(
+					ContainSubstring("kairos"),
+					ContainSubstring("kairos-agent")))
 			} else {
-				// Eventually(func() string {
-				// 	out, _ := machine.SSHCommand("sudo systemctl status kairos-agent")
-				// 	return out
-				// }, 30*time.Second, 10*time.Second).Should(ContainSubstring("no network token"))
+				Eventually(func() string {
+					out, _ := vm.Sudo("systemctl status kairos-agent")
+					return out
+				}, 30*time.Second, 10*time.Second).Should(ContainSubstring(
+					"loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
 
-				out, _ := Sudo("systemctl status kairos-agent")
-				Expect(out).Should(ContainSubstring("loaded (/etc/systemd/system/kairos-agent.service; enabled; vendor preset: disabled)"))
-
-				out, _ = Sudo("systemctl status systemd-timesyncd")
-				Expect(out).Should(ContainSubstring("loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
+				Eventually(func() string {
+					out, _ := vm.Sudo("systemctl status systemd-timesyncd")
+					return out
+				}, 30*time.Second, 10*time.Second).Should(ContainSubstring(
+					"loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 			}
 		})
 
-		It("has correct grub menu entries", func() {
-			if isFlavor("alpine") {
-				Skip("not working on alpine yet")
-			}
-
-			By("checking entries", func() {
-				state, _ := Sudo("blkid -L COS_STATE")
+		vmForEach("checking if it has correct grub menu entries", vms, func(vm VM) {
+			if !isFlavor(vm, "alpine") {
+				state, _ := vm.Sudo("blkid -L COS_STATE")
 				state = strings.TrimSpace(state)
-				out, _ := Sudo("blkid")
-				fmt.Println(out)
-				out, _ = Sudo("mkdir -p /tmp/mnt/STATE")
-				fmt.Println(out)
-				out, _ = Sudo("mount " + state + " /tmp/mnt/STATE")
-				fmt.Println(out)
-				out, _ = Sudo("cat /tmp/mnt/STATE/grubmenu")
+				out, err := vm.Sudo("blkid")
+				Expect(err).ToNot(HaveOccurred(), out)
+				out, err = vm.Sudo("mkdir -p /tmp/mnt/STATE")
+				Expect(err).ToNot(HaveOccurred(), out)
+				out, err = vm.Sudo("mount " + state + " /tmp/mnt/STATE")
+				Expect(err).ToNot(HaveOccurred(), out)
+				out, err = vm.Sudo("cat /tmp/mnt/STATE/grubmenu")
+				Expect(err).ToNot(HaveOccurred(), out)
+
 				Expect(out).Should(ContainSubstring("Kairos remote recovery"))
 
-				grub, _ := Sudo("cat /tmp/mnt/STATE/grub_oem_env")
+				grub, err := vm.Sudo("cat /tmp/mnt/STATE/grub_oem_env")
+				Expect(err).ToNot(HaveOccurred(), grub)
+
 				Expect(grub).Should(ContainSubstring("default_menu_entry=Kairos"))
 
-				Sudo("umount /tmp/mnt/STATE")
-			})
+				out, err = vm.Sudo("umount /tmp/mnt/STATE")
+				Expect(err).ToNot(HaveOccurred(), out)
+			}
 		})
 
-		It("configure k3s", func() {
-			_, err := Machine.Command("cat /run/cos/live_mode")
-			Expect(err).To(HaveOccurred())
-			if isFlavor("alpine") {
+		vmForEach("checking if k3s was configured", vms, func(vm VM) {
+			out, err := vm.Sudo("cat /run/cos/live_mode")
+			Expect(err).To(HaveOccurred(), out)
+			if isFlavor(vm, "alpine") {
 				Eventually(func() string {
-					out, _ := Sudo("sudo cat /var/log/kairos/agent.log")
-					fmt.Println(out)
+					out, _ = vm.Sudo("sudo cat /var/log/kairos/agent.log")
 					return out
 				}, 20*time.Minute, 1*time.Second).Should(
 					Or(
 						ContainSubstring("Configuring k3s-agent"),
 						ContainSubstring("Configuring k3s"),
-					))
+					), out)
 			} else {
 				Eventually(func() string {
-					out, _ := Sudo("systemctl status kairos-agent")
+					out, _ = vm.Sudo("systemctl status kairos-agent")
 					return out
 				}, 30*time.Minute, 1*time.Second).Should(
 					Or(
 						ContainSubstring("Configuring k3s-agent"),
 						ContainSubstring("Configuring k3s"),
-					))
+					), out)
 			}
 		})
 
-		PIt("configure edgevpn", func() {
-			Eventually(func() string {
-				out, _ := Sudo("cat /etc/systemd/system.conf.d/edgevpn-kairos.env")
-				return out
-			}, 1*time.Minute, 1*time.Second).Should(
-				And(
-					ContainSubstring("EDGEVPNLOGLEVEL=\"debug\""),
-				))
-		})
-
-		It("has default image sizes", func() {
+		vmForEach("checking if it has default image sizes", vms, func(vm VM) {
 			for _, p := range []string{"active.img", "passive.img"} {
-				out, _ := Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
+				out, err := vm.Sudo(`stat -c "%s" /run/initramfs/cos-state/cOS/` + p)
+				Expect(err).ToNot(HaveOccurred(), out)
 				Expect(out).Should(ContainSubstring("3145728000"))
 			}
 		})
 
-		It("propagate kubeconfig", func() {
+		vmForEach("checking if it has a working kubeconfig", vms, func(vm VM) {
+			var out string
 			Eventually(func() string {
-				out, _ := Machine.Command("kairos get-kubeconfig")
+				out, _ = vm.Sudo("kairos get-kubeconfig")
 				return out
-			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"))
+			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("https:"), out)
 
 			Eventually(func() string {
-				Machine.Command("kairos get-kubeconfig > kubeconfig")
-				out, _ := Machine.Command("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
+				vm.Sudo("kairos get-kubeconfig > kubeconfig")
+				out, _ = vm.Sudo("KUBECONFIG=kubeconfig kubectl get nodes -o wide")
 				return out
-			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("Ready"))
+			}, 900*time.Second, 10*time.Second).Should(ContainSubstring("Ready"), out)
 		})
 
-		It("has roles", func() {
-			uuid, _ := Machine.Command("kairos-agent uuid")
+		vmForEach("checking roles", vms, func(vm VM) {
+			var out string
+			uuid, err := vm.Sudo("kairos-agent uuid")
+			Expect(err).ToNot(HaveOccurred(), uuid)
 			Expect(uuid).ToNot(Equal(""))
 			Eventually(func() string {
-				out, _ := Machine.Command("kairos role list")
+				out, _ = vm.Sudo("kairos role list")
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring(uuid),
@@ -167,52 +177,53 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				ContainSubstring("master"),
 				HaveMinMaxRole("master", 1, 1),
 				HaveMinMaxRole("worker", 1, 1),
-			))
+			), out)
 		})
 
-		It("has machines with different IPs", func() {
+		vmForEach("checking if it has machines with different IPs", vms, func(vm VM) {
+			var out string
 			Eventually(func() string {
-				out, _ := Machine.Command(`curl http://localhost:8080/api/machines`)
+				out, _ = vm.Sudo(`curl http://localhost:8080/api/machines`)
 				return out
 			}, 900*time.Second, 10*time.Second).Should(And(
 				ContainSubstring("10.1.0.1"),
 				ContainSubstring("10.1.0.2"),
-			))
+			), out)
 		})
 
-		It("can propagate dns and it is functional", func() {
-			if isFlavor("alpine") {
-				Skip("DNS not working on alpine yet")
+		vmForEach("checking if it can propagate dns and it is functional", vms, func(vm VM) {
+			if !isFlavor(vm, "alpine") {
+				// FIXUP: DNS needs reboot to take effect
+				vm.Reboot(1200)
+				out := ""
+				Eventually(func() string {
+					vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
+					out, _ = vm.Sudo("ping -c 1 foo.bar")
+					return out
+				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("2.2.2.2"), out)
+				Eventually(func() string {
+					out, _ = vm.Sudo("ping -c 1 google.com")
+					return out
+				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("64 bytes from"), out)
 			}
-			// FIXUP: DNS needs reboot to take effect
-			Reboot()
-			Eventually(func() string {
-				Machine.Command(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
-				out, _ := Machine.Command("ping -c 1 foo.bar")
-				return out
-			}, 900*time.Second, 10*time.Second).Should(And(
-				ContainSubstring("2.2.2.2"),
-			))
-			Eventually(func() string {
-				out, _ := Machine.Command("ping -c 1 google.com")
-				return out
-			}, 900*time.Second, 10*time.Second).Should(And(
-				ContainSubstring("64 bytes from"),
-			))
 		})
 
-		It("upgrades to a specific version", func() {
-			version, _ := Machine.Command(getVersionCmd)
+		vmForEach("checking if it upgrades to a specific version", vms, func(vm VM) {
+			version, err := vm.Sudo("source /etc/os-release; echo $VERSION")
+			Expect(err).ToNot(HaveOccurred(), version)
 
-			out, _ := Sudo("kairos-agent upgrade --image quay.io/kairos/kairos-opensuse:v1.0.0-rc2-k3sv1.21.14-k3s1")
+			out, err := vm.Sudo("kairos-agent upgrade --image quay.io/kairos/kairos-opensuse:v1.0.0-rc2-k3sv1.21.14-k3s1")
+			Expect(err).ToNot(HaveOccurred(), out)
 			Expect(out).To(ContainSubstring("Upgrade completed"))
 
-			Sudo("sync")
-			Reboot()
+			out, err = vm.Sudo("sync")
+			Expect(err).ToNot(HaveOccurred(), out)
 
-			EventuallyConnects(700)
+			By("rebooting to the upgraded system")
+			vm.Reboot(1200)
 
-			version2, _ := Machine.Command(getVersionCmd)
+			version2, err := vm.Sudo(getVersionCmd)
+			Expect(err).ToNot(HaveOccurred(), version2)
 			Expect(version).ToNot(Equal(version2))
 		})
 	})
@@ -230,4 +241,35 @@ func HaveMinMaxRole(name string, min, max int) types.GomegaMatcher {
 		}, SatisfyAll(
 			BeNumerically(">=", min),
 			BeNumerically("<=", max)))
+}
+
+func vmForEach(description string, vms []VM, action func(vm VM)) {
+	for i, vm := range vms {
+		By(fmt.Sprintf("%s [%s]", description, strconv.Itoa(i+1)))
+		action(vm)
+	}
+}
+
+func cloudConfig() string {
+	token, err := kairosCli("generate-token")
+	Expect(err).ToNot(HaveOccurred())
+
+	configBytes, err := os.ReadFile("assets/config.yaml")
+	Expect(err).ToNot(HaveOccurred())
+
+	config := fmt.Sprintf(`%s
+
+p2p:
+  network_token: %s
+  dns: true
+`, string(configBytes), token)
+
+	f, err := os.CreateTemp("", "kairos-config-*.yaml")
+	Expect(err).ToNot(HaveOccurred())
+	defer f.Close()
+
+	_, err = f.WriteString(config)
+	Expect(err).ToNot(HaveOccurred())
+
+	return f.Name()
 }

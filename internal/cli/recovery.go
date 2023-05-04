@@ -51,8 +51,6 @@ func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
 			Interval: time.Duration(120) * time.Second,
 		},
 		Connection: edgevpnConfig.Connection{
-			RelayV1: true,
-
 			AutoRelay:      true,
 			MaxConnections: 100,
 			HolePunch:      true,

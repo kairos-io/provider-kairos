@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: ci-image-${{ github.head_ref || github.ref }}-${{ github.repository }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.repository }}
   cancel-in-progress: true
 
 jobs:
@@ -112,377 +112,155 @@ jobs:
         run: |
           docker tag quay.io/kairos/kairos-${{ matrix.flavor }}:latest ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
           docker push ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
-# Test start
-#   build-vm-images:
-#     needs:
-#     - build
-#     runs-on: macos-12
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#        include:
-#          - flavor: "opensuse"
-#          - flavor: "alpine-opensuse-leap"
-#          - flavor: "tumbleweed"
-#          - flavor: "ubuntu"
-#          - flavor: "fedora"
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Install deps
-#         run: |
-#           brew install hudochenkov/sshpass/sshpass
-#           brew install qemu
-#       - name: Download artifacts
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: kairos-${{ matrix.flavor }}.iso.zip
-#       - run: |
-#               git clone https://github.com/kairos-io/kairos
-#               ls -liah
-#               iso=$(ls *.iso)
-#               bash kairos/scripts/build_vm.sh $iso
-#       - uses: actions/upload-artifact@v3
-#         with:
-#           name: kairos-${{ matrix.flavor }}.qcow2.tar.xz
-#           path: |
-#             *.qcow2.tar.xz
-#       - uses: actions/upload-artifact@v3
-#         with:
-#           name: kairos-${{ matrix.flavor }}.ova
-#           path: |
-#             *.ova
-#           if-no-files-found: error
-  prepare-test:
+
+  decentralized-and-upgrade_k8s:
     needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: |
-          git fetch --prune --unshallow
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '^1.16'
-      - name: Prepare config
-        run: |
-              ./earthly.sh +test-create-config --WITH_DNS=true
-      - uses: actions/upload-artifact@v3
-        with:
-          name: config.yaml
-          path: |
-             config.yaml
-          if-no-files-found: error
-
-
-  upgrade-single-node-k8s-test:
-    needs:
-      - prepare-test
-    runs-on: macos-12
+    runs-on: self-hosted
     strategy:
       fail-fast: true
+      max-parallel: 1
       matrix:
-        include:
-          - flavor: "opensuse-leap"
-            node: "A"  # Arbitrary field
-          - flavor: "alpine-opensuse-leap"
-            node: "B"  # Arbitrary field
-            # - flavor: "tumbleweed"
-            #   node: "C"
+        flavor: ["opensuse-leap", "alpine-opensuse-leap"]
+        suite: ["upgrade-k8s", "decentralized-k8s"]
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: kairos-${{ matrix.flavor }}.iso.zip
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: config.yaml
-      - name: Install deps
-        run: |
-          brew install cdrtools jq
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '^1.16'
+          go-version: '^1.20'
       - run: |
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt update
+          sudo apt install -y qemu-system-x86 qemu-utils qemu-kvm acl
+
+          # Allow the "runner" user to access /dev/kvm
+          # Might not be the best solution but adding to the kvm group didn't work
+          # https://askubuntu.com/a/1081326
+          sudo setfacl -m u:runner:rwx /dev/kvm
+      - env:
+          USE_QEMU: true
+          KVM: true
+          MEMORY: 4000
+          CPUS: 2
+          DRIVE_SIZE: 30000
+        run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
-              export GOPATH="/Users/runner/go"
-              export PATH=$PATH:$GOPATH/bin
-              export CLOUD_INIT=$PWD/config.yaml
-              export CREATE_VM=true
-              export FLAVOR=${{ matrix.flavor }}
-              ./.github/run_test.sh "upgrade-k8s"
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ matrix.flavor }}-vbox.logs.zip
-          path: tests/**/logs/*
-          if-no-files-found: warn
+              ./.github/run_test.sh ${{ matrix.suite }}
 
-  decentralized-k8s-test-opensuse:
-    needs:
-      - prepare-test
-      - upgrade-single-node-k8s-test
-    runs-on: macos-12
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - flavor: "opensuse-leap"
-            node: "A"  # Arbitrary field
-          - flavor: "opensuse-leap"
-            node: "B"
-            # - flavor: "alpine"
-            #   node: "C"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}.iso.zip
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: config.yaml
-      - name: Install deps
-        run: |
-          brew install cdrtools jq
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '^1.16'
-      - run: |
-              ls -liah
-              export ISO=$PWD/$(ls *.iso)
-              export GOPATH="/Users/runner/go"
-              export PATH=$PATH:$GOPATH/bin
-              export CLOUD_INIT=$PWD/config.yaml
-              export CREATE_VM=true
-              export FLAVOR=${{ matrix.flavor }}
-              ./.github/run_test.sh "decentralized-k8s"
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ matrix.flavor }}-vbox.logs.zip
-          path: tests/**/logs/*
-          if-no-files-found: warn
-
-  prepare-alpine-test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: |
-          git fetch --prune --unshallow
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '^1.16'
-      - name: Prepare config
-        run: |
-              ./earthly.sh +test-create-config --WITH_DNS=true
-      - uses: actions/upload-artifact@v3
-        with:
-          name: config.yaml
-          path: |
-             config.yaml
-          if-no-files-found: error
-
-  decentralized-k8s-test-alpine:
-    needs:
-      - prepare-alpine-test
-      - decentralized-k8s-test-opensuse
-    runs-on: macos-12
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - flavor: "alpine-opensuse-leap"
-            node: "A"  # Arbitrary field
-          - flavor: "alpine-opensuse-leap"
-            node: "B"
-            # - flavor: "alpine"
-            #   node: "C"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: kairos-${{ matrix.flavor }}.iso.zip
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: config.yaml
-      - name: Install deps
-        run: |
-          brew install cdrtools jq
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '^1.16'
-      - run: |
-              ls -liah
-              export ISO=$PWD/$(ls *.iso)
-              export GOPATH="/Users/runner/go"
-              export PATH=$PATH:$GOPATH/bin
-              export CLOUD_INIT=$PWD/config.yaml
-              export CREATE_VM=true
-              export FLAVOR=${{ matrix.flavor }}
-              ./.github/run_test.sh "decentralized-k8s"
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ matrix.flavor }}-vbox.logs.zip
-          path: tests/**/logs/*
-          if-no-files-found: warn
-
-  latest-release:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - flavor: "alpine-opensuse-leap"
-          - flavor: "opensuse-leap"
-    steps:
-    - uses: robinraju/release-downloader@v1.7
-      with:
-        # A flag to set the download target as latest release
-        # The default value is 'false'
-        latest: true
-        repository: "kairos-io/provider-kairos"
-        fileName: "kairos-${{ matrix.flavor }}-*v1.25*.iso"
-        out-file-path: "last-release"
-    - uses: actions/upload-artifact@v3
-      with:
-        name: latest-release-${{ matrix.flavor }}.zip
-        path: last-release
-        if-no-files-found: error
-
-  # qrcode-test-cli:
-  #   needs:
-  #   - build
-  #   - prepare-alpine-test
-  #   - upgrade-test
-
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Download artifacts
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #         name: config.yaml
-  #   - name: Install Go
-  #     uses: actions/setup-go@v3
-  #     with:
-  #         go-version: '^1.16'
-  #   - run: |
-  #            ./earthly.sh +build-kairos-agent-provider
-  #            sudo cp -rfv build/agent-provider-kairos /usr/bin/kairos
-  #            export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-  #            export FLAVOR=${{ matrix.flavor }}
-  #            ./.github/run_test.sh "qrcode-register"
-  #     env:
-  #      SENDKEY: 4kgpo43kphopj
-  #   - uses: actions/upload-artifact@v3
-  #     if: failure()
-  #     with:
-  #       name: screenshot.zip
-  #       path: |
-  #         tests/*.png
-  # qrcode-test:
-  #   needs:
-  #   - build
-  #   - upgrade-test
-  #   - prepare-alpine-test
-  #   runs-on: macos-12
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #      include:
-  #        - flavor: "alpine-opensuse-leap"
-  #          node: "A" # Arbitrary field
-  #         - flavor: "alpine"
-  #           node: "C"
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Download artifacts
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #         name: config.yaml
-  #   - name: Download artifacts
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #         name: kairos-${{ matrix.flavor }}.iso.zip
-  #   - name: Install deps
-  #     run: |
-  #       brew install cdrtools jq
-  #   - name: Install Go
-  #     uses: actions/setup-go@v3
-  #     with:
-  #         go-version: '^1.16'
-  #   - run: |
-  #           ls -liah
-  #           export ISO=$PWD/$(ls *.iso)
-  #           export GOPATH="/Users/runner/go"
-  #           export PATH=$PATH:$GOPATH/bin
-  #           export CLOUD_INIT=$PWD/tests/assets/qrcode.yaml
-  #           export CREATE_VM=true
-  #           export FLAVOR=${{ matrix.flavor }}
-  #           ./.github/run_test.sh "qrcode-install"
-  #     env:
-  #      SENDKEY: 4kgpo43kphopj
-  #   - uses: actions/upload-artifact@v3
-  #     if: failure()
-  #     with:
-  #       name: ${{ matrix.flavor }}-qrcode-test.logs.zip
-  #       path: tests/**/logs/*
-  #       if-no-files-found: warn
-
-
-  upgrade-test:
+  upgrade_latest_k8s:
     needs:
       - build
-      - latest-release
-    runs-on: macos-12
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - flavor: "alpine-opensuse-leap"
-            node: "A"  # Arbitrary field
-          - flavor: "opensuse-leap"
-            node: "B"
-            # - flavor: "alpine"
-            #   node: "C"
+        flavor: ["alpine-opensuse-leap", "opensuse-leap"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          # A flag to set the download target as latest release
+          # The default value is 'false'
+          latest: true
+          repository: "kairos-io/provider-kairos"
+          fileName: "kairos-${{ matrix.flavor }}-*v1.25*.iso"
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20'
+      - run: |
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt update
+          sudo apt install -y qemu-system-x86 qemu-utils qemu-kvm acl
+
+          # Allow the "runner" user to access /dev/kvm
+          # Might not be the best solution but adding to the kvm group didn't work
+          # https://askubuntu.com/a/1081326
+          sudo setfacl -m u:runner:rwx /dev/kvm
+      - env:
+          USE_QEMU: true
+          KVM: true
+        run: |
+              ls -liah
+              export ISO=$PWD/$(ls kairos-${{ matrix.flavor }}-*.iso | tail -n1 )
+              export CONTAINER_IMAGE=ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
+              ./.github/run_test.sh "upgrade-latest-with-kubernetes"
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ${{ matrix.flavor }}-upgrade-test.logs.zip
+          path: tests/**/logs/*
+          if-no-files-found: warn
+
+  provider_upgrade:
+    needs:
+      - build
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: kairos-opensuse-leap.iso.zip
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20'
+      - run: |
+          # install qemu-system-x86_64 and qemu-img
+          sudo apt update
+          sudo apt install -y qemu-system-x86 qemu-utils qemu-kvm acl
+
+          # Allow the "runner" user to access /dev/kvm
+          # Might not be the best solution but adding to the kvm group didn't work
+          # https://askubuntu.com/a/1081326
+          sudo setfacl -m u:runner:rwx /dev/kvm
+      - env:
+          USE_QEMU: true
+          KVM: true
+        run: |
+              ls -liah
+              export ISO=$PWD/$(ls *.iso)
+              ./.github/run_test.sh "provider-upgrade"
+
+  install_qrcode:
+    needs:
+    - build
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - name: Download artifacts
       uses: actions/download-artifact@v3
       with:
-        name: latest-release-${{ matrix.flavor }}.zip
-    - name: Install deps
-      run: |
-        brew install cdrtools jq
+        name: kairos-opensuse-leap.iso.zip
     - name: Install Go
       uses: actions/setup-go@v4
       with:
-        go-version: '^1.16'
+        go-version: '^1.20'
     - run: |
+        # install qemu-system-x86_64 and qemu-img
+        sudo apt update
+        sudo apt install -y qemu-system-x86 qemu-utils qemu-kvm acl
+
+        # Allow the "runner" user to access /dev/kvm
+        # Might not be the best solution but adding to the kvm group didn't work
+        # https://askubuntu.com/a/1081326
+        sudo setfacl -m u:runner:rwx /dev/kvm
+    - env:
+        USE_QEMU: true
+        KVM: true
+      run: |
             ls -liah
-            export ISO=$PWD/$(ls kairos-${{ matrix.flavor }}-*.iso | tail -n1 )
-            export GOPATH="/Users/runner/go"
-            export CONTAINER_IMAGE=ttl.sh/kairos-${{ matrix.flavor }}-${{ github.sha }}:8h
-            export PATH=$PATH:$GOPATH/bin
-            export CLOUD_INIT=$PWD/tests/assets/config.yaml
-            export CREATE_VM=true
-            export FLAVOR=${{ matrix.flavor }}
-            ./.github/run_test.sh "upgrade-latest-with-kubernetes"
+            export ISO=$PWD/$(ls *.iso)
+            ./.github/run_test.sh "qrcode-install"
     - uses: actions/upload-artifact@v3
       if: failure()
       with:
-        name: ${{ matrix.flavor }}-upgrade-test.logs.zip
+        name: opensuse-leap-qrcode-test.logs.zip
         path: tests/**/logs/*
         if-no-files-found: warn

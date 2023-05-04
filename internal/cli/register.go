@@ -7,8 +7,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	nodepair "github.com/mudler/go-nodepair"
-	qr "github.com/mudler/go-nodepair/qrcode"
+	nodepair "github.com/kairos-io/go-nodepair"
+	qr "github.com/kairos-io/go-nodepair/qrcode"
 )
 
 // RegisterCMD is only used temporarily to avoid duplication while the kairosctl sub-command is deprecated.

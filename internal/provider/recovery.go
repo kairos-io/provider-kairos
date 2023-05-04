@@ -6,7 +6,7 @@ import (
 
 	"github.com/kairos-io/kairos-sdk/utils"
 
-	nodepair "github.com/mudler/go-nodepair"
+	nodepair "github.com/kairos-io/go-nodepair"
 	"github.com/mudler/go-pluggable"
 	process "github.com/mudler/go-processmanager"
 )
