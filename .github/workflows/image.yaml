@@ -115,7 +115,7 @@ jobs:
 
   decentralized-and-upgrade_k8s:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       max-parallel: 1
@@ -140,12 +140,9 @@ jobs:
           # Allow the "runner" user to access /dev/kvm
           # Might not be the best solution but adding to the kvm group didn't work
           # https://askubuntu.com/a/1081326
-          sudo setfacl -m u:runner:rwx /dev/kvm
+          #sudo setfacl -m u:runner:rwx /dev/kvm
       - env:
           USE_QEMU: true
-          KVM: true
-          MEMORY: 4000
-          CPUS: 2
           DRIVE_SIZE: 30000
         run: |
               ls -liah
@@ -155,7 +152,7 @@ jobs:
   upgrade_latest_k8s:
     needs:
       - build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -181,10 +178,9 @@ jobs:
           # Allow the "runner" user to access /dev/kvm
           # Might not be the best solution but adding to the kvm group didn't work
           # https://askubuntu.com/a/1081326
-          sudo setfacl -m u:runner:rwx /dev/kvm
+          #sudo setfacl -m u:runner:rwx /dev/kvm
       - env:
           USE_QEMU: true
-          KVM: true
         run: |
               ls -liah
               export ISO=$PWD/$(ls kairos-${{ matrix.flavor }}-*.iso | tail -n1 )
@@ -200,7 +196,7 @@ jobs:
   provider_upgrade:
     needs:
       - build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
@@ -219,10 +215,9 @@ jobs:
           # Allow the "runner" user to access /dev/kvm
           # Might not be the best solution but adding to the kvm group didn't work
           # https://askubuntu.com/a/1081326
-          sudo setfacl -m u:runner:rwx /dev/kvm
+          #sudo setfacl -m u:runner:rwx /dev/kvm
       - env:
           USE_QEMU: true
-          KVM: true
         run: |
               ls -liah
               export ISO=$PWD/$(ls *.iso)
@@ -231,7 +226,7 @@ jobs:
   install_qrcode:
     needs:
     - build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Download artifacts
@@ -250,10 +245,9 @@ jobs:
         # Allow the "runner" user to access /dev/kvm
         # Might not be the best solution but adding to the kvm group didn't work
         # https://askubuntu.com/a/1081326
-        sudo setfacl -m u:runner:rwx /dev/kvm
+        #sudo setfacl -m u:runner:rwx /dev/kvm
     - env:
         USE_QEMU: true
-        KVM: true
       run: |
             ls -liah
             export ISO=$PWD/$(ls *.iso)
