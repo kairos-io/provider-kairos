@@ -139,6 +139,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 		By("wait system-upgrade-controller")
 		Eventually(func() string {
 			out, _ := kubectl(vm, "get pods -A")
+			fmt.Printf("out = %+v\n", out)
 			return out
 		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
 
@@ -163,7 +164,7 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 
 		By("checking upgraded version")
 		Eventually(func() string {
-			out, _ = kubectl(vm, "get pods -A")
+			out, _ = kubectl(vm, "describe jobs -A")
 			version, err := vm.Sudo(getVersionCmd)
 			if err != nil || !strings.Contains(version, "v") {
 				// If we met error, keep going with the Eventually
