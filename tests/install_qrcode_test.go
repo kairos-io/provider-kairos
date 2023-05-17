@@ -80,13 +80,13 @@ var _ = Describe("kairos qr code install", Label("qrcode-install"), func() {
 		Eventually(func() string {
 			v, _ := vm.Sudo("ps aux")
 			return v
-		}, 20*time.Minute, 10*time.Second).Should(ContainSubstring("elemental install"))
+		}, 20*time.Minute, 10*time.Second).Should(ContainSubstring("/usr/bin/kairos-agent install"))
 
 		By("checking that the installer has terminated")
 		Eventually(func() string {
 			v, _ := vm.Sudo("ps aux")
 			return v
-		}, 10*time.Minute, 10*time.Second).ShouldNot(ContainSubstring("elemental install"))
+		}, 10*time.Minute, 10*time.Second).ShouldNot(ContainSubstring("/usr/bin/kairos-agent install"))
 
 		By("restarting on the installed system")
 		vm.Reboot()
