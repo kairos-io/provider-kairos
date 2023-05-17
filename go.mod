@@ -20,7 +20,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.9.5
 	github.com/onsi/gomega v1.27.6
 	github.com/pterm/pterm v0.12.59
-	github.com/samber/lo v1.37.0
+	github.com/samber/lo v1.38.1
 	github.com/spectrocloud/peg v0.0.0-20230509124120-c55d1df4dac1
 	github.com/urfave/cli/v2 v2.25.3
 	go.uber.org/zap v1.24.0
