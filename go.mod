@@ -24,7 +24,7 @@ require (
 	github.com/spectrocloud/peg v0.0.0-20230509124120-c55d1df4dac1
 	github.com/urfave/cli/v2 v2.25.3
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.8.0
+	golang.org/x/crypto v0.9.0
 	golang.org/x/mod v0.10.0
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
