@@ -197,14 +197,17 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				vm.Reboot(1200)
 				out := ""
 				Eventually(func() string {
-					vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
-					out, _ = vm.Sudo("ping -c 1 foo.bar")
+					var err error
+					out, err = vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
+					Expect(err).ToNot(HaveOccurred(), out)
+
+					out, _ = vm.Sudo("dig +short foo.bar")
 					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("2.2.2.2"), out)
+				}, 900*time.Second, 10*time.Second).Should(Equal("2.2.2.2"), out)
 				Eventually(func() string {
-					out, _ = vm.Sudo("ping -c 1 google.com")
+					out, _ = vm.Sudo("dig +short google.com")
 					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("64 bytes from"), out)
+				}, 900*time.Second, 10*time.Second).ShouldNot(BeEmpty(), out)
 			}
 		})
 
