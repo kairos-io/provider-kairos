@@ -85,12 +85,15 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 		Expect(err).ToNot(HaveOccurred(), device)
 
 		By("installing")
-		out, _ := vm.Sudo(fmt.Sprintf("elemental install --cloud-init /tmp/config.yaml %s", device))
+		cmd := fmt.Sprintf("kairos-agent manual-install --device %s /tmp/config.yaml", strings.TrimSpace(device))
+		out, err := vm.Sudo(cmd)
+		Expect(err).ToNot(HaveOccurred(), out)
 		Expect(out).Should(ContainSubstring("Running after-install hook"))
 
 		out, err = vm.Sudo("sync")
 		Expect(err).ToNot(HaveOccurred(), out)
 
+		By("rebooting after install")
 		vm.Reboot()
 
 		By("checking default services are on after first boot")
