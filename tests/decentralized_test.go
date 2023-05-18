@@ -61,12 +61,11 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			Expect(err).ToNot(HaveOccurred(), out)
 			Expect(out).Should(ContainSubstring("Running after-install hook"), out)
 
-			out, err = vm.Sudo("sync")
-			Expect(err).ToNot(HaveOccurred(), out)
-		})
-
-		vmForEach("rebooting after installation", vms, func(vm VM) {
-			vm.Reboot(1200)
+			By("waiting until it reboots to installed system")
+			Eventually(func() string {
+				v, _ := vm.Sudo("kairos-agent state get boot")
+				return strings.TrimSpace(v)
+			}, 30*time.Minute, 10*time.Second).Should(ContainSubstring("active_boot"))
 		})
 
 		vmForEach("checking default services are on after first boot", vms, func(vm VM) {

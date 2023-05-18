@@ -1,5 +1,8 @@
 #cloud-config
 
+install:
+  reboot: true
+
 stages:
    initramfs:
      - name: "Set user and password"
