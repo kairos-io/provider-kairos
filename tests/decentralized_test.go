@@ -202,11 +202,11 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					Expect(err).ToNot(HaveOccurred(), out)
 
 					out, _ = vm.Sudo("dig +short foo.bar")
-					return out
+					return strings.TrimSpace(out)
 				}, 900*time.Second, 10*time.Second).Should(Equal("2.2.2.2"), out)
 				Eventually(func() string {
 					out, _ = vm.Sudo("dig +short google.com")
-					return out
+					return strings.TrimSpace(out)
 				}, 900*time.Second, 10*time.Second).ShouldNot(BeEmpty(), out)
 			}
 		})
