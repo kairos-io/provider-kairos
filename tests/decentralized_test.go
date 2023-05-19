@@ -57,16 +57,14 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			err := vm.Scp(configPath, "/tmp/config.yaml", "0770")
 			Expect(err).ToNot(HaveOccurred())
 
-			out, err := vm.Sudo("kairos-agent manual-install --device auto /tmp/config.yaml")
-			Expect(err).ToNot(HaveOccurred(), out)
+			out, _ := vm.Sudo("kairos-agent manual-install --device auto /tmp/config.yaml")
 			Expect(out).Should(ContainSubstring("Running after-install hook"), out)
 
-			out, err = vm.Sudo("sync")
-			Expect(err).ToNot(HaveOccurred(), out)
-		})
-
-		vmForEach("rebooting after installation", vms, func(vm VM) {
-			vm.Reboot(1200)
+			By("waiting until it reboots to installed system")
+			Eventually(func() string {
+				v, _ := vm.Sudo("kairos-agent state get boot")
+				return strings.TrimSpace(v)
+			}, 30*time.Minute, 10*time.Second).Should(ContainSubstring("active_boot"))
 		})
 
 		vmForEach("checking default services are on after first boot", vms, func(vm VM) {
@@ -197,14 +195,17 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 				vm.Reboot(1200)
 				out := ""
 				Eventually(func() string {
-					vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
-					out, _ = vm.Sudo("ping -c 1 foo.bar")
-					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("2.2.2.2"), out)
+					var err error
+					out, err = vm.Sudo(`curl -X POST http://localhost:8080/api/dns --header "Content-Type: application/json" -d '{ "Regex": "foo.bar", "Records": { "A": "2.2.2.2" } }'`)
+					Expect(err).ToNot(HaveOccurred(), out)
+
+					out, _ = vm.Sudo("dig +short foo.bar")
+					return strings.TrimSpace(out)
+				}, 900*time.Second, 10*time.Second).Should(Equal("2.2.2.2"), out)
 				Eventually(func() string {
-					out, _ = vm.Sudo("ping -c 1 google.com")
-					return out
-				}, 900*time.Second, 10*time.Second).Should(ContainSubstring("64 bytes from"), out)
+					out, _ = vm.Sudo("dig +short google.com")
+					return strings.TrimSpace(out)
+				}, 900*time.Second, 10*time.Second).ShouldNot(BeEmpty(), out)
 			}
 		})
 

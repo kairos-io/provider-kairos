@@ -88,7 +88,7 @@ write_files:
             envFrom:
             - configMapRef:
                 name: default-controller-env
-            image: rancher/system-upgrade-controller:v0.9.1
+            image: quay.io/kairos/system-upgrade-controller:v0.9.1
             imagePullPolicy: IfNotPresent
             name: system-upgrade-controller
             volumeMounts:

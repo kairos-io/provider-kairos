@@ -238,10 +238,19 @@ arm-image:
   ARG MODEL=rpi64
   ARG IMAGE_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}.img
   WORKDIR /build
-  ENV STATE_SIZE="6200"
-  ENV RECOVERY_SIZE="4200"
+
   ENV SIZE="15200"
-  ENV DEFAULT_ACTIVE_SIZE="2000"
+  IF [[ "$FLAVOR" =~ ^ubuntu* ]]
+    ENV STATE_SIZE="6900"
+    ENV RECOVERY_SIZE="4600"
+    ENV DEFAULT_ACTIVE_SIZE="2500"
+  ELSE
+    ENV STATE_SIZE="6200"
+    ENV RECOVERY_SIZE="4200"
+    ENV DEFAULT_ACTIVE_SIZE="2000"
+  END
+
+
   COPY --platform=linux/arm64 +docker-rootfs/rootfs /build/image
   # With docker is required for loop devices
   WITH DOCKER --allow-privileged
