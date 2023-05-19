@@ -234,6 +234,7 @@ netboot:
 
 arm-image:
   ARG OSBUILDER_IMAGE
+  ARG COMPRESS_IMG=true
   FROM $OSBUILDER_IMAGE
   ARG MODEL=rpi64
   ARG IMAGE_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}.img
@@ -243,7 +244,7 @@ arm-image:
   IF [[ "$FLAVOR" =~ ^ubuntu* ]]
     ENV STATE_SIZE="6900"
     ENV RECOVERY_SIZE="4600"
-    ENV DEFAULT_ACTIVE_SIZE="2500"
+    ENV DEFAULT_ACTIVE_SIZE="2700"
   ELSE
     ENV STATE_SIZE="6200"
     ENV RECOVERY_SIZE="4200"
@@ -256,8 +257,12 @@ arm-image:
   WITH DOCKER --allow-privileged
     RUN /build-arm-image.sh --model $MODEL --directory "/build/image" /build/$IMAGE_NAME
   END
-  RUN xz -v /build/$IMAGE_NAME
-  SAVE ARTIFACT /build/$IMAGE_NAME.xz img AS LOCAL build/$IMAGE_NAME.xz
+  IF [ "$COMPRESS_IMG" = "true" ]
+    RUN xz -v /build/$IMAGE_NAME
+    SAVE ARTIFACT /build/$IMAGE_NAME.xz img AS LOCAL build/$IMAGE_NAME.xz
+  ELSE
+    SAVE ARTIFACT /build/$IMAGE_NAME img AS LOCAL build/$IMAGE_NAME
+  END
   SAVE ARTIFACT /build/$IMAGE_NAME.sha256 img-sha256 AS LOCAL build/$IMAGE_NAME.sha256
 
 syft:
