@@ -114,7 +114,8 @@ jobs:
         uses: docker/setup-buildx-action@master
       - name: Build  🔧
         run: |
-          K3S_LATEST=$(curl -s https://update.k3s.io/v1-release/channels | jq -rc '[ .data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest ] | unique | .[-1]')
+          K3S_LATEST=$(curl -s https://update.k3s.io/v1-release/channels | \
+            jq -rc '[ .data[] | select(.type == "channel") | select(.name | test("testing") | not) | .latest ] | unique | .[-1]')
           earthly -P +all-arm-generic --FLAVOR=${{ matrix.flavor }} --K3S_VERSION=$K3S_LATEST
           sudo mv build release
       - name: Push to quay

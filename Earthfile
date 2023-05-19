@@ -24,7 +24,9 @@ ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.6.0
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
-ARG GOLINT_VERSION=1.52.2
+ARG GOLANGCILINT_VERSION=v1.52-alpine
+ARG HADOLINT_VERSION=2.12.0-alpine
+ARG SHELLCHECK_VERSION=v0.9.0
 ARG GO_VERSION=1.20
 
 ARG OS_ID=kairos
@@ -136,7 +138,7 @@ docker:
     ELSE
         ENV INSTALL_K3S_VERSION=${K3S_VERSION}
     END
-    
+
     COPY repository.yaml /etc/luet/luet.yaml
 
     IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
@@ -166,10 +168,10 @@ docker:
     ARG KAIROS_VERSION
     IF [ "$KAIROS_VERSION" = "" ]
         ARG OS_VERSION=${VERSION}
-    ELSE 
+    ELSE
         ARG OS_VERSION=${KAIROS_VERSION}
     END
-    
+
     ARG OS_ID
     ARG OS_NAME=${OS_ID}-${FLAVOR}
     ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
@@ -318,7 +320,7 @@ linux-bench:
     RUN cd /linux-bench-src && CGO_ENABLED=0 go build -o linux-bench . && mv linux-bench /
     SAVE ARTIFACT /linux-bench /linux-bench
 
-# The target below should run on a live host instead. 
+# The target below should run on a live host instead.
 # However, some checks are relevant as well at container level.
 # It is good enough for a quick assessment.
 linux-bench-scan:
@@ -383,7 +385,7 @@ edgevpn:
     FROM quay.io/mudler/edgevpn:$EDGEVPN_VERSION
     SAVE ARTIFACT /usr/bin/edgevpn /edgevpn
 
-# usage e.g. 
+# usage e.g.
 # ./earthly.sh +run-proxmox-tests --PROXMOX_USER=root@pam --PROXMOX_PASS=xxx --PROXMOX_ENDPOINT=https://192.168.1.72:8006/api2/json --PROXMOX_ISO=/test/build/kairos-opensuse-v0.0.0-79fd363-k3s.iso --PROXMOX_NODE=proxmox
 run-proxmox-tests:
     FROM golang:alpine
@@ -407,19 +409,39 @@ run-proxmox-tests:
     RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/
 
 lint:
-    BUILD +golint
+    BUILD +hadolint
+    BUILD +renovate-validator
+    BUILD +shellcheck-lint
+    BUILD +golangci-lint
     BUILD +yamllint
 
-golint:
-    ARG GO_VERSION
-    FROM golang:$GO_VERSION
-    ARG GOLINT_VERSION
-    RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$GOLINT_VERSION
-    WORKDIR /build
-    COPY . .
-    RUN golangci-lint run --timeout 360s
+hadolint:
+  FROM hadolint/hadolint:${HADOLINT_VERSION}
+  COPY . /work
+  WORKDIR /work
+  RUN find . -name "Dockerfile*" -print  | xargs -r -n1 hadolint
+
+renovate-validator:
+  FROM renovate/renovate
+  COPY . /work
+  WORKDIR /work
+  ENV RENOVATE_VERSION="35"
+  RUN renovate-config-validator
+
+shellcheck-lint:
+  FROM koalaman/shellcheck-alpine:${SHELLCHECK_VERSION}
+  COPY . /work
+  WORKDIR /work
+  RUN find . -name "*.sh" -print  | xargs -r -n1 shellcheck
+
+golangci-lint:
+  FROM golangci/golangci-lint:${GOLANGCILINT_VERSION}
+  COPY . /work
+  WORKDIR /work
+  RUN golangci-lint run --timeout 360s
 
 yamllint:
-    FROM cytopia/yamllint
-    COPY . .
-    RUN yamllint .github/workflows/
+  FROM cytopia/yamllint
+  COPY . /work
+  WORKDIR /work
+  RUN find . -name "*.yml" -or -name "*.yaml" -print  | xargs -r -n1

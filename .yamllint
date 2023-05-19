@@ -5,6 +5,7 @@ rules:
   line-length:
     max: 150
     level: warning
+    ignore: "tests/assets/qrcode.yaml" # tokens are big
 
   # accept both     key:
   #                   - item
@@ -19,3 +20,7 @@ rules:
 
   document-start:
     present: false
+    ignore: "*" # There are multiple yamls in the same file, we need this sometimes
+
+  comments:
+    ignore: "tests/assets/*" # our #cloud-config header doesn't take a space after the "#"
