@@ -20,7 +20,8 @@ ARG BASE_REPO=quay.io/kairos
 ARG IMAGE=${BASE_REPO}/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
-ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.6.0
+# renovate: datasource=docker depName=quay.io/kairos/osbuilder-tools versioning=semver-coerced
+ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.6.7
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
@@ -54,9 +55,12 @@ all:
   DO +RELEASEVERSION
 
 all-arm:
+  ARG SECURITY_SCANS=true
   BUILD --platform=linux/arm64 +docker
-  BUILD +image-sbom
-  BUILD +arm-image
+  IF [ "$SECURITY_SCANS" = "true" ]
+      BUILD --platform=linux/arm64  +image-sbom
+  END
+  BUILD +arm-image --MODEL=rpi64
   DO +RELEASEVERSION
 
 go-deps:
@@ -257,7 +261,7 @@ arm-image:
   COPY --platform=linux/arm64 +docker-rootfs/rootfs /build/image
   # With docker is required for loop devices
   WITH DOCKER --allow-privileged
-    RUN /build-arm-image.sh --model $MODEL --directory "/build/image" /build/$IMAGE_NAME
+    RUN /build-arm-image.sh --use-lvm --model $MODEL --directory "/build/image" /build/$IMAGE_NAME
   END
   IF [ "$COMPRESS_IMG" = "true" ]
     RUN xz -v /build/$IMAGE_NAME
