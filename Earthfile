@@ -20,7 +20,7 @@ ARG BASE_REPO=quay.io/kairos
 ARG IMAGE=${BASE_REPO}/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
-ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:v0.6.0
+ARG OSBUILDER_IMAGE=ttl.sh/mm-osbuilder-tools-04:24h
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
