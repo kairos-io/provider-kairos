@@ -2,14 +2,14 @@ package cli
 
 import (
 	"fmt"
+	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"os"
 	"strconv"
 
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	"github.com/kairos-io/kairos-sdk/schema"
+	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v1"
-
-	"github.com/mudler/edgevpn/pkg/node"
 )
 
 // do not edit version here, it is set by LDFLAGS
@@ -32,6 +32,65 @@ var networkAPI = []cli.Flag{
 }
 
 const recoveryAddr = "127.0.0.1:2222"
+
+var CreateConfigCMD = cli.Command{
+	Name:      "create-config",
+	Aliases:   []string{"c"},
+	UsageText: "Create a config with a generated network token",
+
+	Usage: "Creates a pristine config file",
+	Description: `
+		Prints a vanilla YAML configuration on screen which can be used to bootstrap a kairos network.
+		`,
+	ArgsUsage: "Optionally takes a token rotation interval (seconds)",
+
+	Action: func(c *cli.Context) error {
+		l := int(^uint(0) >> 1)
+		if c.Args().Present() {
+			if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
+				l = i
+			}
+		}
+		cc := &providerConfig.Config{P2P: &providerConfig.P2P{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
+		y, _ := yaml.Marshal(cc)
+		fmt.Printf("#cloud-config\n\n%s", string(y))
+		return nil
+	},
+}
+
+var GenerateTokenCMD = cli.Command{
+	Name:      "generate-token",
+	Aliases:   []string{"g"},
+	UsageText: "Generate a network token",
+	Usage:     "Creates a new token",
+	Description: `
+		Generates a new token which can be used to bootstrap a kairos network.
+		`,
+	ArgsUsage: "Optionally takes a token rotation interval (seconds)",
+
+	Action: func(c *cli.Context) error {
+		l := int(^uint(0) >> 1)
+		if c.Args().Present() {
+			if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
+				l = i
+			}
+		}
+		fmt.Println(node.GenerateNewConnectionData(l).Base64())
+		return nil
+	},
+}
+
+var ValidateSchemaCMD = cli.Command{
+	Name: "validate",
+	Action: func(c *cli.Context) error {
+		config := c.Args().First()
+		return schema.Validate(config)
+	},
+	Usage: "Validates a cloud config file",
+	Description: `
+The validate command expects a configuration file as its only argument. Local files and URLs are accepted.
+		`,
+}
 
 func Start() error {
 	toolName := "kairos"
@@ -94,51 +153,9 @@ For all the example cases, see: https://kairos.io/docs/
 			BridgeCMD(toolName),
 			&GetKubeConfigCMD,
 			&RoleCMD,
-			{
-				Name:      "create-config",
-				Aliases:   []string{"c"},
-				UsageText: "Create a config with a generated network token",
-
-				Usage: "Creates a pristine config file",
-				Description: `
-		Prints a vanilla YAML configuration on screen which can be used to bootstrap a kairos network.
-		`,
-				ArgsUsage: "Optionally takes a token rotation interval (seconds)",
-
-				Action: func(c *cli.Context) error {
-					l := int(^uint(0) >> 1)
-					if c.Args().Present() {
-						if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
-							l = i
-						}
-					}
-					cc := &providerConfig.Config{P2P: &providerConfig.P2P{NetworkToken: node.GenerateNewConnectionData(l).Base64()}}
-					y, _ := yaml.Marshal(cc)
-					fmt.Printf("#cloud-config\n\n%s", string(y))
-					return nil
-				},
-			},
-			{
-				Name:      "generate-token",
-				Aliases:   []string{"g"},
-				UsageText: "Generate a network token",
-				Usage:     "Creates a new token",
-				Description: `
-		Generates a new token which can be used to bootstrap a kairos network.
-		`,
-				ArgsUsage: "Optionally takes a token rotation interval (seconds)",
-
-				Action: func(c *cli.Context) error {
-					l := int(^uint(0) >> 1)
-					if c.Args().Present() {
-						if i, err := strconv.Atoi(c.Args().Get(0)); err == nil {
-							l = i
-						}
-					}
-					fmt.Println(node.GenerateNewConnectionData(l).Base64())
-					return nil
-				},
-			},
+			&CreateConfigCMD,
+			&GenerateTokenCMD,
+			&ValidateSchemaCMD,
 		},
 	}
 

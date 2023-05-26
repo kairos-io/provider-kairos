@@ -43,6 +43,9 @@ func Start() error {
 			iCli.BridgeCMD(toolName),
 			&iCli.GetKubeConfigCMD,
 			&iCli.RoleCMD,
+			&iCli.CreateConfigCMD,
+			&iCli.GenerateTokenCMD,
+			&iCli.ValidateSchemaCMD,
 		},
 	}
 
