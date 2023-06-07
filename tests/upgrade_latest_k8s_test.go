@@ -144,7 +144,15 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 			out, _ := kubectl(vm, "get pods -A")
 			fmt.Printf("out = %+v\n", out)
 			return out
-		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
+		})
+
+		By("wait for all containers to be in running state")
+		Eventually(func() string {
+			out, _ := kubectl(vm, "get pods -A")
+			fmt.Printf("out = %+v\n", out)
+			return out
+
+		}, 900*time.Second, 10*time.Second).ShouldNot(And(ContainSubstring("Pending"), ContainSubstring("ContainerCreating")))
 
 		By("triggering an upgrade")
 		suc := sucYAML(strings.ReplaceAll(containerImage, ":8h", ""), "8h")

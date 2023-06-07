@@ -52,7 +52,17 @@ jobs:
       - name: Login to Quay Registry
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: echo ${{ secrets.QUAY_PASSWORD }} | docker login -u ${{ secrets.QUAY_USERNAME }} --password-stdin quay.io
-      - name: Build  🔧
+      - name: Build PR 🔧
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+          IMAGE: quay.io/kairos/kairos-${{ matrix.flavor }}:latest
+        run: |
+          ./earthly.sh +ci --IMAGE=$IMAGE --FLAVOR=$FLAVOR
+          sudo mv build/* .
+          sudo rm -rf build
+      - name: Build main 🔧
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           FLAVOR: ${{ matrix.flavor }}
           IMAGE: quay.io/kairos/kairos-${{ matrix.flavor }}:latest
@@ -68,6 +78,7 @@ jobs:
             *.sha256
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           name: kairos-${{ matrix.flavor }}.sbom.zip
           path: |
@@ -75,18 +86,21 @@ jobs:
             *.spdx.json
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           name: kairos-${{ matrix.flavor }}.initrd.zip
           path: |
             *-initrd
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           name: kairos-${{ matrix.flavor }}.squashfs.zip
           path: |
             *.squashfs
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           name: kairos-${{ matrix.flavor }}.kernel.zip
           path: |
@@ -94,6 +108,7 @@ jobs:
             *-initrd
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           name: kairos-${{ matrix.flavor }}.ipxe.zip
           path: |
@@ -196,7 +211,6 @@ jobs:
           name: ${{ matrix.flavor }}-upgrade-test.logs.zip
           path: tests/**/logs/*
           if-no-files-found: warn
-
   provider_upgrade:
     needs:
       - build

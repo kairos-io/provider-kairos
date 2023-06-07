@@ -45,7 +45,6 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 		vmForEach("checking if it has default service active", vms, func(vm VM) {
 			if isFlavor(vm, "alpine") {
 				out, _ := vm.Sudo("rc-status")
-				Expect(out).Should(ContainSubstring("kairos"))
 				Expect(out).Should(ContainSubstring("kairos-agent"))
 			} else {
 				out, _ := vm.Sudo("systemctl status kairos")
@@ -73,7 +72,6 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 					out, _ := vm.Sudo("rc-status")
 					return out
 				}, 30*time.Second, 10*time.Second).Should(And(
-					ContainSubstring("kairos"),
 					ContainSubstring("kairos-agent")))
 			} else {
 				Eventually(func() string {
@@ -119,14 +117,17 @@ var _ = Describe("kairos decentralized k8s test", Label("decentralized-k8s"), fu
 			out, err := vm.Sudo("cat /run/cos/live_mode")
 			Expect(err).To(HaveOccurred(), out)
 			if isFlavor(vm, "alpine") {
-				Eventually(func() string {
-					out, _ = vm.Sudo("sudo cat /var/log/kairos/agent.log")
-					return out
-				}, 20*time.Minute, 1*time.Second).Should(
-					Or(
-						ContainSubstring("Configuring k3s-agent"),
-						ContainSubstring("Configuring k3s"),
-					), out)
+				// Skip for now as agent doesn't log anymore as it cannot behave both as a one-off and a daemon
+				/*
+					Eventually(func() string {
+						out, _ = vm.Sudo("sudo cat /var/log/kairos/agent.log")
+						return out
+					}, 20*time.Minute, 1*time.Second).Should(
+						Or(
+							ContainSubstring("Configuring k3s-agent"),
+							ContainSubstring("Configuring k3s"),
+						), out)
+				*/
 			} else {
 				Eventually(func() string {
 					out, _ = vm.Sudo("systemctl status kairos-agent")
