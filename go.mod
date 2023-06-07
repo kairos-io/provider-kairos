@@ -10,7 +10,7 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.15.2
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos-sdk v0.0.6-0.20230526103201-c90740d747f8
+	github.com/kairos-io/kairos-sdk 3524a69e57bd
 	github.com/kairos-io/kairos/v2 v2.0.3
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.23.1
