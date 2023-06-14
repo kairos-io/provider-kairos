@@ -29,6 +29,7 @@ ARG LUET_VERSION=0.33.0
 ARG GOLANGCILINT_VERSION=v1.52-alpine
 ARG HADOLINT_VERSION=2.12.0-alpine
 ARG SHELLCHECK_VERSION=v0.9.0
+# renovate: datasource=docker depName=golang
 ARG GO_VERSION=1.20
 
 ARG OS_ID=kairos
@@ -74,7 +75,6 @@ go-deps:
     WORKDIR /build
     COPY go.mod go.sum ./
     RUN go mod download
-    RUN apt-get update && apt-get install -y upx
     SAVE ARTIFACT go.mod AS LOCAL go.mod
     SAVE ARTIFACT go.sum AS LOCAL go.sum
 
@@ -98,7 +98,7 @@ BUILD_GOLANG:
     ARG SRC
     ENV CGO_ENABLED=${CGO_ENABLED}
     RUN echo $LDFLAGS
-    RUN go build -ldflags "${LDFLAGS}" -o ${BIN} ${SRC} && upx ${BIN}
+    RUN go build -ldflags "${LDFLAGS}" -o ${BIN} ${SRC}
     SAVE ARTIFACT ${BIN} ${BIN} AS LOCAL build/${BIN}
 
 build-kairos-agent-provider:
