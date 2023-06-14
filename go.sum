@@ -476,6 +476,8 @@ github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 h1:Qh6ghkMgTu6siFbTf7
 github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0/go.mod h1:nViSE8jcOcraZwhi34joEqn7HYFISgs0M8/YujzY5Xk=
 github.com/mudler/yip v1.1.0 h1:QQLQhD5FQ7ojaP7s7dIll6pSGnwnIplL1zGMSg5lsHQ=
 github.com/mudler/yip v1.1.0/go.mod h1:GIzGnY6+tP7kaNBsmtisdyuo4cgn/4y6bEOS3GZNtkY=
+github.com/mudler/yip v1.2.0 h1:hs6x2HDUq+0mwxKzY0SLixnv+VKYc4n3tDY/nXPVejU=
+github.com/mudler/yip v1.2.0/go.mod h1:7fAek4ZV9SS8anO6drK+tn5eXA6w1mXKpPxI0wZT5u8=
 github.com/multiformats/go-base32 v0.1.0 h1:pVx9xoSPqEIQG8o+UbAe7DNi51oej1NtK+aGkbLYxPE=
 github.com/multiformats/go-base32 v0.1.0/go.mod h1:Kj3tFY6zNr+ABYMqeUNeGvkIC/UYgtWibDcT0rExnbI=
 github.com/multiformats/go-base36 v0.2.0 h1:lFsAbNOGeKtuKozrtBsAkSVhv1p9D0/qedU9rQyccr0=
