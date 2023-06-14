@@ -86,22 +86,23 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 				"loaded (/usr/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: disabled)"))
 		}
 
-		By("checking if it has a working kubeconfig")
+		By("checking if kairos-agent has started")
 		Eventually(func() string {
 			var out string
 			if isFlavor(vm, "alpine") {
-				out, _ = vm.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
+				out, _ = vm.Sudo("rc-service kairos-agent status")
 			} else {
 				out, _ = vm.Sudo("systemctl status kairos-agent")
 			}
 			return out
-		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
-
+		}, 900*time.Second, 10*time.Second).Should(Or(ContainSubstring("One time bootstrap starting"), ContainSubstring("status: started")))
+		By("Checking agent provider correct start")
 		Eventually(func() string {
 			out, _ := vm.Sudo("cat /var/log/kairos/agent-provider.log")
 			return out
 		}, 900*time.Second, 10*time.Second).Should(Or(ContainSubstring("One time bootstrap starting"), ContainSubstring("Sentinel exists")))
 
+		By("Checking k3s is pointing to https")
 		Eventually(func() string {
 			out, _ := vm.Sudo("cat /etc/rancher/k3s/k3s.yaml")
 			return out
@@ -119,6 +120,14 @@ var _ = Describe("k3s upgrade test", Label("upgrade-k8s"), func() {
 			out, _ := kubectl(vm, "get pods -A")
 			return out
 		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("system-upgrade-controller"))
+
+		By("wait for all containers to be in running state")
+		Eventually(func() string {
+			out, _ := kubectl(vm, "get pods -A")
+			fmt.Printf("out = %+v\n", out)
+			return out
+
+		}, 900*time.Second, 10*time.Second).ShouldNot(And(ContainSubstring("Pending"), ContainSubstring("ContainerCreating")))
 
 		By("applying upgrade plan")
 		err = vm.Scp("assets/suc.yaml", "./suc.yaml", "0770")

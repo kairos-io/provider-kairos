@@ -55,6 +55,10 @@ all:
   BUILD +ipxe-iso
   DO +RELEASEVERSION
 
+ci:
+  BUILD +docker
+  BUILD +iso
+
 all-arm:
   ARG SECURITY_SCANS=true
   BUILD --platform=linux/arm64 +docker

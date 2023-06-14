@@ -76,6 +76,8 @@ func startVM(iso string) (context.Context, VM) {
 	stateDir, err := os.MkdirTemp("", "stateDir-*")
 	Expect(err).ToNot(HaveOccurred())
 
+	fmt.Printf("Statedir: %s\n", stateDir)
+
 	sshPort, err = getFreePort()
 	Expect(err).ToNot(HaveOccurred())
 
@@ -111,6 +113,14 @@ func startVM(iso string) (context.Context, VM) {
 			// but we just print the output just in case.
 			fmt.Printf("\nVM Aborted: %s %s Exit status: %s\n", out, err, status)
 		}),
+		func(m *types.MachineConfig) error {
+			m.Args = append(m.Args,
+				"-chardev", fmt.Sprintf("stdio,mux=on,id=char0,logfile=%s,signal=off", path.Join(stateDir, "serial.log")),
+				"-serial", "chardev:char0",
+				"-mon", "chardev=char0",
+			)
+			return nil
+		},
 		types.WithStateDir(stateDir),
 		types.WithDataSource(os.Getenv("DATASOURCE")),
 	}
