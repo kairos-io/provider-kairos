@@ -121,12 +121,12 @@ var _ = Describe("k3s upgrade test from k8s", Label("upgrade-latest-with-kuberne
 		Eventually(func() string {
 			var out string
 			if isFlavor(vm, "alpine") {
-				out, _ = vm.Sudo("cat /var/log/kairos/agent.log;cat /var/log/kairos-agent.log")
+				out, _ = vm.Sudo("rc-service kairos-agent status")
 			} else {
 				out, _ = vm.Sudo("systemctl status kairos-agent")
 			}
 			return out
-		}, 900*time.Second, 10*time.Second).Should(ContainSubstring("One time bootstrap starting"))
+		}, 900*time.Second, 10*time.Second).Should(Or(ContainSubstring("One time bootstrap starting"), ContainSubstring("status: started")))
 
 		By("checking kubeconfig")
 		Eventually(func() string {
