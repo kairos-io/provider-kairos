@@ -157,7 +157,7 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 			VMIDS = append(VMIDS, startVMS([]byte(genConfig(freeIP, pubkey, networkToken, true, false, false, true)), 4)...)
 
 			By("Waiting for HA control-plane to be available", func() {
-				ping(freeIP)
+				ping(freeIP, ControlVM)
 			})
 
 			Eventually(func() string {
@@ -196,7 +196,7 @@ var _ = Describe("kairos decentralized k8s test", Label("proxmox-ha-test"), func
 
 			// 10.1.0.1 will be our IP, and DHCP will assign then 10.1.0.2 to one of the nodes of the cluster.
 			By("Waiting for HA control-plane to be available", func() {
-				ping("10.1.0.2")
+				ping("10.1.0.2", ControlVM)
 			})
 
 			Eventually(func() string {

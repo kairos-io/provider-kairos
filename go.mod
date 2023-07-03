@@ -1,4 +1,4 @@
-module github.com/kairos-io/provider-kairos
+module github.com/kairos-io/provider-kairos/v2
 
 go 1.18
 

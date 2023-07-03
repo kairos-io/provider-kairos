@@ -18,8 +18,10 @@ import (
 	"github.com/luthermonson/go-proxmox"
 )
 
+var randGen *rand.Rand
+
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	randGen = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -27,7 +29,7 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 func RandStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		b[i] = letterRunes[randGen.Intn(len(letterRunes))]
 	}
 	return string(b)
 }
@@ -86,6 +88,10 @@ func uploadCloudInitISO(isoname string, cc []byte, storage *proxmox.Storage) err
 	}
 
 	tup, err := storage.Upload("iso", filepath.Join(temp, isoname))
+	if err != nil {
+		return err
+	}
+
 	return tup.WaitFor(300)
 }
 
@@ -159,6 +165,9 @@ func getNode() (*proxmox.Node, *proxmox.Client, error) {
 	fmt.Println(version.Release) // 6.3
 
 	statuses, err := client.Nodes()
+	if err != nil {
+		return nil, nil, err
+	}
 
 	for _, st := range statuses {
 		fmt.Println(st.Node)
@@ -225,7 +234,7 @@ EOF`)
 
 }
 
-func ping(ip string) {
+func ping(ip string, ControlVM *SSHConn) {
 	EventuallyWithOffset(1, func() string {
 		out, err := ControlVM.Command(fmt.Sprintf("ping %s -c 3", ip))
 		if err != nil {

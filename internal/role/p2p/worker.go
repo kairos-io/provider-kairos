@@ -9,8 +9,8 @@ import (
 	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/kairos-io/kairos/v2/pkg/config"
 
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
-	"github.com/kairos-io/provider-kairos/internal/role"
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/v2/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 

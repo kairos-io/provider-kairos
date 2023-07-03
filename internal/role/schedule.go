@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kairos-io/kairos/v2/pkg/config"
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/samber/lo"
 )

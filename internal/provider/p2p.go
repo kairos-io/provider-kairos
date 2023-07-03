@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kairos-io/provider-kairos/internal/provider/assets"
+	"github.com/kairos-io/provider-kairos/v2/internal/provider/assets"
 
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
 	"github.com/kairos-io/kairos-sdk/utils"
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
-	"github.com/kairos-io/provider-kairos/internal/services"
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/v2/internal/services"
 	"gopkg.in/yaml.v3"
 
 	yip "github.com/mudler/yip/pkg/schema"

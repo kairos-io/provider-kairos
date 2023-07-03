@@ -15,11 +15,11 @@ import (
 	"github.com/kairos-io/kairos-sdk/machine/openrc"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
 	"github.com/kairos-io/kairos-sdk/utils"
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
-	"github.com/kairos-io/provider-kairos/internal/role"
-	p2p "github.com/kairos-io/provider-kairos/internal/role/p2p"
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	"github.com/kairos-io/provider-kairos/v2/internal/role"
+	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
 
-	"github.com/kairos-io/provider-kairos/internal/services"
+	"github.com/kairos-io/provider-kairos/v2/internal/services"
 
 	"github.com/kairos-io/kairos/v2/pkg/config"
 	"github.com/mudler/edgevpn/api/client/service"

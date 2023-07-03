@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/kairos-io/kairos-sdk/bus"
-	iCli "github.com/kairos-io/provider-kairos/internal/cli"
-	"github.com/kairos-io/provider-kairos/internal/provider"
+	iCli "github.com/kairos-io/provider-kairos/v2/internal/cli"
+	"github.com/kairos-io/provider-kairos/v2/internal/provider"
 	"github.com/urfave/cli/v2"
 )
 
