@@ -18,8 +18,10 @@ import (
 	"github.com/luthermonson/go-proxmox"
 )
 
+var randGen *rand.Rand
+
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	randGen = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -27,7 +29,7 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 func RandStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		b[i] = letterRunes[randGen.Intn(len(letterRunes))]
 	}
 	return string(b)
 }
