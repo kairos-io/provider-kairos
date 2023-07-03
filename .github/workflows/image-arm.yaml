@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: arm-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.repository }}
+  cancel-in-progress: true
+
 jobs:
   get-matrix:
     runs-on: ubuntu-latest
