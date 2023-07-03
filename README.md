@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/licence-APL2-brightgreen"
          alt="license">
   </a>
-  <a href="https://github.com/kairos-io/provider-kairos/issues"><img src="https://img.shields.io/github/issues/kairos-io/provider-kairos"></a>
+  <a href="https://github.com/kairos-io/provider-kairos/v2/issues"><img src="https://img.shields.io/github/issues/kairos-io/provider-kairos"></a>
   <a href="https://kairos.io/docs/" target=_blank> <img src="https://img.shields.io/badge/Documentation-blue"
          alt="docs"></a>
   <img src="https://img.shields.io/badge/made%20with-Go-blue">

@@ -93,7 +93,7 @@ BUILD_GOLANG:
     COPY . ./
     ARG CGO_ENABLED
     ARG VERSION
-    ARG LDFLAGS="-s -w -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'"
+    ARG LDFLAGS="-s -w -X 'github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION=$VERSION'"
     ARG BIN
     ARG SRC
     ENV CGO_ENABLED=${CGO_ENABLED}

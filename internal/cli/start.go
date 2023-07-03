@@ -2,9 +2,10 @@ package cli
 
 import (
 	"fmt"
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
 	"os"
 	"strconv"
+
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 
 	"github.com/kairos-io/kairos-sdk/schema"
 	"github.com/mudler/edgevpn/pkg/node"
@@ -13,7 +14,7 @@ import (
 )
 
 // do not edit version here, it is set by LDFLAGS
-// -X 'github.com/kairos-io/provider-kairos/internal/cli.VERSION=$VERSION'
+// -X 'github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION=$VERSION'
 // see Earthlfile.
 var VERSION = "0.0.0"
 var Author = "Ettore Di Giacinto"

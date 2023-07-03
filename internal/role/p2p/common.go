@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	providerConfig "github.com/kairos-io/provider-kairos/internal/provider/config"
+	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 )
 
 func guessInterface(pconfig *providerConfig.Config) string {
