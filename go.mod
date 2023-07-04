@@ -32,7 +32,7 @@ require (
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3
+	github.com/kairos-io/go-nodepair v0.0.0-20230613101045-8eb2c1d2cc49
 	github.com/lmittmann/ppm v1.0.2
 	github.com/makiuchi-d/gozxing v0.1.1
 )
