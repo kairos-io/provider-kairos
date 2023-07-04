@@ -14,18 +14,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
-	"gopkg.in/yaml.v3"
-
-	yip "github.com/mudler/yip/pkg/schema"
 )
-
-func SaveOEMCloudConfig(name string, yc yip.YipConfig) error {
-	dnsYAML, err := yaml.Marshal(yc)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("100_%s.yaml", name)), dnsYAML, 0700)
-}
 
 func SaveCloudConfig(name string, c []byte) error {
 	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
