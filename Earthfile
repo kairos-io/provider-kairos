@@ -185,8 +185,6 @@ PROVIDER_INSTALL:
         && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh agent \
         && rm -rf installer.sh
 
-    COPY repository.yaml /etc/luet/luet.yaml
-
     RUN luet install -y utils/edgevpn utils/k9s utils/nerdctl container/kubectl utils/kube-vip && luet cleanup
     # Drop env files from k3s as we will generate them
     IF [ -e "/etc/rancher/k3s/k3s.env" ]
