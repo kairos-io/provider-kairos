@@ -314,6 +314,8 @@ github.com/kairos-io/kairos v2.3.0+incompatible h1:vbGynuGz31oiGiBU/fjTEcXm0qKPk
 github.com/kairos-io/kairos v2.3.0+incompatible/go.mod h1:JX0Ce5cBs5sPYoXuIuLLqHzrmmA+rvkLgXb+hh0t7tw=
 github.com/kairos-io/kairos-sdk v0.0.7 h1:C1lK5QpmBy+ZZB2QIgtemaJ76aw4l5ZGxzb+mh24+Nc=
 github.com/kairos-io/kairos-sdk v0.0.7/go.mod h1:kPT8LJVmUjwIslJl4LW471D4l91tBOmbGiGoO+NC+7E=
+github.com/kairos-io/kairos-sdk v0.0.9 h1:DnuvmnCTDBQg0nr3siaXb5pspi+GUsf1rPb0MFOTdTc=
+github.com/kairos-io/kairos-sdk v0.0.9/go.mod h1:Z+1CLqMZq97bzwX2XSIArr8EoniMth3mMYkOOb8L3QY=
 github.com/kairos-io/kairos/v2 v2.0.3 h1:IOgK+bKklERQpU+ZQ1j/tX2qmKD4CFTQ0vzlMymQvno=
 github.com/kairos-io/kairos/v2 v2.0.3/go.mod h1:dzys8LY3s/J7HutuJ3Qoz2Cj1Pp668dXeTRPe00rpnk=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
