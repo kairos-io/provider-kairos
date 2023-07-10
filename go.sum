@@ -310,6 +310,8 @@ github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3 h1:HlHW1DfV/WcCphzR5uZh+NyECDLb1KlIbzbzVYvFG5Y=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
+github.com/kairos-io/kairos v2.3.0+incompatible h1:vbGynuGz31oiGiBU/fjTEcXm0qKPk2Nf01kVCWUGBSY=
+github.com/kairos-io/kairos v2.3.0+incompatible/go.mod h1:JX0Ce5cBs5sPYoXuIuLLqHzrmmA+rvkLgXb+hh0t7tw=
 github.com/kairos-io/kairos-sdk v0.0.7 h1:C1lK5QpmBy+ZZB2QIgtemaJ76aw4l5ZGxzb+mh24+Nc=
 github.com/kairos-io/kairos-sdk v0.0.7/go.mod h1:kPT8LJVmUjwIslJl4LW471D4l91tBOmbGiGoO+NC+7E=
 github.com/kairos-io/kairos/v2 v2.0.3 h1:IOgK+bKklERQpU+ZQ1j/tX2qmKD4CFTQ0vzlMymQvno=

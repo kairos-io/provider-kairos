@@ -113,6 +113,7 @@ require (
 	github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 // indirect
 	github.com/jinzhu/copier v0.3.4 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/kairos-io/kairos v2.3.0+incompatible // indirect
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
