@@ -21,7 +21,7 @@ import (
 
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 
-	"github.com/kairos-io/kairos/v2/pkg/config"
+	"github.com/kairos-io/kairos-agent/v2/pkg/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/mudler/go-pluggable"
 )
