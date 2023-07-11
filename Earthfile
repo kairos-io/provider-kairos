@@ -21,7 +21,7 @@ ARG IMAGE=${BASE_REPO}/${VARIANT}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
 # renovate: datasource=docker depName=quay.io/kairos/osbuilder-tools versioning=semver-coerced
-ARG OSBUILDER_VERSION=v0.7.6
+ARG OSBUILDER_VERSION=v0.7.7
 ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:$OSBUILDER_VERSION
 
 ## External deps pinned versions
@@ -49,8 +49,11 @@ all-arm-generic:
   DO +RELEASEVERSION
 
 all:
+  ARG SECURITY_SCANS=true
   BUILD +docker
-  BUILD +image-sbom
+  IF [ "$SECURITY_SCANS" = "true" ]
+      BUILD +image-sbom
+  END
   BUILD +iso
   BUILD +netboot
   BUILD +ipxe-iso
@@ -263,7 +266,12 @@ arm-image:
   WORKDIR /build
 
   ENV SIZE="15200"
-  IF [[ "$FLAVOR" =~ ^ubuntu* ]]
+
+  IF [[ "$FLAVOR" = "ubuntu-20-lts-arm-nvidia-jetson-agx-orin" ]]
+    ENV STATE_SIZE="14000"
+    ENV RECOVERY_SIZE="10000"
+    ENV DEFAULT_ACTIVE_SIZE="4500"
+  ELSE IF [[ "$FLAVOR" =~ ^ubuntu* ]]
     ENV STATE_SIZE="6900"
     ENV RECOVERY_SIZE="4600"
     ENV DEFAULT_ACTIVE_SIZE="2700"
