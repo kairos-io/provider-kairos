@@ -143,39 +143,9 @@ dist:
 docker:
     ARG FLAVOR
     ARG VARIANT
-
     FROM $BASE_IMAGE
 
-    IF [ "$K3S_VERSION" = "latest" ]
-    ELSE
-        ENV INSTALL_K3S_VERSION=${K3S_VERSION}
-    END
-
-    COPY repository.yaml /etc/luet/luet.yaml
-
-    IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
-      RUN zypper ref && zypper in -y nohang
-    ELSE IF [ "$FLAVOR" = "alpine-ubuntu" ] || [ "$FLAVOR" = "alpine-opensuse-leap" ] || [ "$FLAVOR" = "alpine-arm-rpi" ]
-      RUN apk add grep
-    ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
-      RUN zypper ref && zypper in -y nohang
-    ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ] || [ "$FLAVOR" = "debian" ]
-      RUN apt-get update && apt-get install -y nohang
-    END
-
-    ENV INSTALL_K3S_BIN_DIR="/usr/bin"
-    RUN curl -sfL https://get.k3s.io > installer.sh \
-        && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh \
-        && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh agent \
-        && rm -rf installer.sh
-    RUN luet install -y utils/edgevpn utils/k9s utils/nerdctl container/kubectl utils/kube-vip && luet cleanup
-    # Drop env files from k3s as we will generate them
-    IF [ -e "/etc/rancher/k3s/k3s.env" ]
-        RUN rm -rf /etc/rancher/k3s/k3s.env /etc/rancher/k3s/k3s-agent.env && touch /etc/rancher/k3s/.keep
-    END
-
-    COPY +build-kairos-agent-provider/agent-provider-kairos /system/providers/agent-provider-kairos
-    RUN ln -s /system/providers/agent-provider-kairos /usr/bin/kairos
+    DO +PROVIDER_INSTALL
 
     ARG KAIROS_VERSION
     IF [ "$KAIROS_VERSION" = "" ]
@@ -192,6 +162,47 @@ docker:
     DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT}
 
     SAVE IMAGE $IMAGE
+
+# This install the requirements for the provider to be included.
+# Made as a command so it can be reused from other targets without depending on this repo BASE_IMAGE
+PROVIDER_INSTALL:
+    COMMAND
+    IF [ "$K3S_VERSION" = "latest" ]
+    ELSE
+        ENV INSTALL_K3S_VERSION=${K3S_VERSION}
+    END
+
+    IF [ "$FLAVOR" = "opensuse-leap" ] || [ "$FLAVOR" = "opensuse-leap-arm-rpi" ]
+      RUN zypper ref && zypper in -y nohang
+    ELSE IF [ "$FLAVOR" = "alpine-ubuntu" ] || [ "$FLAVOR" = "alpine-opensuse-leap" ] || [ "$FLAVOR" = "alpine-arm-rpi" ]
+      RUN apk add grep
+    ELSE IF [ "$FLAVOR" = "opensuse-tumbleweed" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
+      RUN zypper ref && zypper in -y nohang
+    ELSE IF [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ] || [ "$FLAVOR" = "debian" ]
+      RUN apt-get update && apt-get install -y nohang
+    END
+
+    ENV INSTALL_K3S_BIN_DIR="/usr/bin"
+    RUN curl -sfL https://get.k3s.io > installer.sh \
+        && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh \
+        && INSTALL_K3S_SELINUX_WARN=true INSTALL_K3S_SKIP_START="true" INSTALL_K3S_SKIP_ENABLE="true" INSTALL_K3S_SKIP_SELINUX_RPM="true" bash installer.sh agent \
+        && rm -rf installer.sh
+
+    # If base image does not bundle a luet config use one
+    # TODO: Remove this, use luet config from base images so they are in sync
+    IF [ ! -e "/etc/luet/luet.yaml" ]
+        COPY repository.yaml /etc/luet/luet.yaml
+    END
+
+    RUN luet install -y utils/edgevpn utils/k9s utils/nerdctl container/kubectl utils/kube-vip && luet cleanup
+    # Drop env files from k3s as we will generate them
+    IF [ -e "/etc/rancher/k3s/k3s.env" ]
+        RUN rm -rf /etc/rancher/k3s/k3s.env /etc/rancher/k3s/k3s-agent.env && touch /etc/rancher/k3s/.keep
+    END
+
+    COPY +build-kairos-agent-provider/agent-provider-kairos /system/providers/agent-provider-kairos
+    RUN ln -s /system/providers/agent-provider-kairos /usr/bin/kairos
+
 
 docker-rootfs:
     FROM +docker
