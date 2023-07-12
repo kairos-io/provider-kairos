@@ -26,9 +26,6 @@ ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:$OSBUILDER_VERSION
 
 ## External deps pinned versions
 ARG LUET_VERSION=0.33.0
-ARG GOLANGCILINT_VERSION=v1.52-alpine
-ARG HADOLINT_VERSION=2.12.0-alpine
-ARG SHELLCHECK_VERSION=v0.9.0
 # renovate: datasource=docker depName=golang
 ARG GO_VERSION=1.20
 
@@ -84,10 +81,9 @@ go-deps:
 test:
     FROM +go-deps
     WORKDIR /build
-    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
     COPY (kairos+luet/luet) /usr/bin/luet
     COPY . .
-    RUN ginkgo run --fail-fast --slow-spec-threshold 30s --covermode=atomic --coverprofile=coverage.out -p -r ./internal
+    RUN go run github.com/onsi/ginkgo/v2/ginkgo --fail-fast --covermode=atomic --coverprofile=coverage.out -p -r ./internal
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
 BUILD_GOLANG:
@@ -126,19 +122,6 @@ version:
 
     ARG VERSION=$(cat VERSION)
     SAVE ARTIFACT VERSION VERSION
-
-dist:
-    ARG GO_VERSION
-    FROM golang:$GO_VERSION
-    RUN echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | tee /etc/apt/sources.list.d/goreleaser.list
-    RUN apt update
-    RUN apt install -y goreleaser
-    WORKDIR /build
-    COPY . .
-    COPY +version/VERSION ./
-    RUN echo $(cat VERSION)
-    RUN VERSION=$(cat VERSION) goreleaser build --rm-dist --skip-validate --snapshot
-    SAVE ARTIFACT /build/dist/* AS LOCAL dist/
 
 docker:
     ARG FLAVOR
@@ -215,12 +198,6 @@ kairos:
    WORKDIR /kairos
    RUN git clone https://github.com/kairos-io/kairos /kairos && cd /kairos && git checkout "$KAIROS_VERSION"
    SAVE ARTIFACT /kairos/
-
-get-kairos-scripts:
-    FROM alpine
-    WORKDIR /build
-    COPY +kairos/kairos/ ./
-    SAVE ARTIFACT /build/scripts AS LOCAL scripts
 
 iso:
     ARG OSBUILDER_IMAGE
@@ -329,7 +306,6 @@ ipxe-iso:
     SAVE ARTIFACT /build/ipxe/src/bin/ipxe.iso iso AS LOCAL build/${ISO_NAME}-ipxe.iso.ipxe
     SAVE ARTIFACT /build/ipxe/src/bin/ipxe.usb usb AS LOCAL build/${ISO_NAME}-ipxe-usb.img.ipxe
 
-
 ## Security targets
 trivy:
     FROM aquasec/trivy
@@ -340,136 +316,3 @@ trivy-scan:
     FROM +docker
     COPY +trivy/trivy /trivy
     RUN /trivy filesystem --severity $SEVERITY --exit-code 1 --no-progress /
-
-linux-bench:
-    ARG GO_VERSION
-    FROM golang:$GO_VERSION
-    GIT CLONE https://github.com/aquasecurity/linux-bench /linux-bench-src
-    RUN cd /linux-bench-src && CGO_ENABLED=0 go build -o linux-bench . && mv linux-bench /
-    SAVE ARTIFACT /linux-bench /linux-bench
-
-# The target below should run on a live host instead.
-# However, some checks are relevant as well at container level.
-# It is good enough for a quick assessment.
-linux-bench-scan:
-    FROM +docker
-    GIT CLONE https://github.com/aquasecurity/linux-bench /build/linux-bench
-    WORKDIR /build/linux-bench
-    COPY +linux-bench/linux-bench /build/linux-bench/linux-bench
-    RUN /build/linux-bench/linux-bench
-
-# Generic targets
-# usage e.g. ./earthly.sh +datasource-iso --CLOUD_CONFIG=tests/assets/qrcode.yaml
-datasource-iso:
-  ARG OSBUILDER_IMAGE
-  ARG CLOUD_CONFIG
-  FROM $OSBUILDER_IMAGE
-  RUN zypper in -y mkisofs
-  WORKDIR /build
-  RUN touch meta-data
-  COPY ./${CLOUD_CONFIG} user-data
-  RUN cat user-data
-  RUN mkisofs -output ci.iso -volid cidata -joliet -rock user-data meta-data
-  SAVE ARTIFACT /build/ci.iso iso.iso AS LOCAL build/datasource.iso
-
-# usage e.g. ./earthly.sh +run-qemu-tests --FLAVOR=alpine --FROM_ARTIFACTS=true
-run-qemu-tests:
-    FROM opensuse/leap
-    WORKDIR /test
-    RUN zypper in -y qemu-x86 qemu-arm qemu-tools go
-    ARG FLAVOR
-    ARG TEST_SUITE=autoinstall-test
-    ARG FROM_ARTIFACTS
-    ENV FLAVOR=$FLAVOR
-    ENV SSH_PORT=60022
-    ENV CREATE_VM=true
-    ARG CLOUD_CONFIG="/tests/tests/assets/autoinstall.yaml"
-    ENV USE_QEMU=true
-
-    ENV GOPATH="/go"
-
-    ENV CLOUD_CONFIG=$CLOUD_CONFIG
-
-    IF [ "$FROM_ARTIFACTS" = "true" ]
-        COPY . .
-        ENV ISO=/test/build/kairos.iso
-        ENV DATASOURCE=/test/build/datasource.iso
-    ELSE
-        COPY ./tests .
-        COPY +iso/kairos.iso kairos.iso
-        COPY ( +datasource-iso/iso.iso --CLOUD_CONFIG=$CLOUD_CONFIG) datasource.iso
-        ENV ISO=/test/kairos.iso
-        ENV DATASOURCE=/test/datasource.iso
-    END
-
-
-    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-    ENV CLOUD_INIT=$CLOUD_CONFIG
-
-    RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/
-
-edgevpn:
-    ARG EDGEVPN_VERSION=latest
-    FROM quay.io/mudler/edgevpn:$EDGEVPN_VERSION
-    SAVE ARTIFACT /usr/bin/edgevpn /edgevpn
-
-# usage e.g.
-# ./earthly.sh +run-proxmox-tests --PROXMOX_USER=root@pam --PROXMOX_PASS=xxx --PROXMOX_ENDPOINT=https://192.168.1.72:8006/api2/json --PROXMOX_ISO=/test/build/kairos-opensuse-v0.0.0-79fd363-k3s.iso --PROXMOX_NODE=proxmox
-run-proxmox-tests:
-    FROM golang:alpine
-    WORKDIR /test
-    RUN apk add xorriso
-    ARG FLAVOR
-    ARG TEST_SUITE=proxmox-ha-test
-    ARG FROM_ARTIFACTS
-    ARG PROXMOX_USER
-    ARG PROXMOX_PASS
-    ARG PROXMOX_ENDPOINT
-    ARG PROXMOX_STORAGE=local
-    ARG PROXMOX_ISO
-    ARG PROXMOX_NODE
-    ENV GOPATH="/go"
-
-    RUN go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-
-    COPY +edgevpn/edgevpn /usr/bin/edgevpn
-    COPY . .
-    RUN PATH=$PATH:$GOPATH/bin ginkgo --label-filter "$TEST_SUITE" --fail-fast -r ./tests/e2e/
-
-lint:
-    BUILD +hadolint
-    BUILD +renovate-validator
-    BUILD +shellcheck-lint
-    BUILD +golangci-lint
-    BUILD +yamllint
-
-hadolint:
-  FROM hadolint/hadolint:${HADOLINT_VERSION}
-  COPY . /work
-  WORKDIR /work
-  RUN find . -name "Dockerfile*" -print  | xargs -r -n1 hadolint
-
-renovate-validator:
-  FROM renovate/renovate
-  COPY . /work
-  WORKDIR /work
-  ENV RENOVATE_VERSION="35"
-  RUN renovate-config-validator
-
-shellcheck-lint:
-  FROM koalaman/shellcheck-alpine:${SHELLCHECK_VERSION}
-  COPY . /work
-  WORKDIR /work
-  RUN find . -name "*.sh" -print  | xargs -r -n1 shellcheck
-
-golangci-lint:
-  FROM golangci/golangci-lint:${GOLANGCILINT_VERSION}
-  COPY . /work
-  WORKDIR /work
-  RUN golangci-lint run --timeout 360s
-
-yamllint:
-  FROM cytopia/yamllint
-  COPY . /work
-  WORKDIR /work
-  RUN find . -name "*.yml" -or -name "*.yaml" -print  | xargs -r -n1
