@@ -142,7 +142,7 @@ docker:
     ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
     ARG OS_LABEL=latest
 
-    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT}
+    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT} --FLAVOR=${FLAVOR}
 
     SAVE IMAGE $IMAGE
 
