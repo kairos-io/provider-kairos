@@ -94,11 +94,24 @@ The validate command expects a configuration file as its only argument. Local fi
 		`,
 }
 
+var VersionCMD = cli.Command{
+	Name: "version",
+	Action: func(c *cli.Context) error {
+		printVersion()
+		return nil
+	},
+	Description: "Prints version information of this binary",
+}
+
+func printVersion() {
+	fmt.Printf("version: %s, compiled with: %s\n", VERSION, runtime.Version())
+}
+
 func Start() error {
 	toolName := "kairos"
 
 	cli.VersionPrinter = func(cCtx *cli.Context) {
-		fmt.Printf("version: %s, compiled with: %s\n", VERSION, runtime.Version())
+		printVersion()
 	}
 
 	app := &cli.App{
@@ -163,6 +176,7 @@ For all the example cases, see: https://kairos.io/docs/
 			&CreateConfigCMD,
 			&GenerateTokenCMD,
 			&ValidateSchemaCMD,
+			&VersionCMD,
 		},
 	}
 
