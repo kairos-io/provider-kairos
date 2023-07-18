@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
@@ -95,6 +96,11 @@ The validate command expects a configuration file as its only argument. Local fi
 
 func Start() error {
 	toolName := "kairos"
+
+	cli.VersionPrinter = func(cCtx *cli.Context) {
+		fmt.Printf("version: %s, compiled with: %s\n", VERSION, runtime.Version())
+	}
+
 	app := &cli.App{
 		Name:    toolName,
 		Version: VERSION,
