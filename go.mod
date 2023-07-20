@@ -10,13 +10,13 @@ require (
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.15.2
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230710123948-9c5731baa2e3
+	github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230720100243-1ab0898c2cf5
 	github.com/kairos-io/kairos-sdk v0.0.9
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.23.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
-	github.com/onsi/ginkgo/v2 v2.10.0
+	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
 	github.com/pterm/pterm v0.12.62
 	github.com/samber/lo v1.38.1
@@ -214,7 +214,7 @@ require (
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
