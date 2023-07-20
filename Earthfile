@@ -142,7 +142,7 @@ docker:
     ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
     ARG OS_LABEL=latest
 
-    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT}
+    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT} --FLAVOR=${FLAVOR}
 
     SAVE IMAGE $IMAGE
 
@@ -186,21 +186,6 @@ PROVIDER_INSTALL:
     COPY +build-kairos-agent-provider/agent-provider-kairos /system/providers/agent-provider-kairos
     RUN ln -s /system/providers/agent-provider-kairos /usr/bin/kairos
 
-    ARG KAIROS_VERSION
-    IF [ "$KAIROS_VERSION" = "" ]
-        ARG OS_VERSION=${VERSION}
-    ELSE
-        ARG OS_VERSION=${KAIROS_VERSION}
-    END
-
-    ARG OS_ID
-    ARG OS_NAME=${OS_ID}-${FLAVOR}
-    ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
-    ARG OS_LABEL=latest
-
-    DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --FLAVOR=${FLAVOR}
-
-    SAVE IMAGE $IMAGE
 
 docker-rootfs:
     FROM +docker
