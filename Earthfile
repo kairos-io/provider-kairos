@@ -31,7 +31,6 @@ ARG GO_VERSION=1.20
 
 ARG MODEL=generic
 ARG TARGETARCH
-ARG ISO_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}
 ARG CGO_ENABLED=0
 
 RELEASEVERSION:
@@ -205,6 +204,12 @@ iso:
     ARG OSBUILDER_IMAGE
     ARG IMG=docker:$IMAGE
     ARG overlay=overlay/files-iso
+    IF [ "$TARGETARCH" = "arm64" ]
+        ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
+        ARG ISO_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}
+    ELSE
+        ARG ISO_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}
+    END
     FROM $OSBUILDER_IMAGE
     RUN zypper in -y jq docker
     WORKDIR /build
@@ -283,6 +288,12 @@ image-sbom:
     ARG TAG
     ARG FLAVOR
     ARG VARIANT
+    IF [ "$TARGETARCH" = "arm64" ]
+        ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
+        ARG ISO_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}
+    ELSE
+        ARG ISO_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}
+    END
     COPY +syft/syft /usr/bin/syft
     RUN syft / -o json=sbom.syft.json -o spdx-json=sbom.spdx.json
     SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL build/${ISO_NAME}-sbom.syft.json
