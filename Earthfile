@@ -3,7 +3,8 @@ VERSION 0.6
 IMPORT github.com/kairos-io/kairos
 
 FROM alpine
-ARG VARIANT=kairos # core, lite, framework
+ARG OS_ID=kairos
+ARG VARIANT=standard
 ARG FLAVOR=opensuse-leap
 
 ## Versioning
@@ -17,9 +18,8 @@ RUN echo "version ${VERSION}"
 ARG K3S_VERSION_TAG=$(echo $K3S_VERSION | sed s/+/-/)
 ARG TAG=${VERSION}-k3s${K3S_VERSION_TAG}
 ARG BASE_REPO=quay.io/kairos
-ARG IMAGE=${BASE_REPO}/${VARIANT}-${FLAVOR}:$TAG
+ARG IMAGE=${BASE_REPO}/${OS_ID}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
-ARG ISO_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}
 # renovate: datasource=docker depName=quay.io/kairos/osbuilder-tools versioning=semver-coerced
 ARG OSBUILDER_VERSION=v0.7.8
 ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:$OSBUILDER_VERSION
@@ -29,7 +29,9 @@ ARG LUET_VERSION=0.33.0
 # renovate: datasource=docker depName=golang
 ARG GO_VERSION=1.20
 
-ARG OS_ID=kairos
+ARG MODEL=generic
+ARG TARGETARCH
+ARG ISO_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}
 ARG CGO_ENABLED=0
 
 RELEASEVERSION:
@@ -139,7 +141,7 @@ docker:
 
     ARG OS_ID
     ARG OS_NAME=${OS_ID}-${FLAVOR}
-    ARG OS_REPO=quay.io/kairos/${VARIANT}-${FLAVOR}
+    ARG OS_REPO=quay.io/kairos/${OS_ID}-${FLAVOR}
     ARG OS_LABEL=latest
 
     DO kairos+OSRELEASE --BUG_REPORT_URL="https://github.com/kairos-io/kairos/issues/new/choose" --HOME_URL="https://github.com/kairos-io/provider-kairos" --OS_ID=${OS_ID} --OS_LABEL=${OS_LABEL} --OS_NAME=${OS_NAME} --OS_REPO=${OS_REPO} --OS_VERSION=${OS_VERSION}-k3s${K3S_VERSION} --GITHUB_REPO="kairos-io/provider-kairos" --VARIANT=${VARIANT} --FLAVOR=${FLAVOR}
@@ -201,7 +203,6 @@ kairos:
 
 iso:
     ARG OSBUILDER_IMAGE
-    ARG ISO_NAME=${OS_ID}
     ARG IMG=docker:$IMAGE
     ARG overlay=overlay/files-iso
     FROM $OSBUILDER_IMAGE
@@ -239,7 +240,7 @@ arm-image:
   ARG COMPRESS_IMG=true
   FROM $OSBUILDER_IMAGE
   ARG MODEL=rpi64
-  ARG IMAGE_NAME=${VARIANT}-${FLAVOR}-${VERSION}-k3s${K3S_VERSION}.img
+  ARG IMAGE_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}.img
   WORKDIR /build
 
   ENV SIZE="15200"
@@ -284,8 +285,8 @@ image-sbom:
     ARG VARIANT
     COPY +syft/syft /usr/bin/syft
     RUN syft / -o json=sbom.syft.json -o spdx-json=sbom.spdx.json
-    SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL build/${VARIANT}-${FLAVOR}-${TAG}-sbom.syft.json
-    SAVE ARTIFACT /build/sbom.spdx.json sbom.spdx.json AS LOCAL build/${VARIANT}-${FLAVOR}-${TAG}-sbom.spdx.json
+    SAVE ARTIFACT /build/sbom.syft.json sbom.syft.json AS LOCAL build/${ISO_NAME}-sbom.syft.json
+    SAVE ARTIFACT /build/sbom.spdx.json sbom.spdx.json AS LOCAL build/${ISO_NAME}-sbom.spdx.json
 
 ipxe-iso:
     FROM ubuntu
@@ -295,7 +296,6 @@ ipxe-iso:
                            mtools syslinux isolinux gcc-arm-none-eabi git make gcc liblzma-dev mkisofs xorriso
                            # jq docker
     WORKDIR /build
-    ARG ISO_NAME=${OS_ID}
     RUN git clone https://github.com/ipxe/ipxe
     IF [ "$ipxe_script" = "" ]
         COPY +netboot/ipxe /build/ipxe/script.ipxe
@@ -303,8 +303,8 @@ ipxe-iso:
         COPY $ipxe_script /build/ipxe/script.ipxe
     END
     RUN cd ipxe/src && make EMBED=/build/ipxe/script.ipxe
-    SAVE ARTIFACT /build/ipxe/src/bin/ipxe.iso iso AS LOCAL build/${ISO_NAME}-ipxe.iso.ipxe
-    SAVE ARTIFACT /build/ipxe/src/bin/ipxe.usb usb AS LOCAL build/${ISO_NAME}-ipxe-usb.img.ipxe
+    SAVE ARTIFACT /build/ipxe/src/bin/ipxe.iso iso AS LOCAL build/${ISO_NAME}-ipxe.iso
+    SAVE ARTIFACT /build/ipxe/src/bin/ipxe.usb usb AS LOCAL build/${ISO_NAME}-ipxe-usb.img
 
 ## Security targets
 trivy:
