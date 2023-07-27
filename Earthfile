@@ -246,7 +246,9 @@ arm-image:
   FROM $OSBUILDER_IMAGE
   ARG MODEL=rpi64
   ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
-  ARG IMAGE_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}.img
+  # TARGETARCH is not used here because OSBUILDER_IMAGE is not available in arm64. When this changes, then the caller
+  # of this target can simply pass the desired TARGETARCH.
+  ARG IMAGE_NAME=${OS_ID}-${VARIANT}-${DISTRO}-arm64-${MODEL}-${VERSION}-k3s${K3S_VERSION}.img
   WORKDIR /build
 
   ENV SIZE="15200"
