@@ -65,7 +65,7 @@ all-arm:
   ARG SECURITY_SCANS=true
   BUILD --platform=linux/arm64 +docker
   IF [ "$SECURITY_SCANS" = "true" ]
-      BUILD --platform=linux/arm64  +image-sbom
+      BUILD --platform=linux/arm64  +image-sbom --MODEL=rpi64
   END
   BUILD +arm-image --MODEL=rpi64
   DO +RELEASEVERSION
@@ -245,7 +245,8 @@ arm-image:
   ARG COMPRESS_IMG=true
   FROM $OSBUILDER_IMAGE
   ARG MODEL=rpi64
-  ARG IMAGE_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}.img
+  ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
+  ARG IMAGE_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}-k3s${K3S_VERSION}.img
   WORKDIR /build
 
   ENV SIZE="15200"
@@ -288,6 +289,7 @@ image-sbom:
     ARG TAG
     ARG FLAVOR
     ARG VARIANT
+    ARG MODEL
     IF [ "$TARGETARCH" = "arm64" ]
         ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
         ARG ISO_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}
