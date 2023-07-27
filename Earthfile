@@ -226,7 +226,12 @@ iso:
 netboot:
    FROM opensuse/leap
    ARG VERSION
-   ARG ISO_NAME
+   IF [ "$TARGETARCH" = "arm64" ]
+       ARG DISTRO=$(echo $FLAVOR | sed 's/-arm-.*//')
+       ARG ISO_NAME=${OS_ID}-${VARIANT}-${DISTRO}-${TARGETARCH}-${MODEL}-${VERSION}
+   ELSE
+       ARG ISO_NAME=${OS_ID}-${VARIANT}-${FLAVOR}-${TARGETARCH}-${MODEL}-${VERSION}
+   END
    WORKDIR /build
    COPY +iso/kairos.iso kairos.iso
    COPY . .
