@@ -36,6 +36,10 @@
     "k3s_version": "v1.25.11+k3s1"
   },
   {
+    "flavor": "rockylinux",
+    "k3s_version": "v1.25.11+k3s1"
+  },
+  {
     "flavor": "opensuse-leap",
     "k3s_version": "v1.26.6+k3s1"
   },
@@ -72,6 +76,10 @@
     "k3s_version": "v1.26.6+k3s1"
   },
   {
+    "flavor": "rockylinux",
+    "k3s_version": "v1.26.6+k3s1"
+  },
+  {
     "flavor": "opensuse-leap",
     "k3s_version": "v1.27.3+k3s1"
   },
@@ -105,6 +113,10 @@
   },
   {
     "flavor": "debian",
+    "k3s_version": "v1.27.3+k3s1"
+  },
+  {
+    "flavor": "rockylinux",
     "k3s_version": "v1.27.3+k3s1"
   }
 ]
