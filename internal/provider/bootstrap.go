@@ -54,7 +54,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
 	}
 
-	utils.SH("elemental run-stage kairos-agent.bootstrap")    //nolint:errcheck
+	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
 	bus.RunHookScript("/usr/bin/kairos-agent.bootstrap.hook") //nolint:errcheck
 
 	logLevel := "debug"

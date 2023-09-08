@@ -89,7 +89,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 
 		c.Logger.Info("Configuring k3s-agent", masterIP, nodeToken, args)
 
-		utils.SH(fmt.Sprintf("elemental run-stage provider-kairos.bootstrap.before.%s", "worker")) //nolint:errcheck
+		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", "worker")) //nolint:errcheck
 
 		// Setup systemd unit and starts it
 		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
@@ -120,7 +120,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return err
 		}
 
-		utils.SH(fmt.Sprintf("elemental run-stage provider-kairos.bootstrap.after.%s", "worker")) //nolint:errcheck
+		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.after.%s", "worker")) //nolint:errcheck
 
 		return role.CreateSentinel()
 	}
