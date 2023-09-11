@@ -59,6 +59,9 @@ Contribute
 
 This repository generates Kairos images with full-mesh support. full-mesh support currently is available only with k3s, and the provider follows strictly k3s releases.
 
+> [!NOTE] 
+> The provider-kairos release pipelines have been merged with the kairos ones from version `2.4.0` onward. All image artifacts are released from the kairos repository, both core images and standard images (those with the provider).
+
 To use Kairos with mesh support, either download the bootable medium in the releases. 
 
 Follow up the examples in our documentation on how to get started:
