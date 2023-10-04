@@ -21,7 +21,7 @@ ARG BASE_REPO=quay.io/kairos
 ARG IMAGE=${BASE_REPO}/${OS_ID}-${FLAVOR}:$TAG
 ARG BASE_IMAGE=quay.io/kairos/core-${FLAVOR}:${CORE_VERSION}
 # renovate: datasource=docker depName=quay.io/kairos/osbuilder-tools versioning=semver-coerced
-ARG OSBUILDER_VERSION=v0.8.2
+ARG OSBUILDER_VERSION=v0.9.0
 ARG OSBUILDER_IMAGE=quay.io/kairos/osbuilder-tools:$OSBUILDER_VERSION
 
 ## External deps pinned versions
