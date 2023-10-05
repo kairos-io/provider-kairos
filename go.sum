@@ -1,6 +1,8 @@
 atomicgo.dev/assert v0.0.2 h1:FiKeMiZSgRrZsPo9qn/7vmr7mCsh5SZyXY4YGYiYwrg=
 atomicgo.dev/cursor v0.1.1 h1:0t9sxQomCTRh5ug+hAMCs59x/UmC9QL6Ci5uosINKD4=
 atomicgo.dev/cursor v0.1.1/go.mod h1:Lr4ZJB3U7DfPPOkbH7/6TOtJ4vFGHlgj1nc+n900IpU=
+atomicgo.dev/cursor v0.1.3 h1:w8GcylMdZRyFzvDiGm3wy3fhZYYT7BwaqNjUFHxo0NU=
+atomicgo.dev/cursor v0.1.3/go.mod h1:Lr4ZJB3U7DfPPOkbH7/6TOtJ4vFGHlgj1nc+n900IpU=
 atomicgo.dev/keyboard v0.2.9 h1:tOsIid3nlPLZ3lwgG8KZMp/SFmr7P0ssEN5JUsm78K8=
 atomicgo.dev/keyboard v0.2.9/go.mod h1:BC4w9g00XkxH/f1HXhW2sXmJFOCWbKn9xrOunSFtExQ=
 atomicgo.dev/schedule v0.0.2 h1:2e/4KY6t3wokja01Cyty6qgkQM8MotJzjtqCH70oX2Q=
@@ -327,6 +329,8 @@ github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230710123948-9c5731baa2e3 h1:2/
 github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230710123948-9c5731baa2e3/go.mod h1:+zG2JtLuTE9TDwiXJg9/jqcD/G59PhdN+Z0G5dcGiJk=
 github.com/kairos-io/kairos-sdk v0.0.9 h1:DnuvmnCTDBQg0nr3siaXb5pspi+GUsf1rPb0MFOTdTc=
 github.com/kairos-io/kairos-sdk v0.0.9/go.mod h1:Z+1CLqMZq97bzwX2XSIArr8EoniMth3mMYkOOb8L3QY=
+github.com/kairos-io/kairos-sdk v0.0.14 h1:yVKaay70cjmAUY6m4uLoV9UguBv3Dx3JxAh2faRlUZo=
+github.com/kairos-io/kairos-sdk v0.0.14/go.mod h1:+fhVoCEA2hD7OFTmhDmy4pP3uC9q84OYhDa7irkEVWQ=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
@@ -573,6 +577,8 @@ github.com/pterm/pterm v0.12.36/go.mod h1:NjiL09hFhT/vWjQHSj1athJpx6H8cjpHXNAK5b
 github.com/pterm/pterm v0.12.40/go.mod h1:ffwPLwlbXxP+rxT0GsgDTzS3y3rmpAO1NMjUkGTYf8s=
 github.com/pterm/pterm v0.12.62 h1:Xjj5Wl6UR4Il9xOiDUOZRwReRTdO75if/JdWsn9I59s=
 github.com/pterm/pterm v0.12.62/go.mod h1:+c3ujjE7N5qmNx6eKAa7YVSC6m/gCorJJKhzwYTbL90=
+github.com/pterm/pterm v0.12.63 h1:fHlrpFiI9qLtEU0TWDWMU+tAt4qKJ/s157BEAPtGm8w=
+github.com/pterm/pterm v0.12.63/go.mod h1:Bq1eoUJ6BhUzzXG8WxA4l7T3s7d3Ogwg7v9VXlsVat0=
 github.com/qeesung/image2ascii v1.0.1 h1:Fe5zTnX/v/qNC3OC4P/cfASOXS501Xyw2UUcgrLgtp4=
 github.com/qeesung/image2ascii v1.0.1/go.mod h1:kZKhyX0h2g/YXa/zdJR3JnLnJ8avHjZ3LrvEKSYyAyU=
 github.com/quic-go/qpack v0.4.0 h1:Cr9BXA1sQS2SmDUWjSofMPNKmvF6IiIfDRmgU0w1ZCo=

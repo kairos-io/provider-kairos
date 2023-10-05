@@ -11,14 +11,14 @@ require (
 	github.com/google/go-containerregistry v0.15.2
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230710123948-9c5731baa2e3
-	github.com/kairos-io/kairos-sdk v0.0.9
+	github.com/kairos-io/kairos-sdk v0.0.14
 	github.com/luthermonson/go-proxmox v0.0.0-alpha3
 	github.com/mudler/edgevpn v0.23.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20220724164624-c45b5c61312d
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.10
-	github.com/pterm/pterm v0.12.62
+	github.com/pterm/pterm v0.12.63
 	github.com/samber/lo v1.38.1
 	github.com/spectrocloud/peg v0.0.0-20230517140709-5c01c852c557
 	github.com/urfave/cli/v2 v2.25.7
@@ -38,7 +38,7 @@ require (
 )
 
 require (
-	atomicgo.dev/cursor v0.1.1 // indirect
+	atomicgo.dev/cursor v0.1.3 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.0.2 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
