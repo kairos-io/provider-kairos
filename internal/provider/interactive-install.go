@@ -12,7 +12,7 @@ import (
 func InteractiveInstall(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 	prompts := []bus.YAMLPrompt{
 		{
-			YAMLSection: "kairos.network_token",
+			YAMLSection: "p2p.network_token",
 			Prompt:      "Insert a network token, leave empty to autogenerate",
 			AskFirst:    true,
 			AskPrompt:   "Do you want to setup a full mesh-support?",
