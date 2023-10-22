@@ -27,7 +27,6 @@ builds:
     id: "kairosctl"
     binary: "kairosctl"
 source:
-  rlcp: true
   enabled: true
   name_template: 'kairos-cli-{{ .Tag }}-source'
 archives:
