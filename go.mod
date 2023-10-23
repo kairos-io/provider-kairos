@@ -1,6 +1,8 @@
 module github.com/kairos-io/provider-kairos/v2
 
-go 1.18
+// as soon as https://github.com/kairos-io/provider-kairos/actions/runs/6123251646/job/16620757329#step:7:224
+// is fixed, we are able to switch to go 1.21
+go 1.20
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
