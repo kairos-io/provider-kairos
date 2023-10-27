@@ -3,7 +3,6 @@ package role
 import (
 	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/kairos-io/kairos-agent/v2/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
@@ -13,8 +12,6 @@ import (
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error { //nolint:revive
-	rand.Seed(time.Now().Unix())
-
 	// Assign roles to nodes
 	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
 	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
