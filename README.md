@@ -57,18 +57,18 @@ Contribute
 
 ## Provider kairos
 
-This repository generates Kairos images with full-mesh support. full-mesh support currently is available only with k3s, and the provider follows strictly k3s releases.
+This repository hosts the code for provider binary used in Kairos "standard" images which offer full-mesh support.
+full-mesh support currently is available only with k3s, and the provider follows strictly k3s releases.
 
 > [!NOTE] 
 > The provider-kairos release pipelines have been merged with the kairos ones from version `2.4.0` onward. All image artifacts are released from the kairos repository, both core images and standard images (those with the provider).
 
-To use Kairos with mesh support, either download the bootable medium in the releases. 
+To use Kairos with mesh support, download the bootable medium form the [kairos releases](https://github.com/kairos-io/kairos/releases).
 
 Follow up the examples in our documentation on how to get started:
 - https://kairos.io/docs/examples/single-node/
 - https://kairos.io/docs/examples/multi-node/
 - https://kairos.io/docs/examples/multi-node-p2p-ha-kubevip/
-
 
 ## Upgrades
 
