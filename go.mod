@@ -8,7 +8,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 
 require (
 	github.com/bramvdbogaerde/go-scp v1.2.1
-	github.com/creack/pty v1.1.19-0.20220421211855-0d412c9fbeb1
+	github.com/creack/pty v1.1.20
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.15.2
 	github.com/ipfs/go-log v1.0.5
