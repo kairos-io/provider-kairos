@@ -451,6 +451,7 @@ github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0/go.mod h1:zJYVVT2
 github.com/lunixbochs/vtclean v1.0.0/go.mod h1:pHhQNgMf3btfWnGBVipUOjRYhoOsdGqdm/+2c2E2WMI=
 github.com/luthermonson/go-proxmox v0.0.0-alpha3 h1:HywsFQf2Xr1am2GoCJEFey0IN25w23AySXxO+KbfkL0=
 github.com/luthermonson/go-proxmox v0.0.0-alpha3/go.mod h1:vaCzhWez7HzvjDU8ACmJrVA4zKiQndqRNYnO4Usu/iM=
+github.com/luthermonson/go-proxmox v0.0.0-beta1/go.mod h1:wkD6045y9lKBCP0sJGjNqmlBCo0vwRwnfhmsrPBTu34=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e h1:H+t6A/QJMbhCSEH5rAuRxh+CtW96g0Or0Fxa9IKr4uc=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e/go.mod h1:KxxjdtRkfNoYDCUP5ryK7XJJNTnpC8atvtmTheChOtk=
 github.com/magefile/mage v1.14.0 h1:6QDX3g6z1YvJ4olPhT1wksUcSa/V0a1B+pJb73fBjyo=
