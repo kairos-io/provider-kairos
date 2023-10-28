@@ -14,7 +14,7 @@ require (
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.1.11-0.20230710123948-9c5731baa2e3
 	github.com/kairos-io/kairos-sdk v0.0.15
-	github.com/luthermonson/go-proxmox v0.0.0-alpha3
+	github.com/luthermonson/go-proxmox v0.0.0-beta1
 	github.com/mudler/edgevpn v0.24.4
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
