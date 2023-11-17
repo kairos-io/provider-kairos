@@ -176,6 +176,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 }
 
 func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
 		return nil
@@ -196,13 +197,22 @@ func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSet
 	}
 
 	if utils.IsOpenRCBased() {
-		svc, _ = openrc.NewService(
+		svc, err = openrc.NewService(
 			openrc.WithName(svcName),
 		)
+		if err != nil {
+			l.Errorf("Failed to create service: %s", err.Error())
+			return err
+		}
 	} else {
-		svc, _ = systemd.NewService(
+		svc, err = systemd.NewService(
 			systemd.WithName(svcName),
+			systemd.WithUnitContent("[Service]\nExecStart="),
 		)
+		if err != nil {
+			l.Errorf("Failed to create service: %s", err.Error())
+			return err
+		}
 	}
 
 	envFile := machine.K3sEnvUnit(svcName)
@@ -214,27 +224,39 @@ func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSet
 	if err := utils.WriteEnv(envFile,
 		k3sConfig.Env,
 	); err != nil {
+		l.Errorf("Failed to write env file: %s", err.Error())
 		return err
 	}
 
 	k3sbin := utils.K3sBin()
 	if k3sbin == "" {
+		l.Errorf("no k3s binary found (?)")
 		return fmt.Errorf("no k3s binary found (?)")
 	}
 	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k3sbin, svcRole, strings.Join(k3sConfig.Args, " "))); err != nil {
+		l.Errorf("Failed to override k3s command: %s", err.Error())
+		return err
+	}
+
+	err = svc.WriteUnit()
+	if err != nil {
+		l.Errorf("Failed to write service: %s", err.Error())
 		return err
 	}
 
 	if err := svc.Start(); err != nil {
+		l.Errorf("Failed to start service: %s", err.Error())
 		return err
 	}
 
 	if err := svc.Enable(); err != nil {
+		l.Errorf("Failed to enable service: %s", err.Error())
 		return err
 	}
 
 	if c.P2P != nil && c.P2P.VPNNeedsCreation() {
 		if err := vpnSetupFN(); err != nil {
+			l.Errorf("Failed to setup VPN: %s", err.Error())
 			return err
 		}
 	}
