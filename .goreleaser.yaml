@@ -10,6 +10,7 @@ builds:
     goarch:
       - amd64
       - '386'
+      - arm64
     main: ./
     id: "kairos-cli"
     binary: "kairos-cli"
@@ -23,6 +24,7 @@ builds:
     goarch:
       - amd64
       - '386'
+      - arm64
     main: ./cli/kairosctl
     id: "kairosctl"
     binary: "kairosctl"
