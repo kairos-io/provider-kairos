@@ -27,7 +27,5 @@ func Start() error {
 
 	factory.Add(bus.EventInteractiveInstall, InteractiveInstall)
 
-	factory.Add(bus.EventAvailableReleases, ListVersions)
-
 	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
 }
