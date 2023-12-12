@@ -29,7 +29,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3
+require github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
