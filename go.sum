@@ -445,6 +445,8 @@ github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfV
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3 h1:HlHW1DfV/WcCphzR5uZh+NyECDLb1KlIbzbzVYvFG5Y=
 github.com/kairos-io/go-nodepair v0.0.0-20230424150716-d8f0757542c3/go.mod h1:KH11wbkXxTMJrtRLjzycCqmYMoUjGJAz2gduHlQ9r8w=
+github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c h1:WrN/o8OskRmdEXiNVYsKv6QZPPkJIX2V7Jvt4cPsCAs=
+github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c/go.mod h1:cxk6j3VTn/VUG4NxGTYkMr3GLfs5zt4X19j+tEQSZiI=
 github.com/kairos-io/kairos-agent/v2 v2.4.5 h1:xEbscaVgao6qD0aHvuytT/pWNy0ase6y8+9LjRSL2gs=
 github.com/kairos-io/kairos-agent/v2 v2.4.5/go.mod h1:WE1yuwnbDVhqkLnUMdQXuCzJ/3bXFq64FUHzvB3SrEo=
 github.com/kairos-io/kairos-sdk v0.0.17 h1:rBdtONkkRoIxtenB6BYb7Sir1Ss2yveSobyC7wC/fYU=
