@@ -10,7 +10,7 @@ require (
 	github.com/bramvdbogaerde/go-scp v1.2.1
 	github.com/creack/pty v1.1.20
 	github.com/gliderlabs/ssh v0.2.2
-	github.com/google/go-containerregistry v0.15.2
+	github.com/google/go-containerregistry v0.17.0
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.4.5
 	github.com/kairos-io/kairos-sdk v0.0.17
@@ -79,9 +79,9 @@ require (
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/diskfs/go-diskfs v1.3.0 // indirect
 	github.com/distribution/distribution v2.8.2+incompatible // indirect
-	github.com/docker/cli v23.0.5+incompatible // indirect
-	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v23.0.6+incompatible // indirect
+	github.com/docker/cli v24.0.0+incompatible // indirect
+	github.com/docker/distribution v2.8.2+incompatible // indirect
+	github.com/docker/docker v24.0.0+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
