@@ -166,13 +166,13 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 
 		svc, err := machine.K3s()
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get k3s service: %w", err)
 		}
 
 		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s"),
 			env,
 		); err != nil {
-			return err
+			return fmt.Errorf("failed to write the k3s service: %w", err)
 		}
 
 		args := genArgs(pconfig, ip, ifaceIP)
@@ -207,23 +207,27 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 		}
 
 		if err := svc.OverrideCmd(fmt.Sprintf("%s server %s", k3sbin, strings.Join(args, " "))); err != nil {
-			return err
+			return fmt.Errorf("failed to override k3s command: %w", err)
 		}
 
 		if err := svc.Start(); err != nil {
-			return err
+			return fmt.Errorf("failed to start k3s service: %w", err)
 		}
 
 		if err := svc.Enable(); err != nil {
-			return err
+			return fmt.Errorf("failed to enable k3s service: %w", err)
 		}
 
 		if err := propagateMasterData(ip, c, clusterInit, ha, roleName); err != nil {
-			return err
+			return fmt.Errorf("failed to propagate master data: %w", err)
 		}
 
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.after.%s", roleName)) //nolint:errcheck
 
-		return role.CreateSentinel()
+		if err := role.CreateSentinel(); err != nil {
+			return fmt.Errorf("failed to create sentinel: %w", err)
+		}
+
+		return nil
 	}
 }
