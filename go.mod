@@ -22,7 +22,7 @@ require (
 	github.com/onsi/gomega v1.30.0
 	github.com/pterm/pterm v0.12.65
 	github.com/samber/lo v1.38.1
-	github.com/spectrocloud/peg v0.0.0-20230517140709-5c01c852c557
+	github.com/spectrocloud/peg v0.0.0-20231002135825-d1dc260381ac
 	github.com/urfave/cli/v2 v2.25.7
 	go.uber.org/zap v1.25.0
 	golang.org/x/crypto v0.14.0
