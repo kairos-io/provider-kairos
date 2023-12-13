@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	iCli "github.com/kairos-io/provider-kairos/v2/internal/cli"
 	"os"
 
+	iCli "github.com/kairos-io/provider-kairos/v2/internal/cli"
 	"github.com/urfave/cli/v2"
 )
 

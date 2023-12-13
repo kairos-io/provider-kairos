@@ -1,4 +1,4 @@
-package rotate
+package token
 
 import (
 	"errors"

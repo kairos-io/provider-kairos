@@ -27,6 +27,11 @@ jobs:
         with:
           repository: quay.io/kairos/packages
           packages: utils/earthly
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          version: latest
+          args: --snapshot --clean
       - name: Run tests
         run: |
           earthly +test
