@@ -7,7 +7,7 @@ go 1.20
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
 require (
-	github.com/creack/pty v1.1.20
+	github.com/creack/pty v1.1.21
 	github.com/gliderlabs/ssh v0.2.2
 	github.com/google/go-containerregistry v0.15.2 // indirect
 	github.com/ipfs/go-log v1.0.5
