@@ -33,6 +33,7 @@ source:
 archives:
   # Default template uses underscores instead of -
   - name_template: >-
+    allow_different_binary_count: true
   - name_template: "kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     id: kairos-id
     builds:
