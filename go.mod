@@ -12,7 +12,7 @@ require (
 	github.com/google/go-containerregistry v0.15.2 // indirect
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.4.5
-	github.com/kairos-io/kairos-sdk v0.0.17
+	github.com/kairos-io/kairos-sdk v0.0.19
 	github.com/mudler/edgevpn v0.24.4
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
@@ -20,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.30.0
 	github.com/pterm/pterm v0.12.65
 	github.com/samber/lo v1.38.1
-	github.com/urfave/cli/v2 v2.25.7
+	github.com/urfave/cli/v2 v2.26.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
