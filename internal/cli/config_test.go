@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/kairos-io/kairos-agent/v2/pkg/config"
-	. "github.com/kairos-io/provider-kairos/v2/internal/cli"
+	. "github.com/kairos-io/provider-kairos/v2/internal/cli/token"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/yaml.v2"

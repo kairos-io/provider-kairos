@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kairos-io/kairos-sdk/bus"
 	iCli "github.com/kairos-io/provider-kairos/v2/internal/cli"
-	"github.com/kairos-io/provider-kairos/v2/internal/provider"
 	"github.com/urfave/cli/v2"
 )
 
@@ -19,10 +17,6 @@ func checkErr(err error) {
 }
 
 func main() {
-	if len(os.Args) >= 2 && bus.IsEventDefined(os.Args[1]) {
-		checkErr(provider.Start())
-	}
-
 	checkErr(Start())
 }
 

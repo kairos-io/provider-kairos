@@ -1,4 +1,4 @@
-package cli
+package token
 
 import (
 	"errors"
