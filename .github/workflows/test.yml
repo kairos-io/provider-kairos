@@ -27,11 +27,6 @@ jobs:
         with:
           repository: quay.io/kairos/packages
           packages: utils/earthly
-      - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          version: latest
-          args: --snapshot --clean
       - name: Run tests
         run: |
           earthly +test
@@ -39,6 +34,13 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.out
+      - name: Generate version
+        run: echo "VERSION=$(git describe --always --tags --dirty)" >> $GITHUB_ENV
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          version: latest
+          args: --snapshot --clean
       - uses: actions/upload-artifact@v3
         with:
           name: build.zip
