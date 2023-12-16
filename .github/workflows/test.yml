@@ -41,7 +41,7 @@ jobs:
         with:
           version: latest
           args: --snapshot --clean
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build.zip
           path: |
