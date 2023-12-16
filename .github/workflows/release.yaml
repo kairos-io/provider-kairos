@@ -22,13 +22,13 @@ jobs:
           go-version-file: 'go.mod'
       - name: (dry-run) GoReleaser
         if: startsWith(github.ref_name, 'test-goreleaser')
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
           args: release --skip=validate,publish
       - name: Run GoReleaser
         if: startsWith(github.ref_name, 'test-goreleaser') != true
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
           args: release --clean
