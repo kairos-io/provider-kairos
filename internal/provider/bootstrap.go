@@ -205,6 +205,12 @@ func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSet
 			return err
 		}
 
+		if len(content) == 0 {
+			err = fmt.Errorf("empty init file for k3s")
+			l.Errorf("openrc error: %s", err.Error())
+			return err
+		}
+
 		svc, err = openrc.NewService(
 			openrc.WithName(svcName),
 			openrc.WithUnitContent(string(content)),
