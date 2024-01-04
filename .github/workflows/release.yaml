@@ -17,7 +17,7 @@ jobs:
       - name: Generate version
         run: echo "VERSION=$(git describe --always --tags --dirty)" >> $GITHUB_ENV
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
       - name: (dry-run) GoReleaser
