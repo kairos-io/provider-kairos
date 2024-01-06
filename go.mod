@@ -12,7 +12,7 @@ require (
 	github.com/google/go-containerregistry v0.15.2 // indirect
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.4.5
-	github.com/kairos-io/kairos-sdk v0.0.21
+	github.com/kairos-io/kairos-sdk v0.0.22
 	github.com/mudler/edgevpn v0.24.6
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
