@@ -2,7 +2,9 @@ module github.com/kairos-io/provider-kairos/v2
 
 // as soon as https://github.com/kairos-io/provider-kairos/actions/runs/6123251646/job/16620757329#step:7:224
 // is fixed, we are able to switch to go 1.21
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
@@ -18,7 +20,7 @@ require (
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
 	github.com/onsi/ginkgo/v2 v2.13.2
 	github.com/onsi/gomega v1.30.0
-	github.com/pterm/pterm v0.12.65
+	github.com/pterm/pterm v0.12.71
 	github.com/samber/lo v1.38.1
 	github.com/urfave/cli/v2 v2.26.0
 	go.uber.org/zap v1.26.0
@@ -34,7 +36,7 @@ require github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
-	atomicgo.dev/schedule v0.0.2 // indirect
+	atomicgo.dev/schedule v0.1.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
@@ -101,7 +103,7 @@ require (
 	github.com/google/pprof v0.0.0-20230821062121-407c9e7a662f // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.4.0 // indirect
-	github.com/gookit/color v1.5.3 // indirect
+	github.com/gookit/color v1.5.4 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
