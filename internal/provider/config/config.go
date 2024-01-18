@@ -45,6 +45,7 @@ type KubeVIP struct {
 	ManifestURL string   `yaml:"manifest_url,omitempty"`
 	Interface   string   `yaml:"interface,omitempty"`
 	Enable      *bool    `yaml:"enable,omitempty"`
+	StaticPod   bool     `yaml:"static_pod,omitempty"`
 }
 
 func (k KubeVIP) IsEnabled() bool {

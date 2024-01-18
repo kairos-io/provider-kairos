@@ -12,8 +12,8 @@ import (
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 )
 
-func generateKubeVIP(iface, ip string, args []string) (string, error) {
-	out, err := utils.SH(fmt.Sprintf("kube-vip manifest daemonset --interface %s --address %s --inCluster --taint --controlplane --arp --leaderElection %s", iface, ip, strings.Join(args, " ")))
+func generateKubeVIP(command string, iface, ip string, args []string) (string, error) {
+	out, err := utils.SH(fmt.Sprintf("kube-vip manifest %s --interface %s --address %s --inCluster --taint --controlplane --arp --leaderElection %s", command, iface, ip, strings.Join(args, " ")))
 
 	if err != nil {
 		return "", fmt.Errorf("error: %w - %s", err, out)
@@ -41,12 +41,21 @@ func downloadFromURL(url, where string) error {
 }
 
 func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
-	if err := os.MkdirAll("/var/lib/rancher/k3s/server/manifests/", 0650); err != nil {
+	manifestDirectory := "/var/lib/rancher/k3s/server/manifests/"
+	if pconfig.K3sAgent.Enabled {
+		manifestDirectory = "/var/lib/rancher/k3s/agent/pod-manifests/"
+	}
+	if err := os.MkdirAll(manifestDirectory, 0650); err != nil {
 		return fmt.Errorf("could not create manifest dir")
 	}
 
-	targetFile := "/var/lib/rancher/k3s/server/manifests/kubevip.yaml"
-	targetCRDFile := "/var/lib/rancher/k3s/server/manifests/kubevipmanifest.yaml"
+	targetFile := manifestDirectory + "kubevip.yaml"
+	targetCRDFile := manifestDirectory + "kubevipmanifest.yaml"
+
+	command := "daemonset"
+	if pconfig.KubeVIP.StaticPod {
+		command = "pod"
+	}
 
 	if pconfig.KubeVIP.ManifestURL != "" {
 		err := downloadFromURL(pconfig.KubeVIP.ManifestURL, targetCRDFile)
@@ -71,7 +80,7 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 		}
 	}
 
-	content, err := generateKubeVIP(iface, ip, pconfig.KubeVIP.Args)
+	content, err := generateKubeVIP(command, iface, ip, pconfig.KubeVIP.Args)
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
