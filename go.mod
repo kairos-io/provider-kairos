@@ -8,7 +8,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 
 require (
 	github.com/creack/pty v1.1.21
-	github.com/gliderlabs/ssh v0.2.2
+	github.com/gliderlabs/ssh v0.3.7
 	github.com/google/go-containerregistry v0.15.2 // indirect
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/kairos-agent/v2 v2.4.5
@@ -22,7 +22,7 @@ require (
 	github.com/samber/lo v1.38.1
 	github.com/urfave/cli/v2 v2.26.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/mod v0.13.0 // indirect
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
@@ -43,7 +43,7 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20220623141421-5afb4c282135 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
-	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 // indirect
+	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
@@ -264,9 +264,9 @@ require (
 	golang.org/x/image v0.6.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
-	golang.org/x/sys v0.14.0 // indirect
-	golang.org/x/term v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
