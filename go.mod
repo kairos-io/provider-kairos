@@ -4,8 +4,6 @@ module github.com/kairos-io/provider-kairos/v2
 // is fixed, we are able to switch to go 1.21
 go 1.21
 
-toolchain go1.22.2
-
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
 require (
