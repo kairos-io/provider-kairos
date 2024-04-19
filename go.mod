@@ -10,7 +10,7 @@ require (
 	github.com/creack/pty v1.1.21
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/google/go-containerregistry v0.19.1 // indirect
-	github.com/ipfs/go-log v1.0.5
+	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/kairos-agent/v2 v2.9.1
 	github.com/kairos-io/kairos-sdk v0.1.1
 	github.com/mudler/edgevpn v0.25.1
@@ -29,7 +29,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
+require (
+	github.com/ipfs/go-log v1.0.5
+	github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
+)
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
@@ -119,7 +122,6 @@ require (
 	github.com/ipfs/boxo v0.10.0 // indirect
 	github.com/ipfs/go-cid v0.4.1 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
-	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/ipld/go-ipld-prime v0.20.0 // indirect
 	github.com/itchyny/gojq v0.12.15 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
