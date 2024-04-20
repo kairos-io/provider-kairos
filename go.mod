@@ -24,7 +24,6 @@ require (
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -32,6 +31,7 @@ require (
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
