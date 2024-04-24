@@ -166,7 +166,7 @@ For all the example cases, see: https://kairos.io/docs/
 					},
 				},
 				Action: func(c *cli.Context) error {
-					return StartRecoveryService(c.String("token"), c.String("service"), c.String("password"), c.String("listen"))
+					return StartRecoveryService(c)
 				},
 			},
 			RegisterCMD(toolName),

@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
-	"runtime"
 	"time"
-
-	edgevpnConfig "github.com/mudler/edgevpn/pkg/config"
 
 	"github.com/ipfs/go-log"
 
@@ -18,49 +15,12 @@ import (
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/mudler/edgevpn/pkg/services"
 	"github.com/pterm/pterm"
+	cliV2 "github.com/urfave/cli/v2"
 )
 
-func networkConfig(token, address, loglevel, i string) *edgevpnConfig.Config {
-	return &edgevpnConfig.Config{
-		NetworkToken:   token,
-		Address:        address,
-		Libp2pLogLevel: "error",
-		FrameTimeout:   "30s",
-		BootstrapIface: true,
-		LogLevel:       loglevel,
-		LowProfile:     true,
-		Interface:      i,
-		Concurrency:    runtime.NumCPU(),
-		PacketMTU:      1420,
-		InterfaceMTU:   1200,
-		Ledger: edgevpnConfig.Ledger{
-			AnnounceInterval: time.Duration(30) * time.Second,
-			SyncInterval:     time.Duration(30) * time.Second,
-		},
-		NAT: edgevpnConfig.NAT{
-			Service:           true,
-			Map:               true,
-			RateLimit:         true,
-			RateLimitGlobal:   10,
-			RateLimitPeer:     10,
-			RateLimitInterval: time.Duration(10) * time.Second,
-		},
-		Discovery: edgevpnConfig.Discovery{
-			DHT:      true,
-			MDNS:     true,
-			Interval: time.Duration(120) * time.Second,
-		},
-		Connection: edgevpnConfig.Connection{
-			AutoRelay:      true,
-			MaxConnections: 100,
-			HolePunch:      true,
-		},
-	}
-}
-
-func startRecoveryService(ctx context.Context, token, name, address, loglevel string) error {
-
-	nc := networkConfig(token, "", loglevel, "kairosrecovery0")
+func startRecoveryService(ctx context.Context, loglevel string, c *cliV2.Context) error {
+	c.Set("log-level", loglevel)
+	nc := configFromContext(c)
 
 	lvl, err := log.LevelFromString(loglevel)
 	if err != nil {
@@ -83,7 +43,7 @@ func startRecoveryService(ctx context.Context, token, name, address, loglevel st
 	// if err != nil {
 	// 	return err
 	// }
-	o = append(o, services.RegisterService(llger, time.Duration(5*time.Second), name, address)...)
+	o = append(o, services.RegisterService(llger, time.Duration(5*time.Second), c.String("service"), c.String("listen"))...)
 
 	e, err := node.New(o...)
 	if err != nil {
@@ -125,14 +85,14 @@ func sshServer(listenAdddr, password string) {
 	))
 }
 
-func StartRecoveryService(tk, serviceUUID, generatedPassword, listenAddr string) error {
+func StartRecoveryService(c *cliV2.Context) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	if err := startRecoveryService(ctx, tk, serviceUUID, listenAddr, "fatal"); err != nil {
+	if err := startRecoveryService(ctx, "fatal", c); err != nil {
 		return err
 	}
 
-	sshServer(listenAddr, generatedPassword)
+	sshServer(c.String("listen"), c.String("password"))
 
 	return fmt.Errorf("should not return")
 }

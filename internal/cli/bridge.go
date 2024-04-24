@@ -9,11 +9,15 @@ import (
 	"github.com/ipfs/go-log"
 	qr "github.com/kairos-io/go-nodepair/qrcode"
 	"github.com/kairos-io/kairos-sdk/utils"
+	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
 	"github.com/mudler/edgevpn/api"
+	"github.com/mudler/edgevpn/cmd"
+	"github.com/mudler/edgevpn/pkg/config"
 	"github.com/mudler/edgevpn/pkg/logger"
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/mudler/edgevpn/pkg/services"
 	"github.com/mudler/edgevpn/pkg/vpn"
+	"github.com/multiformats/go-multiaddr"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,7 +32,7 @@ func BridgeCMD(toolName string) *cli.Command {
 
 		For example:
 
-		$ sudo %s bridge --network-token <TOKEN>
+		$ sudo %s bridge --token <TOKEN>
 
 		Will start a VPN, which local ip is fixed to 10.1.0.254 (tweakable with --address).
 
@@ -54,61 +58,142 @@ func BridgeCMD(toolName string) *cli.Command {
 		description = "\t\tWARNING: This command will be deprecated in the next release. Please use the new kairosctl binary instead.\n" + description
 	}
 
+	flags := []cli.Flag{
+		&cli.BoolFlag{
+			Name:     "qr-code-snapshot",
+			Required: false,
+			Usage:    "Bool to take a local snapshot instead of reading from an image file for recovery",
+			EnvVars:  []string{"QR_CODE_SNAPSHOT"},
+		},
+		&cli.StringFlag{
+			Name:     "qr-code-image",
+			Usage:    "Path to an image containing a valid QR code for recovery mode",
+			Required: false,
+			EnvVars:  []string{"QR_CODE_IMAGE"},
+		},
+		&cli.StringFlag{
+			Name:  "api",
+			Value: "127.0.0.1:8080",
+			Usage: "Listening API url",
+		},
+		&cli.BoolFlag{
+			Name:    "dhcp",
+			EnvVars: []string{"DHCP"},
+			Usage:   "Enable DHCP",
+		},
+		&cli.StringFlag{
+			Value:   "10.1.0.254/24",
+			Name:    "address",
+			EnvVars: []string{"ADDRESS"},
+			Usage:   "Specify an address for the bridge",
+		},
+		&cli.StringFlag{
+			Value:   "/tmp/kairos",
+			Name:    "lease-dir",
+			EnvVars: []string{"lease-dir"},
+			Usage:   "DHCP Lease directory",
+		},
+		&cli.StringFlag{
+			Name:    "interface",
+			Usage:   "Interface name",
+			Value:   "kairos0",
+			EnvVars: []string{"IFACE"},
+		},
+	}
+
+	flags = append(flags, cmd.CommonFlags...)
+
 	return &cli.Command{
 		Name:        "bridge",
-		UsageText:   fmt.Sprintf("%s %s", toolName, "bridge --network-token XXX"),
+		UsageText:   fmt.Sprintf("%s %s", toolName, "bridge --token XXX"),
 		Usage:       usage,
 		Description: fmt.Sprintf(description, toolName, toolName, toolName),
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "network-token",
-				Required: false,
-				EnvVars:  []string{"NETWORK_TOKEN"},
-				Usage:    "Network token to connect over",
-			},
-			&cli.StringFlag{
-				Name:     "log-level",
-				Required: false,
-				EnvVars:  []string{"LOGLEVEL"},
-				Value:    "info",
-				Usage:    "Bridge log level",
-			},
-			&cli.BoolFlag{
-				Name:     "qr-code-snapshot",
-				Required: false,
-				Usage:    "Bool to take a local snapshot instead of reading from an image file for recovery",
-				EnvVars:  []string{"QR_CODE_SNAPSHOT"},
-			},
-			&cli.StringFlag{
-				Name:     "qr-code-image",
-				Usage:    "Path to an image containing a valid QR code for recovery mode",
-				Required: false,
-				EnvVars:  []string{"QR_CODE_IMAGE"},
-			},
-			&cli.StringFlag{
-				Name:  "api",
-				Value: "127.0.0.1:8080",
-				Usage: "Listening API url",
-			},
-			&cli.BoolFlag{
-				Name:    "dhcp",
-				EnvVars: []string{"DHCP"},
-				Usage:   "Enable DHCP",
-			},
-			&cli.StringFlag{
-				Value:   "10.1.0.254/24",
-				Name:    "address",
-				EnvVars: []string{"ADDRESS"},
-				Usage:   "Specify an address for the bridge",
-			},
-			&cli.StringFlag{
-				Value:   "/tmp/kairos",
-				Name:    "lease-dir",
-				EnvVars: []string{"lease-dir"},
-				Usage:   "DHCP Lease directory",
-			},
+		Flags:       flags,
+		Action:      bridge,
+	}
+}
+
+func stringsToMultiAddr(peers []string) []multiaddr.Multiaddr {
+	res := []multiaddr.Multiaddr{}
+	for _, p := range peers {
+		addr, err := multiaddr.NewMultiaddr(p)
+		if err != nil {
+			continue
+		}
+		res = append(res, addr)
+	}
+	return res
+}
+
+func configFromContext(c *cli.Context) *config.Config {
+	autorelayInterval, err := time.ParseDuration(c.String("autorelay-discovery-interval"))
+	if err != nil {
+		autorelayInterval = 0
+	}
+	var limitConfig *rcmgr.PartialLimitConfig
+	d := map[string]map[string]interface{}{}
+
+	return &config.Config{
+		NetworkConfig:     c.String("config"),
+		NetworkToken:      c.String("token"),
+		Address:           c.String("address"),
+		Router:            c.String("router"),
+		Interface:         c.String("interface"),
+		Libp2pLogLevel:    c.String("libp2p-log-level"),
+		LogLevel:          c.String("log-level"),
+		LowProfile:        c.Bool("low-profile"),
+		Blacklist:         c.StringSlice("blacklist"),
+		Concurrency:       c.Int("concurrency"),
+		FrameTimeout:      c.String("timeout"),
+		ChannelBufferSize: c.Int("channel-buffer-size"),
+		InterfaceMTU:      c.Int("mtu"),
+		PacketMTU:         c.Int("packet-mtu"),
+		BootstrapIface:    c.Bool("bootstrap-iface"),
+		Whitelist:         stringsToMultiAddr(c.StringSlice("whitelist")),
+		Ledger: config.Ledger{
+			StateDir:         c.String("ledger-state"),
+			AnnounceInterval: time.Duration(c.Int("ledger-announce-interval")) * time.Second,
+			SyncInterval:     time.Duration(c.Int("ledger-syncronization-interval")) * time.Second,
 		},
-		Action: bridge,
+		NAT: config.NAT{
+			Service:           c.Bool("natservice"),
+			Map:               c.Bool("natmap"),
+			RateLimit:         c.Bool("nat-ratelimit"),
+			RateLimitGlobal:   c.Int("nat-ratelimit-global"),
+			RateLimitPeer:     c.Int("nat-ratelimit-peer"),
+			RateLimitInterval: time.Duration(c.Int("nat-ratelimit-interval")) * time.Second,
+		},
+		Discovery: config.Discovery{
+			BootstrapPeers: c.StringSlice("discovery-bootstrap-peers"),
+			DHT:            c.Bool("dht"),
+			MDNS:           c.Bool("mdns"),
+			Interval:       time.Duration(c.Int("discovery-interval")) * time.Second,
+		},
+		Connection: config.Connection{
+			AutoRelay:                  c.Bool("autorelay"),
+			MaxConnections:             c.Int("max-connections"),
+			HolePunch:                  c.Bool("holepunch"),
+			StaticRelays:               c.StringSlice("autorelay-static-peer"),
+			AutoRelayDiscoveryInterval: autorelayInterval,
+			OnlyStaticRelays:           c.Bool("autorelay-static-only"),
+			HighWater:                  c.Int("connection-high-water"),
+			LowWater:                   c.Int("connection-low-water"),
+		},
+		Limit: config.ResourceLimit{
+			Enable:      c.Bool("limit-enable"),
+			FileLimit:   c.String("limit-file"),
+			Scope:       c.String("limit-scope"),
+			MaxConns:    c.Int("max-connections"), // Turn to 0 to use other way of limiting. Files take precedence
+			LimitConfig: limitConfig,
+		},
+		PeerGuard: config.PeerGuard{
+			Enable:        c.Bool("peerguard"),
+			PeerGate:      c.Bool("peergate"),
+			Relaxed:       c.Bool("peergate-relaxed"),
+			Autocleanup:   c.Bool("peergate-autoclean"),
+			SyncInterval:  time.Duration(c.Int("peergate-interval")) * time.Second,
+			AuthProviders: d,
+		},
 	}
 }
 
@@ -127,8 +212,6 @@ func bridge(c *cli.Context) error {
 		fromQRCode = true
 	}
 
-	token := c.String("network-token")
-
 	if fromQRCode {
 		recoveryToken := qr.Reader(qrCodePath)
 		data := utils.DecodeRecoveryToken(recoveryToken)
@@ -136,17 +219,19 @@ func bridge(c *cli.Context) error {
 			fmt.Println("Token not decoded correctly")
 			return fmt.Errorf("invalid token")
 		}
-		token = data[0]
+		token := data[0]
 		serviceUUID = data[1]
 		sshPassword = data[2]
 		if serviceUUID == "" || sshPassword == "" || token == "" {
 			return fmt.Errorf("decoded invalid values")
 		}
+
+		c.Set("token", token)
 	}
 
 	ctx := context.Background()
 
-	nc := networkConfig(token, c.String("address"), c.String("log-level"), "kairos0")
+	nc := configFromContext(c)
 
 	lvl, err := log.LevelFromString(nc.LogLevel)
 	if err != nil {
