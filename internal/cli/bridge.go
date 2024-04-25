@@ -226,7 +226,10 @@ func bridge(c *cli.Context) error {
 			return fmt.Errorf("decoded invalid values")
 		}
 
-		c.Set("token", token)
+		err := c.Set("token", token)
+		if err != nil {
+			return err
+		}
 	}
 
 	ctx := context.Background()

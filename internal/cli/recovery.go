@@ -19,7 +19,11 @@ import (
 )
 
 func startRecoveryService(ctx context.Context, loglevel string, c *cliV2.Context) error {
-	c.Set("log-level", loglevel)
+	err := c.Set("log-level", loglevel)
+	if err != nil {
+		return err
+	}
+
 	nc := configFromContext(c)
 
 	lvl, err := log.LevelFromString(loglevel)
