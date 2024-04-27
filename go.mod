@@ -11,7 +11,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/kairos-io/kairos-agent/v2 v2.9.1
 	github.com/kairos-io/kairos-sdk v0.1.1
-	github.com/mudler/edgevpn v0.25.3-0.20240423154352-8cf7992723be
+	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
 	github.com/onsi/ginkgo/v2 v2.17.1
@@ -28,6 +28,8 @@ require (
 require (
 	github.com/ipfs/go-log v1.0.5
 	github.com/kairos-io/go-nodepair v0.0.0-20231009015959-d3490b3b686c
+	github.com/libp2p/go-libp2p v0.31.0
+	github.com/multiformats/go-multiaddr v0.12.3
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -141,7 +143,6 @@ require (
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p v0.31.0 // indirect
 	github.com/libp2p/go-libp2p-asn-util v0.3.0 // indirect
 	github.com/libp2p/go-libp2p-kad-dht v0.25.2 // indirect
 	github.com/libp2p/go-libp2p-kbucket v0.6.3 // indirect
@@ -182,7 +183,6 @@ require (
 	github.com/mudler/yip v1.6.0 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
-	github.com/multiformats/go-multiaddr v0.12.3 // indirect
 	github.com/multiformats/go-multiaddr-dns v0.3.1 // indirect
 	github.com/multiformats/go-multiaddr-fmt v0.1.0 // indirect
 	github.com/multiformats/go-multibase v0.2.0 // indirect
