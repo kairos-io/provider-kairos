@@ -542,6 +542,8 @@ github.com/mudler/edgevpn v0.25.2 h1:9VH1eSUkObEa0WzO+ohBAO/FTLKG0WENVfJ1ad3UPr0
 github.com/mudler/edgevpn v0.25.2/go.mod h1:/TNk/6bdSjzs7UsALlsw4c3GbJk/kzephVeIpTQ20Xk=
 github.com/mudler/edgevpn v0.25.3-0.20240423154352-8cf7992723be h1:aIWSHmZj3XmcowS4/Za253gR2dEoMogmqkFNGCkpCqg=
 github.com/mudler/edgevpn v0.25.3-0.20240423154352-8cf7992723be/go.mod h1:fzwR+lqzXYEaOEv1kMYqSIBcH1SJ+bxvi+p4N2s/9D4=
+github.com/mudler/edgevpn v0.25.3-0.20240427075231-02687db6880e h1:h5UrySIzqQvJtEwAcEHepYXWn0ssLmC0PvrwHGnyPzw=
+github.com/mudler/edgevpn v0.25.3-0.20240427075231-02687db6880e/go.mod h1:fzwR+lqzXYEaOEv1kMYqSIBcH1SJ+bxvi+p4N2s/9D4=
 github.com/mudler/entities v0.0.0-20220905203055-68348bae0f49 h1:P1QgHLh0hX935j6m9K6rlSxc0mkD1UuIAOQEu+1VCW4=
 github.com/mudler/entities v0.0.0-20220905203055-68348bae0f49/go.mod h1:qquFT9tYp+/NO7tTotto4BT9zSRYSMDxo2PGZwujpFA=
 github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5 h1:FaZD86+A9mVt7lh9glAryzQblMsbJYU2VnrdZ8yHlTs=
