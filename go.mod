@@ -11,7 +11,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/kairos-io/kairos-agent/v2 v2.9.1
 	github.com/kairos-io/kairos-sdk v0.1.1
-	github.com/mudler/edgevpn v0.25.3-0.20240423154352-8cf7992723be
+	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
 	github.com/onsi/ginkgo/v2 v2.17.1
