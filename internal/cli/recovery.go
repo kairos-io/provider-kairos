@@ -11,6 +11,7 @@ import (
 
 	"github.com/creack/pty"
 	"github.com/gliderlabs/ssh"
+	"github.com/mudler/edgevpn/cmd"
 	"github.com/mudler/edgevpn/pkg/logger"
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/mudler/edgevpn/pkg/services"
@@ -24,7 +25,7 @@ func startRecoveryService(ctx context.Context, loglevel string, c *cliV2.Context
 		return err
 	}
 
-	nc := configFromContext(c)
+	nc := cmd.ConfigFromContext(c)
 
 	lvl, err := log.LevelFromString(loglevel)
 	if err != nil {
