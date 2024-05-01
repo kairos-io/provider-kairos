@@ -8,7 +8,7 @@ require (
 	github.com/creack/pty v1.1.21
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/google/go-containerregistry v0.19.1 // indirect
-	github.com/ipfs/go-log/v2 v2.5.1 // indirect
+	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/kairos-agent/v2 v2.9.1
 	github.com/kairos-io/kairos-sdk v0.1.1
 	github.com/mudler/edgevpn v0.25.3
