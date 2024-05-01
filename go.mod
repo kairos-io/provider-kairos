@@ -9,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/google/go-containerregistry v0.19.1 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1
-	github.com/kairos-io/kairos-agent/v2 v2.9.1
+	github.com/kairos-io/kairos-agent/v2 v2.10.0
 	github.com/kairos-io/kairos-sdk v0.1.1
 	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -100,7 +100,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
@@ -180,7 +180,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mudler/entities v0.0.0-20220905203055-68348bae0f49 // indirect
 	github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 // indirect
-	github.com/mudler/yip v1.6.0 // indirect
+	github.com/mudler/yip v1.6.1 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.12.3 // indirect
