@@ -27,7 +27,7 @@ require (
 
 require (
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/go-nodepair v0.0.0-20240423154030-b64584f66cad
+	github.com/kairos-io/go-nodepair v0.0.0-20240502023759-0f117ce8d47e
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -86,7 +86,7 @@ require (
 	github.com/foxboron/go-uefi v0.0.0-20240128152106-48be911532c2 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 // indirect
+	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
@@ -129,9 +129,9 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
 	github.com/jbenet/goprocess v0.1.4 // indirect
-	github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 // indirect
+	github.com/jezek/xgb v1.1.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
+	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 // indirect
 	github.com/kendru/darwin/go/depgraph v0.0.0-20221105232959-877d6a81060c // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
