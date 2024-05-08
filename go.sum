@@ -416,6 +416,8 @@ github.com/kairos-io/kairos-agent/v2 v2.10.1 h1:2YkGnl6gguZ1FQNn7hTOMLQu81+GVlaU
 github.com/kairos-io/kairos-agent/v2 v2.10.1/go.mod h1:g4GA46dyiAEMLtAEnf16Lxv7rSADN4zh9dzmIdHU3qM=
 github.com/kairos-io/kairos-agent/v2 v2.10.2 h1:Ssu6UNB9yTvsAuwdfrzKKxXX6vJEgEyA9bLIIBFFSXE=
 github.com/kairos-io/kairos-agent/v2 v2.10.2/go.mod h1:1Ycl9ydSN4CNY9e7hyeXS6xFtjZ98I8bLr7brw0aMts=
+github.com/kairos-io/kairos-agent/v2 v2.10.3 h1:f+uXBA70eRAnkCXVBu4eS5Z+65dPI0QXgvPwuIR9HV8=
+github.com/kairos-io/kairos-agent/v2 v2.10.3/go.mod h1:1Ycl9ydSN4CNY9e7hyeXS6xFtjZ98I8bLr7brw0aMts=
 github.com/kairos-io/kairos-sdk v0.1.1 h1:A9/bweW+Oy0Tmp3l7R4kL4NZXTJcKPXpp1/7u/tAluE=
 github.com/kairos-io/kairos-sdk v0.1.1/go.mod h1:sR1X4B3F1nkaECQ1vdsJ78OIkfLfyB22/aIpdRQJ/Mo=
 github.com/kairos-io/kairos-sdk v0.1.2 h1:veA06dQR4zddrWSxaZNq+5lSZQH0EHlU6OnR5fdkQ2Q=
