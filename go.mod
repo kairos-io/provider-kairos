@@ -10,7 +10,7 @@ require (
 	github.com/google/go-containerregistry v0.19.1 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/kairos-agent/v2 v2.10.4
-	github.com/kairos-io/kairos-sdk v0.1.6
+	github.com/kairos-io/kairos-sdk v0.1.8
 	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
@@ -83,7 +83,7 @@ require (
 	github.com/eliukblau/pixterm v1.3.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/flynn/noise v1.0.0 // indirect
-	github.com/foxboron/go-uefi v0.0.0-20240128152106-48be911532c2 // indirect
+	github.com/foxboron/go-uefi v0.0.0-20240522180132-205d5597883a // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect

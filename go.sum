@@ -193,6 +193,8 @@ github.com/flynn/noise v1.0.0 h1:DlTHqmzmvcEiKj+4RYo/imoswx/4r6iBlCMfVtrMXpQ=
 github.com/flynn/noise v1.0.0/go.mod h1:xbMo+0i6+IGbYdJhF31t2eR1BIU0CYc12+BNAKwUTag=
 github.com/foxboron/go-uefi v0.0.0-20240128152106-48be911532c2 h1:qGlg/7H49H30Eu7nkCBA7YxNmW30ephqBf7xIxlAGuQ=
 github.com/foxboron/go-uefi v0.0.0-20240128152106-48be911532c2/go.mod h1:ffg/fkDeOYicEQLoO2yFFGt00KUTYVXI+rfnc8il6vQ=
+github.com/foxboron/go-uefi v0.0.0-20240522180132-205d5597883a h1:Q/VIO3QAlaF95JqVVF39udInPR76lu02yrMDInavm8Q=
+github.com/foxboron/go-uefi v0.0.0-20240522180132-205d5597883a/go.mod h1:ffg/fkDeOYicEQLoO2yFFGt00KUTYVXI+rfnc8il6vQ=
 github.com/francoispqt/gojay v1.2.13 h1:d2m3sFjloqoIUQU3TsHBgj6qg/BVGlTBeHDUmyJnXKk=
 github.com/francoispqt/gojay v1.2.13/go.mod h1:ehT5mTG4ua4581f1++1WLG0vPdaA9HaiDsoyrBGkyDY=
 github.com/frankban/quicktest v1.13.0/go.mod h1:qLE0fzW0VuyUAJgPU19zByoIr0HtCHN/r/VLSOOIySU=
@@ -432,6 +434,8 @@ github.com/kairos-io/kairos-sdk v0.1.5 h1:dk33F9naiHiZlzLTioCz7XQcR8Y6CVRbwE5rxt
 github.com/kairos-io/kairos-sdk v0.1.5/go.mod h1:sR1X4B3F1nkaECQ1vdsJ78OIkfLfyB22/aIpdRQJ/Mo=
 github.com/kairos-io/kairos-sdk v0.1.6 h1:x+oqSvyRgexiJeTbYXpM0ZcJnDbnbRSG4lGNVqDCZc0=
 github.com/kairos-io/kairos-sdk v0.1.6/go.mod h1:sR1X4B3F1nkaECQ1vdsJ78OIkfLfyB22/aIpdRQJ/Mo=
+github.com/kairos-io/kairos-sdk v0.1.8 h1:TKigA+3Nmzn/NLztbLVBLacpx0cK1oJl1AoZarohU98=
+github.com/kairos-io/kairos-sdk v0.1.8/go.mod h1:asSOyJanH10Cnxl9zx5RzyYNMhEworaiMh/7uRnS4GA=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 h1:qq2nCpSrXrmvDGRxW0ruW9BVEV1CN2a9YDOExdt+U0o=
 github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329/go.mod h1:2VPVQDR4wO7KXHwP+DAypEy67rXf+okUx2zjgpCxZw4=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
