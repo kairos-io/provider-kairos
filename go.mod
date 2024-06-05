@@ -10,7 +10,7 @@ require (
 	github.com/google/go-containerregistry v0.19.1 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/kairos-agent/v2 v2.10.5
-	github.com/kairos-io/kairos-sdk v0.1.8
+	github.com/kairos-io/kairos-sdk v0.2.1
 	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
@@ -79,6 +79,7 @@ require (
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
 	github.com/eliukblau/pixterm v1.3.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -121,8 +122,8 @@ require (
 	github.com/ipfs/go-cid v0.4.1 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
 	github.com/ipld/go-ipld-prime v0.20.0 // indirect
-	github.com/itchyny/gojq v0.12.15 // indirect
-	github.com/itchyny/timefmt-go v0.1.5 // indirect
+	github.com/itchyny/gojq v0.12.16 // indirect
+	github.com/itchyny/timefmt-go v0.1.6 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jaypipes/ghw v0.12.0 // indirect
 	github.com/jaypipes/pcidb v1.0.0 // indirect
@@ -222,11 +223,13 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/saferwall/pe v1.5.3 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b // indirect
+	github.com/secDre4mer/pkcs7 v0.0.0-20240322103146-665324a4461d // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.7 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
