@@ -7,9 +7,9 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 require (
 	github.com/creack/pty v1.1.21
 	github.com/gliderlabs/ssh v0.3.7
-	github.com/google/go-containerregistry v0.19.1 // indirect
+	github.com/google/go-containerregistry v0.19.2 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1
-	github.com/kairos-io/kairos-agent/v2 v2.11.0
+	github.com/kairos-io/kairos-agent/v2 v2.12.0
 	github.com/kairos-io/kairos-sdk v0.2.3
 	github.com/mudler/edgevpn v0.25.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -170,7 +170,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/mauromorales/xpasswd v0.3.1 // indirect
+	github.com/mauromorales/xpasswd v0.4.0 // indirect
 	github.com/miekg/dns v1.1.59 // indirect
 	github.com/mikioh/tcpinfo v0.0.0-20190314235526-30a79bb1804b // indirect
 	github.com/mikioh/tcpopt v0.0.0-20190314235656-172688c1accc // indirect
@@ -184,9 +184,9 @@ require (
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
-	github.com/mudler/entities v0.0.0-20240611135956-f8f11ba52c2f // indirect
+	github.com/mudler/entities v0.0.0-20240625130751-3d7f84082f3a // indirect
 	github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 // indirect
-	github.com/mudler/yip v1.8.1 // indirect
+	github.com/mudler/yip v1.9.0 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.12.3 // indirect
