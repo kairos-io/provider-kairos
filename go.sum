@@ -434,6 +434,8 @@ github.com/kairos-io/go-nodepair v0.0.0-20240423154030-b64584f66cad h1:e9UMEswf7
 github.com/kairos-io/go-nodepair v0.0.0-20240423154030-b64584f66cad/go.mod h1:cxk6j3VTn/VUG4NxGTYkMr3GLfs5zt4X19j+tEQSZiI=
 github.com/kairos-io/go-nodepair v0.0.0-20240502023759-0f117ce8d47e h1:myqvzF1dh08dqYHDbxyvB4Ty+gLXqBACnG6CbhRZbrU=
 github.com/kairos-io/go-nodepair v0.0.0-20240502023759-0f117ce8d47e/go.mod h1:dPmJiW2gLvcj9qBFFUrXlskpp3WNAL5RiaoWKWJbFZE=
+github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337 h1:xkMmK2zPyceZEKE6wm4SFFUCZtLfZUDpEVkXT8DfZjc=
+github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337/go.mod h1:dPmJiW2gLvcj9qBFFUrXlskpp3WNAL5RiaoWKWJbFZE=
 github.com/kairos-io/kairos-agent/v2 v2.9.1 h1:oqHB7uVPtvIk/w8iTBpY6BdiMkQhcBGdXbifd7zP3fg=
 github.com/kairos-io/kairos-agent/v2 v2.9.1/go.mod h1:AMFqhOX34QF3sXEnBRZljo+jJfkWGAV9gItI6m9ts1g=
 github.com/kairos-io/kairos-agent/v2 v2.10.0 h1:/8j53NxWfo2vM+UZghWIxUa9cfYZmo8n2VyDNmxgUjA=
