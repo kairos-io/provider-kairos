@@ -27,7 +27,7 @@ require (
 
 require (
 	github.com/ipfs/go-log v1.0.5
-	github.com/kairos-io/go-nodepair v0.0.0-20240502023759-0f117ce8d47e
+	github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 	gopkg.in/yaml.v2 v2.4.0
 )
