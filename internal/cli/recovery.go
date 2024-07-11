@@ -84,7 +84,7 @@ func sshServer(listenAdddr, password string) {
 		}
 	})
 
-	pterm.Info.Println(ssh.ListenAndServe(listenAdddr, nil, ssh.PasswordAuth(func(ctx ssh.Context, pass string) bool {
+	pterm.Info.Println(ssh.ListenAndServe(listenAdddr, nil, ssh.PasswordAuth(func(_ ssh.Context, pass string) bool {
 		return pass == password
 	}),
 	))
