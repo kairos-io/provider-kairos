@@ -96,7 +96,7 @@ The validate command expects a configuration file as its only argument. Local fi
 
 var VersionCMD = cli.Command{
 	Name: "version",
-	Action: func(c *cli.Context) error {
+	Action: func(_ *cli.Context) error {
 		printVersion()
 		return nil
 	},
@@ -110,7 +110,7 @@ func printVersion() {
 func Start() error {
 	toolName := "kairos"
 
-	cli.VersionPrinter = func(cCtx *cli.Context) {
+	cli.VersionPrinter = func(_ *cli.Context) {
 		printVersion()
 	}
 
