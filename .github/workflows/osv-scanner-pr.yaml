@@ -10,8 +10,9 @@ on:
 permissions:
   # Require writing security events to upload SARIF file to security tab
   security-events: write
-  # Only need to read contents
+  # Only need to read contents and actions
   contents: read
+  actions: read
 
 jobs:
   scan-pr:
