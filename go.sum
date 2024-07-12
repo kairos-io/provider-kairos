@@ -371,6 +371,8 @@ github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337 h1:xkMmK2zPyceZEKE6wm4SFFUCZtLfZUDpEVkXT8DfZjc=
 github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337/go.mod h1:dPmJiW2gLvcj9qBFFUrXlskpp3WNAL5RiaoWKWJbFZE=
+github.com/kairos-io/go-nodepair v0.2.0 h1:G47RZb/BF1bj/NMl3JZFelUifC4uCTnrFE9mK+z4x7U=
+github.com/kairos-io/go-nodepair v0.2.0/go.mod h1:9e1YCP7Wa8Un5ZVHcVrRfnnkiuiBgJGJ7EdtaPhBhAA=
 github.com/kairos-io/kairos-agent/v2 v2.13.0 h1:mPHTnBEf2+UuRlA5zS+Rdn+y6xghfYHd7+gtzJSMKqI=
 github.com/kairos-io/kairos-agent/v2 v2.13.0/go.mod h1:YdITnh0z2XwFTZJpLLDGCnAKTu2go7Elisy5MA7+388=
 github.com/kairos-io/kairos-sdk v0.3.1 h1:rlVPKFDsM4Lsk9z8BVnamMit5eMDb9q6Tj5JCpOj1tM=
@@ -683,6 +685,8 @@ github.com/quic-go/qpack v0.4.0 h1:Cr9BXA1sQS2SmDUWjSofMPNKmvF6IiIfDRmgU0w1ZCo=
 github.com/quic-go/qpack v0.4.0/go.mod h1:UZVnYIfi5GRk+zI9UMaCPsmZ2xKJP7XBUvVyT1Knj9A=
 github.com/quic-go/quic-go v0.44.0 h1:So5wOr7jyO4vzL2sd8/pD9Kesciv91zSk8BoFngItQ0=
 github.com/quic-go/quic-go v0.44.0/go.mod h1:z4cx/9Ny9UtGITIPzmPTXh1ULfOyWh4qGQlpnPcWmek=
+github.com/quic-go/quic-go v0.45.1 h1:tPfeYCk+uZHjmDRwHHQmvHRYL2t44ROTujLeFVBmjCA=
+github.com/quic-go/quic-go v0.45.1/go.mod h1:1dLehS7TIR64+vxGR70GDcatWTOtMX2PUtnKsjbTurI=
 github.com/quic-go/webtransport-go v0.8.0 h1:HxSrwun11U+LlmwpgM1kEqIqH90IT4N8auv/cD7QFJg=
 github.com/quic-go/webtransport-go v0.8.0/go.mod h1:N99tjprW432Ut5ONql/aUhSLT0YVSlwHohQsuac9WaM=
 github.com/rancher-sandbox/linuxkit v1.0.2 h1:mUFPL2Mgl1XZ5H82ABR57t5H2G2Qd+lu3gMYvUGmeZo=

@@ -9,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/ipfs/go-log v1.0.5
 	github.com/ipfs/go-log/v2 v2.5.1
-	github.com/kairos-io/go-nodepair v0.0.0-20240703103608-ff991182c337
+	github.com/kairos-io/go-nodepair v0.2.0
 	github.com/kairos-io/kairos-agent/v2 v2.13.0
 	github.com/kairos-io/kairos-sdk v0.3.1
 	github.com/mudler/edgevpn v0.26.2
@@ -228,7 +228,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/qeesung/image2ascii v1.0.1 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/quic-go v0.44.0 // indirect
+	github.com/quic-go/quic-go v0.45.1 // indirect
 	github.com/quic-go/webtransport-go v0.8.0 // indirect
 	github.com/rancher-sandbox/linuxkit v1.0.2 // indirect
 	github.com/raulk/go-watchdog v1.3.0 // indirect
