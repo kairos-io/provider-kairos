@@ -11,7 +11,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/schema"
 	"github.com/mudler/edgevpn/pkg/node"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v3"
 )
 
 // do not edit version here, it is set by LDFLAGS

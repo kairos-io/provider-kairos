@@ -7,7 +7,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 require (
 	github.com/creack/pty v1.1.21
 	github.com/gliderlabs/ssh v0.3.7
-	github.com/ipfs/go-log v1.0.5
+	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/go-nodepair v0.2.0
 	github.com/kairos-io/kairos-agent/v2 v2.13.0
 	github.com/kairos-io/kairos-sdk v0.3.1
@@ -20,8 +20,6 @@ require (
 	github.com/samber/lo v1.45.0
 	github.com/urfave/cli/v2 v2.27.2
 	go.uber.org/zap v1.27.0
-	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
-	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -115,7 +113,7 @@ require (
 	github.com/ipfs/boxo v0.10.0 // indirect
 	github.com/ipfs/go-cid v0.4.1 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
-	github.com/ipfs/go-log/v2 v2.5.1 // indirect
+	github.com/ipfs/go-log v1.0.5 // indirect
 	github.com/ipld/go-ipld-prime v0.20.0 // indirect
 	github.com/itchyny/gojq v0.12.16 // indirect
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
@@ -308,6 +306,8 @@ require (
 	gopkg.in/djherbis/times.v1 v1.3.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
+	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	howett.net/plist v1.0.0 // indirect
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/mount-utils v0.30.2 // indirect
