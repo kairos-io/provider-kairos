@@ -9,7 +9,7 @@ import (
 	. "github.com/kairos-io/provider-kairos/v2/internal/cli/token"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type TConfig struct {
