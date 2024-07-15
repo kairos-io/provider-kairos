@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	logging "github.com/ipfs/go-log"
+	logging "github.com/ipfs/go-log/v2"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 	"go.uber.org/zap"
 

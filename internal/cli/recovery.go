@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/ipfs/go-log"
+	"github.com/ipfs/go-log/v2"
 
 	"github.com/creack/pty"
 	"github.com/gliderlabs/ssh"

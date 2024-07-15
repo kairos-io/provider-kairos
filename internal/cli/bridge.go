@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/ipfs/go-log"
+	"github.com/ipfs/go-log/v2"
 	qr "github.com/kairos-io/go-nodepair/qrcode"
 	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/mudler/edgevpn/api"
