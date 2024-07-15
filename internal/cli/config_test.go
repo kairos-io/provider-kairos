@@ -15,6 +15,7 @@ import (
 type TConfig struct {
 	Kairos struct {
 		NetworkToken string `yaml:"network_token"`
+		P2P          string `yaml:"p2p"`
 	} `yaml:"p2p"`
 }
 
@@ -47,14 +48,12 @@ fooz: "bar"
 			Expect(err).ToNot(HaveOccurred())
 
 			res := map[interface{}]interface{}{}
-
 			err = yaml.Unmarshal(content, &res)
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(res).To(Equal(map[interface{}]interface{}{
-				"p2p": map[interface{}]interface{}{"network_token": "baz"},
-				"bb":  map[interface{}]interface{}{"nothing": "foo"},
-			}))
+			// Check by element as they can be unordered
+			Expect(res["p2p"]).To(Equal(map[string]interface{}{"network_token": "baz"}))
+			Expect(res["bb"]).To(Equal(map[string]interface{}{"nothing": "foo"}))
 
 			hasHeader, _ := config.HasHeader(string(content), "#node-config")
 			Expect(hasHeader).To(BeTrue(), string(content))
