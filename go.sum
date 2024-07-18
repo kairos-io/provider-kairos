@@ -371,6 +371,8 @@ github.com/kairos-io/go-nodepair v0.2.0 h1:G47RZb/BF1bj/NMl3JZFelUifC4uCTnrFE9mK
 github.com/kairos-io/go-nodepair v0.2.0/go.mod h1:9e1YCP7Wa8Un5ZVHcVrRfnnkiuiBgJGJ7EdtaPhBhAA=
 github.com/kairos-io/kairos-agent/v2 v2.13.0 h1:mPHTnBEf2+UuRlA5zS+Rdn+y6xghfYHd7+gtzJSMKqI=
 github.com/kairos-io/kairos-agent/v2 v2.13.0/go.mod h1:YdITnh0z2XwFTZJpLLDGCnAKTu2go7Elisy5MA7+388=
+github.com/kairos-io/kairos-agent/v2 v2.13.1 h1:HwNW30FP1gkdrlfADSI0myKsdmpnr/V/nEkUYX0YYfI=
+github.com/kairos-io/kairos-agent/v2 v2.13.1/go.mod h1:EB08k/0WwA/SLgbHM1k0FWZIQcJeqaRegzOhedUgJ9s=
 github.com/kairos-io/kairos-sdk v0.3.1 h1:rlVPKFDsM4Lsk9z8BVnamMit5eMDb9q6Tj5JCpOj1tM=
 github.com/kairos-io/kairos-sdk v0.3.1/go.mod h1:40EjaHJ1R8ru6zg9iOx7QwuOtAm4tXhfBVxILDegoSQ=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
@@ -514,6 +516,8 @@ github.com/mudler/edgevpn v0.26.2 h1:OK4jfk7sYjuU7vCh+geUJk38lsxRgMk+EdsS9s0hioE
 github.com/mudler/edgevpn v0.26.2/go.mod h1:lplntB9N6LzGNqeSM3XHCq8kyDPsNhY3jqEbWGD2WaQ=
 github.com/mudler/entities v0.8.0 h1:U+KD0hn1v7MEkiOv60zjLLUj3kEsgj8IMFMN+No3D0Q=
 github.com/mudler/entities v0.8.0/go.mod h1:exnXZF6qVnu4b9dEiH3sLEyxYBTknfkcJ3UCxyc/dwE=
+github.com/mudler/entities v0.8.1 h1:/iZ3VrhZy8bSVr39IqoSwL4jphna2rgSYnJCUZakZ3s=
+github.com/mudler/entities v0.8.1/go.mod h1:exnXZF6qVnu4b9dEiH3sLEyxYBTknfkcJ3UCxyc/dwE=
 github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5 h1:FaZD86+A9mVt7lh9glAryzQblMsbJYU2VnrdZ8yHlTs=
 github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5/go.mod h1:WmKcT8ONmhDQIqQ+HxU+tkGWjzBEyY/KFO8LTGCu4AI=
 github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c h1:CI5uGwqBpN8N7BrSKC+nmdfw+9nPQIDyjHHlaIiitZI=
@@ -524,6 +528,8 @@ github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 h1:Qh6ghkMgTu6siFbTf7
 github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0/go.mod h1:nViSE8jcOcraZwhi34joEqn7HYFISgs0M8/YujzY5Xk=
 github.com/mudler/yip v1.9.2 h1:yPR+cK3SZkEAt0uQYCeOayhcM3lyP2Py+r0ruy94Mrg=
 github.com/mudler/yip v1.9.2/go.mod h1:1X/i8voXaAkWRWPAvQrbnHf2z7m/8ucs5ljup3IzJkk=
+github.com/mudler/yip v1.9.3 h1:mJb5ETzdbgjcf0B5f0hRqbLCfK5f2y/vQAkToH9xK6g=
+github.com/mudler/yip v1.9.3/go.mod h1:OwkhcI7bCScVhII800aXeRU3x9/BMcid+c3ojTpkMuA=
 github.com/multiformats/go-base32 v0.1.0 h1:pVx9xoSPqEIQG8o+UbAe7DNi51oej1NtK+aGkbLYxPE=
 github.com/multiformats/go-base32 v0.1.0/go.mod h1:Kj3tFY6zNr+ABYMqeUNeGvkIC/UYgtWibDcT0rExnbI=
 github.com/multiformats/go-base36 v0.2.0 h1:lFsAbNOGeKtuKozrtBsAkSVhv1p9D0/qedU9rQyccr0=
