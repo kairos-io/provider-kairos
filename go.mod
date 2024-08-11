@@ -11,7 +11,7 @@ require (
 	github.com/kairos-io/go-nodepair v0.2.0
 	github.com/kairos-io/kairos-agent/v2 v2.13.3
 	github.com/kairos-io/kairos-sdk v0.3.2
-	github.com/mudler/edgevpn v0.26.2
+	github.com/mudler/edgevpn v0.27.0
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20230818213616-f204007f963c
 	github.com/onsi/ginkgo/v2 v2.20.0
@@ -136,7 +136,7 @@ require (
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p v0.35.2 // indirect
+	github.com/libp2p/go-libp2p v0.35.4 // indirect
 	github.com/libp2p/go-libp2p-asn-util v0.4.1 // indirect
 	github.com/libp2p/go-libp2p-kad-dht v0.25.2 // indirect
 	github.com/libp2p/go-libp2p-kbucket v0.6.3 // indirect
@@ -290,7 +290,7 @@ require (
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/term v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
