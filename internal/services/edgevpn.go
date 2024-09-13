@@ -34,7 +34,8 @@ depend() {
 
 supervisor=supervise-daemon
 name="edgevpn"
-command="edgevpn api --enable-healthchecks"
+command="edgevpn"
+command_args="api --enable-healthchecks"
 supervise_daemon_args="--stdout /var/log/edgevpn.log --stderr /var/log/edgevpn.log"
 pidfile="/run/edgevpn.pid"
 respawn_delay=5
