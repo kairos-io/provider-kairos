@@ -6,18 +6,16 @@ import (
 	"fmt"
 	"strings"
 
-	logging "github.com/ipfs/go-log/v2"
-	edgeVPNClient "github.com/mudler/edgevpn/api/client"
-	"go.uber.org/zap"
-
 	"github.com/kairos-io/kairos-sdk/bus"
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/machine/openrc"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
+	"github.com/kairos-io/kairos-sdk/types"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
+	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 
@@ -34,23 +32,23 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	c := &config.Config{}
-	providerConfig := &providerConfig.Config{}
+	prvConfig := &providerConfig.Config{}
 	err = config.FromString(cfg.Config, c)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
 
-	err = config.FromString(cfg.Config, providerConfig)
+	err = config.FromString(cfg.Config, prvConfig)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
 	// TODO: this belong to a systemd service that is started instead
 
-	p2pBlockDefined := providerConfig.P2P != nil
-	tokenNotDefined := ((p2pBlockDefined && providerConfig.P2P.NetworkToken == "") || !p2pBlockDefined)
-	skipAuto := (p2pBlockDefined && !providerConfig.P2P.Auto.IsEnabled())
+	p2pBlockDefined := prvConfig.P2P != nil
+	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
+	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	if providerConfig.P2P == nil && !providerConfig.K3s.Enabled && !providerConfig.K3sAgent.Enabled {
+	if prvConfig.P2P == nil && !prvConfig.K3s.Enabled && !prvConfig.K3sAgent.Enabled {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
 	}
 
@@ -59,35 +57,18 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logLevel := "debug"
 
-	if p2pBlockDefined && providerConfig.P2P.LogLevel != "" {
-		logLevel = providerConfig.P2P.LogLevel
+	if p2pBlockDefined && prvConfig.P2P.LogLevel != "" {
+		logLevel = prvConfig.P2P.LogLevel
 	}
 
-	lvl, err := logging.LevelFromString(logLevel)
-	if err != nil {
-		return ErrorEvent("Failed setup logger: %s", err.Error())
-	}
-
-	// TODO: Fixup Logging to file
-	loggerCfg := zap.NewProductionConfig()
-	loggerCfg.OutputPaths = []string{
-		cfg.Logfile,
-	}
-	logger, err := loggerCfg.Build()
-	if err != nil {
-		return ErrorEvent("Failed setup logger: %s", err.Error())
-	}
-
-	logging.SetAllLoggers(lvl)
-
-	log := &logging.ZapEventLogger{SugaredLogger: *logger.Sugar()}
+	logger := types.NewKairosLogger("provider", logLevel, false)
 
 	// Do onetimebootstrap if K3s or K3s-agent are enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && (providerConfig.K3s.Enabled || providerConfig.K3sAgent.Enabled)) || skipAuto {
-		err := oneTimeBootstrap(log, providerConfig, func() error {
-			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig)
+	if (tokenNotDefined && (prvConfig.K3s.Enabled || prvConfig.K3sAgent.Enabled)) || skipAuto {
+		err := oneTimeBootstrap(logger, prvConfig, func() error {
+			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
 		if err != nil {
 			return ErrorEvent("Failed setup: %s", err.Error())
@@ -100,22 +81,22 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	// We might still want a VPN, but not to route traffic into
-	if providerConfig.P2P.VPNNeedsCreation() {
+	if prvConfig.P2P.VPNNeedsCreation() {
 		logger.Info("Configuring VPN")
-		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, providerConfig); err != nil {
+		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
 	} else { // We need at least the API to co-ordinate
 		logger.Info("Configuring API")
-		if err := SetupAPI(cfg.APIAddress, "/", true, providerConfig); err != nil {
+		if err := SetupAPI(cfg.APIAddress, "/", true, prvConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
 	}
 
 	networkID := "kairos"
 
-	if p2pBlockDefined && providerConfig.P2P.NetworkID != "" {
-		networkID = providerConfig.P2P.NetworkID
+	if p2pBlockDefined && prvConfig.P2P.NetworkID != "" {
+		networkID = prvConfig.P2P.NetworkID
 	}
 
 	cc := service.NewClient(
@@ -123,40 +104,40 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		edgeVPNClient.NewClient(edgeVPNClient.WithHost(cfg.APIAddress)))
 
 	nodeOpts := []service.Option{
-		service.WithMinNodes(providerConfig.P2P.MinimumNodes),
-		service.WithLogger(log),
+		service.WithMinNodes(prvConfig.P2P.MinimumNodes),
+		service.WithLogger(logger),
 		service.WithClient(cc),
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
-		service.WithNetworkToken(providerConfig.P2P.NetworkToken),
+		service.WithNetworkToken(prvConfig.P2P.NetworkToken),
 		service.WithPersistentRoles("auto"),
 		service.WithRoles(
 			service.RoleKey{
 				Role:        "master",
-				RoleHandler: p2p.Master(c, providerConfig, false, false, "master"),
+				RoleHandler: p2p.Master(c, prvConfig, false, false, "master"),
 			},
 			service.RoleKey{
 				Role:        "master/clusterinit",
-				RoleHandler: p2p.Master(c, providerConfig, true, true, "master/clusterinit"),
+				RoleHandler: p2p.Master(c, prvConfig, true, true, "master/clusterinit"),
 			},
 			service.RoleKey{
 				Role:        "master/ha",
-				RoleHandler: p2p.Master(c, providerConfig, false, true, "master/ha"),
+				RoleHandler: p2p.Master(c, prvConfig, false, true, "master/ha"),
 			},
 			service.RoleKey{
 				Role:        "worker",
-				RoleHandler: p2p.Worker(c, providerConfig),
+				RoleHandler: p2p.Worker(c, prvConfig),
 			},
 			service.RoleKey{
 				Role:        "auto",
-				RoleHandler: role.Auto(c, providerConfig),
+				RoleHandler: role.Auto(c, prvConfig),
 			},
 		),
 	}
 
 	// Optionally set up a specific node role if the user has defined so
-	if providerConfig.P2P.Role != "" {
-		nodeOpts = append(nodeOpts, service.WithDefaultRoles(providerConfig.P2P.Role))
+	if prvConfig.P2P.Role != "" {
+		nodeOpts = append(nodeOpts, service.WithDefaultRoles(prvConfig.P2P.Role))
 	}
 
 	k, err := service.NewNode(nodeOpts...)
@@ -175,7 +156,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-func oneTimeBootstrap(l logging.StandardLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")

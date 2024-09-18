@@ -1,7 +1,7 @@
 VERSION 0.6
 
 # renovate: datasource=docker depName=golang
-ARG GO_VERSION=1.22
+ARG GO_VERSION=1.23
 ARG TARGETARCH
 ARG CGO_ENABLED=0
 
