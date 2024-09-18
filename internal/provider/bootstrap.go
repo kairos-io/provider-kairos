@@ -61,7 +61,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		logLevel = prvConfig.P2P.LogLevel
 	}
 
-	logger := types.NewKairosLogger("agent", logLevel, false)
+	logger := types.NewKairosLogger("provider", logLevel, false)
 
 	// Do onetimebootstrap if K3s or K3s-agent are enabled.
 	// Those blocks are not required to be enabled in case of a kairos
