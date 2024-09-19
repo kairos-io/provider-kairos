@@ -441,6 +441,8 @@ github.com/kairos-io/kairos-agent/v2 v2.13.6 h1:S2vlh0lh5z0Z9O6hFwvUqi+5CEuh3Tsr
 github.com/kairos-io/kairos-agent/v2 v2.13.6/go.mod h1:JhzRdDXrcJ5Ngyzd59/HYJ2Fe9oqPwQPcK/P2VeOLKI=
 github.com/kairos-io/kairos-agent/v2 v2.14.0 h1:Xer3EsW5y5HIs8qol582E8BPa8008dttUwcDw12uuRA=
 github.com/kairos-io/kairos-agent/v2 v2.14.0/go.mod h1:dPjMFSIKQayYn/0SrowznYZwB5LEGh3TvOwV/Yv+CcU=
+github.com/kairos-io/kairos-agent/v2 v2.14.1 h1:FhXv7TJ0iIqPrzK+OpMnyU75OmqEW28NXnynR/oIsiY=
+github.com/kairos-io/kairos-agent/v2 v2.14.1/go.mod h1:OCBg6EXasH6AawXRgehWohZravEFmJXaCWmx7vl774w=
 github.com/kairos-io/kairos-sdk v0.3.1 h1:rlVPKFDsM4Lsk9z8BVnamMit5eMDb9q6Tj5JCpOj1tM=
 github.com/kairos-io/kairos-sdk v0.3.1/go.mod h1:40EjaHJ1R8ru6zg9iOx7QwuOtAm4tXhfBVxILDegoSQ=
 github.com/kairos-io/kairos-sdk v0.3.2 h1:xPs6RKjVdMpv6N//iwkjeJHdieliWRCIJ5bNAJsHEMU=
@@ -1472,6 +1474,8 @@ k8s.io/mount-utils v0.30.3 h1:8Z3wSW5+GSvGNtlDhtoZrBCKLMIf5z/9tf8pie+G06s=
 k8s.io/mount-utils v0.30.3/go.mod h1:9sCVmwGLcV1MPvbZ+rToMDnl1QcGozy+jBPd0MsQLIo=
 k8s.io/mount-utils v0.31.0 h1:o+a+n6gyZ7MGc6bIERU3LeFTHbLDBiVReaDpWlJotUE=
 k8s.io/mount-utils v0.31.0/go.mod h1:HV/VYBUGqYUj4vt82YltzpWvgv8FPg0G9ItyInT3NPU=
+k8s.io/mount-utils v0.31.1 h1:f8UrH9kRynljmdNGM6BaCvFUON5ZPKDgE+ltmYqI4wA=
+k8s.io/mount-utils v0.31.1/go.mod h1:HV/VYBUGqYUj4vt82YltzpWvgv8FPg0G9ItyInT3NPU=
 k8s.io/utils v0.0.0-20230726121419-3b25d923346b h1:sgn3ZU783SCgtaSJjpcVVlRqd6GSnlTLKgpAAttJvpI=
 k8s.io/utils v0.0.0-20230726121419-3b25d923346b/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
 k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 h1:pUdcCO1Lk/tbT5ztQWOBi5HBgbBP1J8+AsQnQCKsi8A=
