@@ -471,6 +471,8 @@ github.com/kairos-io/kairos-sdk v0.4.6 h1:6dbKozJTku99P2vytz9M0xAnpkKKiAggSMPfT2
 github.com/kairos-io/kairos-sdk v0.4.6/go.mod h1:QXYmZ2BMrJ0Iyp7I3+rvCYpZRMvwOtK/6IGCLhNL4tY=
 github.com/kairos-io/kairos-sdk v0.5.0 h1:CtYz2WXe5huKkjPSro2J1kiLVjDr6T9909uckK17Bqw=
 github.com/kairos-io/kairos-sdk v0.5.0/go.mod h1:RO5ad3gCd2O2zJE5mEnPHLUy/+fRKKQL4fe7xV6FtyA=
+github.com/kairos-io/kairos-sdk v0.6.0 h1:A096lZVHE4rkvA5kG0Oss0085T0noUcf7AeppWGySR8=
+github.com/kairos-io/kairos-sdk v0.6.0/go.mod h1:7Y6Y/McniCyAJcmQfoTfKd09cwmwS40URaIVbJn8V2k=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237/go.mod h1:e7qQlOY68wOz4b82D7n+DdaptZAi+SHW0+yKiWZzEYE=
 github.com/kendru/darwin/go/depgraph v0.0.0-20221105232959-877d6a81060c h1:eKb4PqwAMhlqwXw0W3atpKaYaPGlXE/Fwh+xpCEYaPk=
@@ -654,6 +656,8 @@ github.com/mudler/yip v1.9.4 h1:yaiPKWG5kt/DTNCf7ZGfyWdb1j5c06zYqWF3F+SVKsE=
 github.com/mudler/yip v1.9.4/go.mod h1:nqf8JFCq7a7rIkm7cSs+SOc8QbiyvVJ/xLbUw4GgzFs=
 github.com/mudler/yip v1.10.0 h1:MwEIySEfSRRwTUz2BmQQpRn6+M7jqVGf/OldsepBvz0=
 github.com/mudler/yip v1.10.0/go.mod h1:gwH7iGcr1Jimox2xKtN2AprEO00GzY7smvuycqCL7+Y=
+github.com/mudler/yip v1.11.0 h1:h+npjzSKM9VbShHxa+ywWZzpGIolKvN/e2FOT+rxKkI=
+github.com/mudler/yip v1.11.0/go.mod h1:gwH7iGcr1Jimox2xKtN2AprEO00GzY7smvuycqCL7+Y=
 github.com/multiformats/go-base32 v0.1.0 h1:pVx9xoSPqEIQG8o+UbAe7DNi51oej1NtK+aGkbLYxPE=
 github.com/multiformats/go-base32 v0.1.0/go.mod h1:Kj3tFY6zNr+ABYMqeUNeGvkIC/UYgtWibDcT0rExnbI=
 github.com/multiformats/go-base36 v0.2.0 h1:lFsAbNOGeKtuKozrtBsAkSVhv1p9D0/qedU9rQyccr0=
