@@ -15,7 +15,7 @@ require (
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20240820160718-8b802d3ecf82
 	github.com/onsi/ginkgo/v2 v2.21.0
-	github.com/onsi/gomega v1.34.2
+	github.com/onsi/gomega v1.35.0
 	github.com/pterm/pterm v0.12.79
 	github.com/samber/lo v1.47.0
 	github.com/urfave/cli/v2 v2.27.5
@@ -310,7 +310,7 @@ require (
 	gonum.org/v1/gonum v0.15.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4 // indirect
 	google.golang.org/grpc v1.65.0 // indirect
-	google.golang.org/protobuf v1.34.2 // indirect
+	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/djherbis/times.v1 v1.3.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
