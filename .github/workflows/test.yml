@@ -31,7 +31,7 @@ jobs:
         run: |
           earthly +test
       - name: Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.out
       - name: Generate version
