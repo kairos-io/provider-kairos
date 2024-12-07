@@ -8,7 +8,7 @@ require (
 	github.com/creack/pty v1.1.24
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/ipfs/go-log/v2 v2.5.1
-	github.com/kairos-io/go-nodepair v0.2.0
+	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.16.1
 	github.com/kairos-io/kairos-sdk v0.6.1
 	github.com/mudler/edgevpn v0.28.4
@@ -77,7 +77,7 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/edsrzf/mmap-go v1.2.0 // indirect
 	github.com/elastic/gosigar v0.14.3 // indirect
-	github.com/eliukblau/pixterm v1.3.1 // indirect
+	github.com/eliukblau/pixterm v1.3.2 // indirect
 	github.com/elliotwutingfeng/asciiset v0.0.0-20230602022725-51bbb787efab // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -299,7 +299,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
-	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/image v0.20.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sync v0.9.0 // indirect
