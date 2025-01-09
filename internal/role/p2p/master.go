@@ -81,6 +81,10 @@ func genArgs(pconfig *providerConfig.Config, ip, ifaceIP string) (args []string)
 		args = append(args, fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP))
 	}
 
+	if pconfig.K3s.EmbeddedRegistry {
+		args = append(args, "--embedded-registry")
+	}
+
 	return
 }
 
