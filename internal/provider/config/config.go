@@ -33,10 +33,12 @@ func (p P2P) VPNNeedsCreation() bool {
 }
 
 type Config struct {
-	P2P      *P2P    `yaml:"p2p,omitempty"`
-	K3sAgent K3s     `yaml:"k3s-agent,omitempty"`
-	K3s      K3s     `yaml:"k3s,omitempty"`
-	KubeVIP  KubeVIP `yaml:"kubevip,omitempty"`
+	P2P       *P2P    `yaml:"p2p,omitempty"`
+	K3sAgent  K3s     `yaml:"k3s-agent,omitempty"`
+	K3s       K3s     `yaml:"k3s,omitempty"`
+	KubeVIP   KubeVIP `yaml:"kubevip,omitempty"`
+	K0sWorker K0s     `yaml:"k0s-worker,omitempty"`
+	K0s       K0s     `yaml:"k0s,omitempty"`
 }
 
 type KubeVIP struct {
@@ -72,6 +74,15 @@ type HA struct {
 }
 
 type K3s struct {
+	Env              map[string]string `yaml:"env,omitempty"`
+	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
+	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
+	Args             []string          `yaml:"args,omitempty"`
+	Enabled          bool              `yaml:"enabled,omitempty"`
+	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
+}
+
+type K0s struct {
 	Env              map[string]string `yaml:"env,omitempty"`
 	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
