@@ -251,6 +251,8 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		l.Errorf("Failed to start service: %s", err.Error())
 		return err
 	}
+
+	// When this fails, it doesn't produce an error!
 	if err := svc.Enable(); err != nil {
 		l.Errorf("Failed to enable service: %s", err.Error())
 		return err
