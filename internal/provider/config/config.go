@@ -41,6 +41,26 @@ type Config struct {
 	K0s       K0s     `yaml:"k0s,omitempty"`
 }
 
+func (c Config) IsK3sAgentEnabled() bool {
+	return c.K3sAgent.IsEnabled()
+}
+
+func (c Config) IsK3sEnabled() bool {
+	return c.K3s.IsEnabled()
+}
+
+func (c Config) IsK0sEnabled() bool {
+	return c.K0s.IsEnabled()
+}
+
+func (c Config) IsK0sWorkerEnabled() bool {
+	return c.K0sWorker.IsEnabled()
+}
+
+func (c Config) IsAKubernetesDistributionEnabled() bool {
+	return c.IsK3sAgentEnabled() || c.IsK3sEnabled() || c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
+}
+
 type KubeVIP struct {
 	Args        []string `yaml:"args,omitempty"`
 	EIP         string   `yaml:"eip,omitempty"`
@@ -82,6 +102,10 @@ type K3s struct {
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
 }
 
+func (k K3s) IsEnabled() bool {
+	return k.Enabled
+}
+
 type K0s struct {
 	Env              map[string]string `yaml:"env,omitempty"`
 	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
@@ -89,4 +113,8 @@ type K0s struct {
 	Args             []string          `yaml:"args,omitempty"`
 	Enabled          bool              `yaml:"enabled,omitempty"`
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
+}
+
+func (k K0s) IsEnabled() bool {
+	return k.Enabled
 }

@@ -63,20 +63,10 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logger := types.NewKairosLogger("provider", logLevel, false)
 
-	// Do onetimebootstrap if K3s or K3s-agent are enabled.
+	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && (prvConfig.K3s.Enabled || prvConfig.K3sAgent.Enabled)) || skipAuto {
-		err := oneTimeBootstrap(logger, prvConfig, func() error {
-			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
-		})
-		if err != nil {
-			return ErrorEvent("Failed setup: %s", err.Error())
-		}
-		return pluggable.EventResponse{}
-	}
-
-	if (tokenNotDefined && prvConfig.K0s.Enabled) || prvConfig.K0sWorker.Enabled || skipAuto {
+	if (tokenNotDefined && prvConfig.IsAKubernetesDistributionEnabled()) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -87,7 +77,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	if tokenNotDefined {
-		return ErrorEvent("No network token provided, or `k3s/k0s` block configured. Exiting")
+		return ErrorEvent("No network token provided, or kubernetes distribution (k3s, k0s) block configured. Exiting")
 	}
 
 	// We might still want a VPN, but not to route traffic into
