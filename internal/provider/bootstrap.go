@@ -188,11 +188,13 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	if c.IsK0sEnabled() {
 		svcName = "k0scontroller"
 		svcRole = "controller"
+		svcEnv = c.K0s.Env
 	}
 
 	if c.IsK0sWorkerEnabled() {
 		svcName = "k0sworker"
 		svcRole = "worker"
+		svcEnv = c.K0sWorker.Env
 	}
 
 	if c.IsK3sDistributionEnabled() {
