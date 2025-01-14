@@ -63,10 +63,10 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logger := types.NewKairosLogger("provider", logLevel, false)
 
-	// Do onetimebootstrap if K3s or K3s-agent are enabled.
+	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && (prvConfig.K3s.Enabled || prvConfig.K3sAgent.Enabled)) || skipAuto {
+	if (tokenNotDefined && prvConfig.IsAKubernetesDistributionEnabled()) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -77,7 +77,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	if tokenNotDefined {
-		return ErrorEvent("No network token provided, or `k3s` block configured. Exiting")
+		return ErrorEvent("No network token provided, or kubernetes distribution (k3s, k0s) block configured. Exiting")
 	}
 
 	// We might still want a VPN, but not to route traffic into
@@ -165,66 +165,90 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	l.Info("One time bootstrap starting")
 
 	var svc machine.Service
-	k3sConfig := providerConfig.K3s{}
-	svcName := "k3s"
-	svcRole := "server"
+	var svcName, svcRole, envFile, binPath string
+	var svcEnv map[string]string
 
-	if c.K3s.Enabled {
-		k3sConfig = c.K3s
-	} else if c.K3sAgent.Enabled {
-		k3sConfig = c.K3sAgent
+	if !c.IsK3sDistributionEnabled() {
+		l.Info("No Kubernetes configuration found, skipping bootstrap.")
+		return nil
+	}
+
+	if c.IsK3sAgentEnabled() {
 		svcName = "k3s-agent"
 		svcRole = "agent"
+		svcEnv = c.K3sAgent.Env
 	}
 
-	if utils.IsOpenRCBased() {
-		svc, err = openrc.NewService(
-			openrc.WithName(svcName),
-		)
-	} else {
-		svc, err = systemd.NewService(
-			systemd.WithName(svcName),
-		)
+	if c.IsK3sEnabled() {
+		svcName = "k3s"
+		svcRole = "server"
+		svcEnv = c.K3s.Env
 	}
+
+	if c.IsK0sEnabled() {
+		svcName = "k0scontroller"
+		svcRole = "controller"
+		svcEnv = c.K0s.Env
+	}
+
+	if c.IsK0sWorkerEnabled() {
+		svcName = "k0sworker"
+		svcRole = "worker"
+		svcEnv = c.K0sWorker.Env
+	}
+
+	if c.IsK3sDistributionEnabled() {
+		envFile = machine.K3sEnvUnit(svcName)
+		binPath = utils.K3sBin()
+	}
+
+	if c.IsK0sDistributionEnabled() {
+		envFile = machine.K0sEnvUnit(svcName)
+		binPath = utils.K0sBin()
+	}
+
+	if binPath == "" {
+		l.Errorf("no %s binary fouund", svcName)
+		return fmt.Errorf("no %s binary found", svcName)
+	}
+
+	if err := utils.WriteEnv(envFile, svcEnv); err != nil {
+		l.Errorf("Failed to write %s env file: %s", svcName, err.Error())
+		return err
+	}
+
+	// Initialize the service based on the system's init system
+	if utils.IsOpenRCBased() {
+		svc, err = openrc.NewService(openrc.WithName(svcName))
+	} else {
+		svc, err = systemd.NewService(systemd.WithName(svcName))
+	}
+
 	if err != nil {
-		l.Errorf("Failed to instanitate service: %s", err.Error())
+		l.Errorf("Failed to instantiate service: %s", err.Error())
 		return err
 	}
 	if svc == nil {
 		return fmt.Errorf("could not detect OS")
 	}
 
-	// Setup k3s service env file
-	envFile := machine.K3sEnvUnit(svcName)
-	if err := utils.WriteEnv(envFile,
-		k3sConfig.Env,
-	); err != nil {
-		l.Errorf("Failed to write env file: %s", err.Error())
+	// Override the service command and start it
+	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", binPath, svcRole, strings.Join(c.K3s.Args, " "))); err != nil {
+		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}
-
-	k3sbin := utils.K3sBin()
-	if k3sbin == "" {
-		l.Errorf("no k3s binary found (?)")
-		return fmt.Errorf("no k3s binary found (?)")
-	}
-
-	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k3sbin, svcRole, strings.Join(k3sConfig.Args, " "))); err != nil {
-		l.Errorf("Failed to override k3s command: %s", err.Error())
-		return err
-	}
-
 	if err := svc.Start(); err != nil {
 		l.Errorf("Failed to start service: %s", err.Error())
 		return err
 	}
 
-	// NOTE: When this fails, it doesn't produce an error!
+	// When this fails, it doesn't produce an error!
 	if err := svc.Enable(); err != nil {
 		l.Errorf("Failed to enable service: %s", err.Error())
 		return err
 	}
 
+	// Setup VPN if required
 	if c.P2P != nil && c.P2P.VPNNeedsCreation() {
 		if err := vpnSetupFN(); err != nil {
 			l.Errorf("Failed to setup VPN: %s", err.Error())
