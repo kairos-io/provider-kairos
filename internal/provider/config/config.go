@@ -49,12 +49,20 @@ func (c Config) IsK3sEnabled() bool {
 	return c.K3s.IsEnabled()
 }
 
+func (c Config) IsK3sDistributionEnabled() bool {
+	return c.IsK3sAgentEnabled() || c.IsK3sEnabled()
+}
+
 func (c Config) IsK0sEnabled() bool {
 	return c.K0s.IsEnabled()
 }
 
 func (c Config) IsK0sWorkerEnabled() bool {
 	return c.K0sWorker.IsEnabled()
+}
+
+func (c Config) IsK0sDistributionEnabled() bool {
+	return c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
 }
 
 func (c Config) IsAKubernetesDistributionEnabled() bool {

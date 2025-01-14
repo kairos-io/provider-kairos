@@ -168,7 +168,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath string
 
 	// Determine the service type (K3s or K0s) and set appropriate variables
-	if c.K3s.Enabled || c.K3sAgent.Enabled {
+	if c.IsK3sDistributionEnabled() {
 		k3sConfig := c.K3s
 		if c.K3sAgent.Enabled {
 			k3sConfig = c.K3sAgent
@@ -213,7 +213,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 			return err
 		}
 	} else {
-		l.Info("No K3s or K0s configuration found, skipping bootstrap.")
+		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
 
