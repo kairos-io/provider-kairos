@@ -166,55 +166,53 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 
 	var svc machine.Service
 	var svcName, svcRole, envFile, binPath string
+	var svcEnv map[string]string
 
-	// Determine the service type (K3s or K0s) and set appropriate variables
-	if c.IsK3sDistributionEnabled() {
-		k3sConfig := c.K3s
-		if c.K3sAgent.Enabled {
-			k3sConfig = c.K3sAgent
-			svcName = "k3s-agent"
-			svcRole = "agent"
-		} else {
-			svcName = "k3s"
-			svcRole = "server"
-		}
-		envFile = machine.K3sEnvUnit(svcName)
-		binPath = utils.K3sBin()
-
-		if binPath == "" {
-			l.Errorf("No K3s binary found")
-			return fmt.Errorf("no K3s binary found")
-		}
-
-		if err := utils.WriteEnv(envFile, k3sConfig.Env); err != nil {
-			l.Errorf("Failed to write K3s env file: %s", err.Error())
-			return err
-		}
-	} else if c.K0s.Enabled || c.K0sWorker.Enabled {
-		k0sConfig := c.K0s
-		if c.K0sWorker.Enabled {
-			k0sConfig = c.K0sWorker
-			svcName = "k0sworker"
-			svcRole = "worker"
-		} else {
-			svcName = "k0scontroller"
-			svcRole = "controller"
-		}
-		envFile = machine.K0sEnvUnit(svcName)
-		binPath = utils.K0sBin()
-
-		if binPath == "" {
-			l.Errorf("No K0s binary found")
-			return fmt.Errorf("no K0s binary found")
-		}
-
-		if err := utils.WriteEnv(envFile, k0sConfig.Env); err != nil {
-			l.Errorf("Failed to write K0s env file: %s", err.Error())
-			return err
-		}
-	} else {
+	if !c.IsK3sDistributionEnabled() {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
+	}
+
+	if c.IsK3sAgentEnabled() {
+		svcName = "k3s-agent"
+		svcRole = "agent"
+		svcEnv = c.K3sAgent.Env
+	}
+
+	if c.IsK3sEnabled() {
+		svcName = "k3s"
+		svcRole = "server"
+		svcEnv = c.K3s.Env
+	}
+
+	if c.IsK0sEnabled() {
+		svcName = "k0scontroller"
+		svcRole = "controller"
+	}
+
+	if c.IsK0sWorkerEnabled() {
+		svcName = "k0sworker"
+		svcRole = "worker"
+	}
+
+	if c.IsK3sDistributionEnabled() {
+		envFile = machine.K3sEnvUnit(svcName)
+		binPath = utils.K3sBin()
+	}
+
+	if c.IsK0sDistributionEnabled() {
+		envFile = machine.K0sEnvUnit(svcName)
+		binPath = utils.K0sBin()
+	}
+
+	if binPath == "" {
+		l.Errorf("no %s binary fouund", svcName)
+		return fmt.Errorf("no %s binary found", svcName)
+	}
+
+	if err := utils.WriteEnv(envFile, svcEnv); err != nil {
+		l.Errorf("Failed to write %s env file: %s", svcName, err.Error())
+		return err
 	}
 
 	// Initialize the service based on the system's init system
