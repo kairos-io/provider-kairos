@@ -48,8 +48,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	if prvConfig.P2P == nil && !prvConfig.K3s.Enabled && !prvConfig.K3sAgent.Enabled {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kairos or k3s configuration. nothing to do: %s", cfg.Config)}
+	if prvConfig.P2P == nil && !prvConfig.IsAKubernetesDistributionEnabled() {
+		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -168,7 +168,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath string
 	var svcEnv map[string]string
 
-	if !c.IsK3sDistributionEnabled() {
+	if !c.IsAKubernetesDistributionEnabled() {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
@@ -232,8 +232,16 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		return fmt.Errorf("could not detect OS")
 	}
 
+	// Args can come from k3s or k0s
+	var args string
+	if c.IsK3sDistributionEnabled() {
+		args = strings.Join(c.K3s.Args, " ")
+	} else if c.IsK0sDistributionEnabled() {
+		args = strings.Join(c.K0s.Args, " ")
+	}
+
 	// Override the service command and start it
-	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", binPath, svcRole, strings.Join(c.K3s.Args, " "))); err != nil {
+	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", binPath, svcRole, args)); err != nil {
 		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}
