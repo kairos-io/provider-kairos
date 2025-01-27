@@ -165,7 +165,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	l.Info("One time bootstrap starting")
 
 	var svc machine.Service
-	var svcName, svcRole, envFile, binPath string
+	var svcName, svcRole, envFile, binPath, args string
 	var svcEnv map[string]string
 
 	if !c.IsAKubernetesDistributionEnabled() {
@@ -177,24 +177,28 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		svcName = "k3s-agent"
 		svcRole = "agent"
 		svcEnv = c.K3sAgent.Env
+		args = strings.Join(c.K3sAgent.Args, " ")
 	}
 
 	if c.IsK3sEnabled() {
 		svcName = "k3s"
 		svcRole = "server"
 		svcEnv = c.K3s.Env
+		args = strings.Join(c.K3s.Args, " ")
 	}
 
 	if c.IsK0sEnabled() {
 		svcName = "k0scontroller"
 		svcRole = "controller"
 		svcEnv = c.K0s.Env
+		args = strings.Join(c.K0s.Args, " ")
 	}
 
 	if c.IsK0sWorkerEnabled() {
 		svcName = "k0sworker"
 		svcRole = "worker"
 		svcEnv = c.K0sWorker.Env
+		args = strings.Join(c.K0sWorker.Args, " ")
 	}
 
 	if c.IsK3sDistributionEnabled() {
@@ -230,14 +234,6 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	}
 	if svc == nil {
 		return fmt.Errorf("could not detect OS")
-	}
-
-	// Args can come from k3s or k0s
-	var args string
-	if c.IsK3sDistributionEnabled() {
-		args = strings.Join(c.K3s.Args, " ")
-	} else if c.IsK0sDistributionEnabled() {
-		args = strings.Join(c.K0s.Args, " ")
 	}
 
 	// Override the service command and start it
