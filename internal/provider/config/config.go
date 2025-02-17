@@ -1,5 +1,7 @@
 package config
 
+import "github.com/kairos-io/kairos-sdk/utils"
+
 const (
 	K3sDistro = "k3s"
 	K0sDistro = "k0s"
@@ -17,8 +19,7 @@ type P2P struct {
 	DisableDHT   bool `yaml:"disable_dht,omitempty"`
 	Auto         Auto `yaml:"auto,omitempty"`
 
-	DynamicRoles bool   `yaml:"dynamic_roles,omitempty"`
-	Distribution string `yaml:"distribution,omitempty"`
+	DynamicRoles bool `yaml:"dynamic_roles,omitempty"`
 }
 
 type VPN struct {
@@ -49,15 +50,11 @@ type Config struct {
 
 // K8sDistro returns the Kubernetes distribution. It defaults to K3s for backwards compatibility.
 func (c Config) K8sDistro() string {
-	if c.P2P.Distribution != "" {
-		return c.P2P.Distribution
-	}
-
-	if c.IsK3sEnabled() || c.IsK3sAgentEnabled() {
+	if c.IsK3sEnabled() || c.IsK3sAgentEnabled() || utils.K3sBin() != "" {
 		return K3sDistro
 	}
 
-	if c.IsK0sEnabled() || c.IsK0sWorkerEnabled() {
+	if c.IsK0sEnabled() || c.IsK0sWorkerEnabled() || utils.K0sBin() != "" {
 		return K0sDistro
 	}
 
