@@ -201,15 +201,6 @@ type HA struct {
 	MasterNodes *int   `yaml:"master_nodes,omitempty"`
 }
 
-type K8sConfig struct {
-	Env              map[string]string `yaml:"env,omitempty"`
-	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
-	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
-	Args             []string          `yaml:"args,omitempty"`
-	Enabled          bool              `yaml:"enabled,omitempty"`
-	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
-}
-
 type K3s struct {
 	Env              map[string]string `yaml:"env,omitempty"`
 	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
