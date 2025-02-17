@@ -3,7 +3,7 @@ package role
 import (
 	"encoding/base64"
 	"errors"
-	"fmt" // nolint
+	"fmt"
 	"os"
 	"strings"
 	"time"
