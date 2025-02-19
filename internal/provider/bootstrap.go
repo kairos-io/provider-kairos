@@ -110,26 +110,26 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
 		service.WithNetworkToken(prvConfig.P2P.NetworkToken),
-		service.WithPersistentRoles("auto"),
+		service.WithPersistentRoles(p2p.RoleAuto),
 		service.WithRoles(
 			service.RoleKey{
-				Role:        "master",
-				RoleHandler: p2p.Master(c, prvConfig, "master"),
+				Role:        p2p.RoleMaster,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMaster),
 			},
 			service.RoleKey{
-				Role:        "master/clusterinit",
-				RoleHandler: p2p.Master(c, prvConfig, "master/clusterinit"),
+				Role:        p2p.RoleMasterClusterInit,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterClusterInit),
 			},
 			service.RoleKey{
-				Role:        "master/ha",
-				RoleHandler: p2p.Master(c, prvConfig, "master/ha"),
+				Role:        p2p.RoleMasterHA,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterHA),
 			},
 			service.RoleKey{
-				Role:        "worker",
+				Role:        p2p.RoleWorker,
 				RoleHandler: p2p.Worker(c, prvConfig),
 			},
 			service.RoleKey{
-				Role:        "auto",
+				Role:        p2p.RoleAuto,
 				RoleHandler: role.Auto(c, prvConfig),
 			},
 		),

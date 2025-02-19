@@ -7,6 +7,14 @@ import (
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 )
 
+const (
+	RoleWorker            = "worker"
+	RoleMaster            = "master"
+	RoleMasterHA          = "master/ha"
+	RoleMasterClusterInit = "master/clusterinit"
+	RoleAuto              = "auto"
+)
+
 func guessInterface(pconfig *providerConfig.Config) string {
 	if pconfig.KubeVIP.Interface != "" {
 		return pconfig.KubeVIP.Interface
