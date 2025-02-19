@@ -40,11 +40,11 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 		var node K8sNode
 
 		if distro == providerConfig.K3sDistro {
-			node = &K3sNode{roleConfig: c, providerConfig: pconfig, role: "worker"}
+			node = &K3sNode{roleConfig: c, providerConfig: pconfig, role: RoleWorker}
 		}
 
 		if distro == providerConfig.K0sDistro {
-			node = &K0sNode{roleConfig: c, providerConfig: pconfig, role: "worker"}
+			node = &K0sNode{roleConfig: c, providerConfig: pconfig, role: RoleWorker}
 		}
 
 		nodeToken, _ := node.Token()

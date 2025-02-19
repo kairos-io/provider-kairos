@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	RoleWorker = "worker"
+	K0sMasterName = "controller"
+	K0sWorkerName = "worker"
 )
 
 type K0sNode struct {
@@ -123,11 +124,13 @@ func (k *K0sNode) RoleConfig() *service.RoleConfig {
 }
 
 func (k *K0sNode) HA() bool {
-	return k.role == "master/ha"
+	return k.role == RoleMasterHA
 }
 
 func (k *K0sNode) ClusterInit() bool {
-	return k.role == "master/clusterinit"
+	// k0s does not have a cluster init role like k3s. Instead we should have a way to set in the config
+	// if the user wants a single node cluster, multi-node cluster, or HA cluster
+	return false
 }
 
 func (k *K0sNode) IP() string {
@@ -200,8 +203,8 @@ func (k *K0sNode) SetupWorker(_, nodeToken string) error {
 
 func (k *K0sNode) CmdFirstArg() string {
 	if k.IsWorker() {
-		return "worker"
+		return K0sWorkerName
 	}
 
-	return "controller"
+	return K0sMasterName
 }

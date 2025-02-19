@@ -13,6 +13,11 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
+const (
+	K3sMasterName = "server"
+	K3sWorkerName = "agent"
+)
+
 type K3sNode struct {
 	providerConfig *providerConfig.Config
 	roleConfig     *service.RoleConfig
@@ -20,6 +25,10 @@ type K3sNode struct {
 	iface          string
 	ifaceIP        string
 	role           string
+}
+
+func (k *K3sNode) IsWorker() bool {
+	return k.role == RoleWorker
 }
 
 func (k *K3sNode) K8sBin() string {
@@ -237,9 +246,9 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 }
 
 func (k *K3sNode) CmdFirstArg() string {
-	if k.role == "worker" {
-		return "agent"
+	if k.IsWorker() {
+		return K3sWorkerName
 	}
 
-	return "server"
+	return K3sMasterName
 }
