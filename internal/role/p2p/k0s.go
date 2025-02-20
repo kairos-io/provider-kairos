@@ -12,8 +12,11 @@ import (
 )
 
 const (
-	K0sMasterName = "controller"
-	K0sWorkerName = "worker"
+	K0sDistroName        = "k0s"
+	K0sMasterName        = "controller"
+	K0sWorkerName        = "worker"
+	K0sMasterServiceName = "k0scontroller"
+	K0sWorkerServiceName = "k0sworker"
 )
 
 type K0sNode struct {
@@ -109,10 +112,6 @@ func (k *K0sNode) GenerateEnv() (env map[string]string) {
 	return env
 }
 
-func (k *K0sNode) SetProviderConfig(c *providerConfig.Config) {
-	k.providerConfig = c
-}
-
 func (k *K0sNode) ProviderConfig() *providerConfig.Config {
 	return k.providerConfig
 }
@@ -203,10 +202,56 @@ func (k *K0sNode) SetupWorker(_, nodeToken string) error {
 	return nil
 }
 
-func (k *K0sNode) CmdFirstArg() string {
+func (k *K0sNode) Role() string {
 	if k.IsWorker() {
 		return K0sWorkerName
 	}
 
 	return K0sMasterName
+}
+
+func (k *K0sNode) ServiceName() string {
+	if k.IsWorker() {
+		return K0sWorkerServiceName
+	}
+
+	return K0sMasterServiceName
+}
+
+func (k *K0sNode) Env() map[string]string {
+	c := k.ProviderConfig()
+	if k.IsWorker() {
+		return c.K0sWorker.Env
+	}
+
+	return c.K0s.Env
+}
+
+func (k *K0sNode) Args() []string {
+	c := k.ProviderConfig()
+	if k.IsWorker() {
+		return c.K0sWorker.Args
+	}
+
+	return c.K0s.Args
+}
+
+func (k *K0sNode) EnvFile() string {
+	return machine.K0sEnvUnit(k.ServiceName())
+}
+
+func (k *K0sNode) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K0sNode) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K0sNode) GuessInterface() {
+	// not used in k0s
+}
+
+func (k *K0sNode) Distro() string {
+	return K0sDistroName
 }
