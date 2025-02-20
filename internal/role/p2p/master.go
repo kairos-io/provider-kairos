@@ -96,20 +96,12 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 		}
 
 		c.Logger.Info("Determining K8s distro")
-		distro := pconfig.K8sDistro()
+		node, _ := NewK8sNode(pconfig)
 
-		var node K8sNode
-
-		if distro == providerConfig.K3sDistro {
-			iface := guessInterface(pconfig)
-			ifaceIP := utils.GetInterfaceIP(iface)
-
-			node = &K3sNode{roleConfig: c, providerConfig: pconfig, ip: ip, ifaceIP: ifaceIP, role: roleName}
-		}
-
-		if distro == providerConfig.K0sDistro {
-			node = &K0sNode{roleConfig: c, providerConfig: pconfig, ip: ip, role: roleName}
-		}
+		node.SetRole(roleName)
+		node.SetRoleConfig(c)
+		node.SetIP(ip)
+		node.GuessInterface()
 
 		c.Logger.Info("Verifying sentinel file")
 		if role.SentinelExist() {
@@ -124,17 +116,16 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 
 		c.Logger.Info("Generating env")
 		env := node.GenerateEnv()
-		svcName := distro // because we are on the master role it will always be identical to distro
 
 		// Configure k8s service to start on edgevpn0
-		c.Logger.Info(fmt.Sprintf("Configuring %s", svcName))
+		c.Logger.Info(fmt.Sprintf("Configuring %s", node.Distro()))
 
 		c.Logger.Info("Running bootstrap before stage")
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", roleName)) //nolint:errcheck
 
 		svc, err := node.Service()
 		if err != nil {
-			return fmt.Errorf("failed to get %s service: %w", svcName, err)
+			return fmt.Errorf("failed to get %s service: %w", node.Distro(), err)
 		}
 
 		c.Logger.Info("Writing service Env %s")
@@ -142,13 +133,13 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 		if err := utils.WriteEnv(envUnit,
 			env,
 		); err != nil {
-			return fmt.Errorf("failed to write the %s service: %w", svcName, err)
+			return fmt.Errorf("failed to write the %s service: %w", node.Distro(), err)
 		}
 
 		c.Logger.Info("Generating args")
 		args, err := node.GenArgs()
 		if err != nil {
-			return fmt.Errorf("failed to generate %s args: %w", svcName, err)
+			return fmt.Errorf("failed to generate %s args: %w", node.Distro(), err)
 		}
 
 		if node.ProviderConfig().KubeVIP.IsEnabled() {
@@ -160,22 +151,22 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 
 		k8sBin := node.K8sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", distro)
+			return fmt.Errorf("no %s binary found (?)", node.Distro())
 		}
 
 		c.Logger.Info("Writing service override")
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.CmdFirstArg(), strings.Join(args, " "))); err != nil {
-			return fmt.Errorf("failed to override %s command: %w", svcName, err)
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
+			return fmt.Errorf("failed to override %s command: %w", node.Distro(), err)
 		}
 
 		c.Logger.Info("Starting service")
 		if err := svc.Start(); err != nil {
-			return fmt.Errorf("failed to start %s service: %w", svcName, err)
+			return fmt.Errorf("failed to start %s service: %w", node.Distro(), err)
 		}
 
 		c.Logger.Info("Enabling service")
 		if err := svc.Enable(); err != nil {
-			return fmt.Errorf("failed to enable %s service: %w", svcName, err)
+			return fmt.Errorf("failed to enable %s service: %w", node.Distro(), err)
 		}
 
 		c.Logger.Info("Propagating master data")
