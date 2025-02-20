@@ -48,7 +48,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	if prvConfig.P2P == nil && !prvConfig.IsAKubernetesDistributionEnabled() {
+	node, _ := p2p.NewK8sNode(prvConfig)
+	if prvConfig.P2P == nil && node != nil {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
 	}
 
@@ -66,7 +67,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && prvConfig.IsAKubernetesDistributionEnabled()) || skipAuto {
+	if (tokenNotDefined && node != nil) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -168,25 +169,18 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath, args string
 	var svcEnv map[string]string
 
-	if !c.IsAKubernetesDistributionEnabled() {
+	node, err := p2p.NewK8sNode(c)
+	if err != nil {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
 
-	svcName = c.K8sServiceName()
-	svcRole = c.K8sNodeRole()
-	svcEnv = c.K8sEnv()
-	args = strings.Join(c.K8sArgs(), " ")
-
-	if c.IsK3sDistributionEnabled() {
-		envFile = machine.K3sEnvUnit(svcName)
-		binPath = utils.K3sBin()
-	}
-
-	if c.IsK0sDistributionEnabled() {
-		envFile = machine.K0sEnvUnit(svcName)
-		binPath = utils.K0sBin()
-	}
+	svcName = node.ServiceName()
+	svcRole = node.Role()
+	svcEnv = node.Env()
+	args = strings.Join(node.Args(), " ")
+	binPath = node.K8sBin()
+	envFile = node.EnvFile()
 
 	if binPath == "" {
 		l.Errorf("no %s binary fouund", svcName)

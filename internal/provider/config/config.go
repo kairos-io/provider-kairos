@@ -1,7 +1,5 @@
 package config
 
-import "github.com/kairos-io/kairos-sdk/utils"
-
 const (
 	K3sDistro = "k3s"
 	K0sDistro = "k0s"
@@ -48,127 +46,6 @@ type Config struct {
 	K0s       K0s     `yaml:"k0s,omitempty"`
 }
 
-// K8sDistro returns the Kubernetes distribution.
-func (c Config) K8sDistro() string {
-	if c.IsK3sEnabled() || c.IsK3sAgentEnabled() || utils.K3sBin() != "" {
-		return K3sDistro
-	}
-
-	if c.IsK0sEnabled() || c.IsK0sWorkerEnabled() || utils.K0sBin() != "" {
-		return K0sDistro
-	}
-
-	return ""
-}
-
-func (c Config) IsK3sAgentEnabled() bool {
-	return c.K3sAgent.IsEnabled()
-}
-
-func (c Config) IsK3sEnabled() bool {
-	return c.K3s.IsEnabled()
-}
-
-func (c Config) IsK3sDistributionEnabled() bool {
-	return c.IsK3sAgentEnabled() || c.IsK3sEnabled()
-}
-
-func (c Config) IsK0sEnabled() bool {
-	return c.K0s.IsEnabled()
-}
-
-func (c Config) IsK0sWorkerEnabled() bool {
-	return c.K0sWorker.IsEnabled()
-}
-
-func (c Config) IsK0sDistributionEnabled() bool {
-	return c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
-}
-
-func (c Config) IsAKubernetesDistributionEnabled() bool {
-	return c.IsK3sAgentEnabled() || c.IsK3sEnabled() || c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
-}
-
-func (c Config) K8sServiceName() string {
-	if c.IsK3sAgentEnabled() {
-		return "k3s-agent"
-	}
-
-	if c.IsK3sEnabled() {
-		return "k3s"
-	}
-
-	if c.IsK0sEnabled() {
-		return "k0scontroller"
-	}
-
-	if c.IsK0sWorkerEnabled() {
-		return "k0sworker"
-	}
-
-	return ""
-}
-
-func (c Config) K8sNodeRole() string {
-	if c.IsK3sAgentEnabled() {
-		return "agent"
-	}
-
-	if c.IsK3sEnabled() {
-		return "server"
-	}
-
-	if c.IsK0sEnabled() {
-		return "controller"
-	}
-
-	if c.IsK0sWorkerEnabled() {
-		return "worker"
-	}
-
-	return ""
-}
-
-func (c Config) K8sEnv() map[string]string {
-	if c.IsK3sEnabled() {
-		return c.K3s.Env
-	}
-
-	if c.IsK3sAgentEnabled() {
-		return c.K3sAgent.Env
-	}
-
-	if c.IsK0sEnabled() {
-		return c.K0s.Env
-	}
-
-	if c.IsK0sWorkerEnabled() {
-		return c.K0sWorker.Env
-	}
-
-	return nil
-}
-
-func (c Config) K8sArgs() []string {
-	if c.IsK3sEnabled() {
-		return c.K3s.Args
-	}
-
-	if c.IsK3sAgentEnabled() {
-		return c.K3sAgent.Args
-	}
-
-	if c.IsK0sEnabled() {
-		return c.K0s.Args
-	}
-
-	if c.IsK0sWorkerEnabled() {
-		return c.K0sWorker.Args
-	}
-
-	return nil
-}
-
 type KubeVIP struct {
 	Args        []string `yaml:"args,omitempty"`
 	EIP         string   `yaml:"eip,omitempty"`
@@ -210,34 +87,10 @@ type K3s struct {
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
 }
 
-func (k K3s) IsEnabled() bool {
-	return k.Enabled
-}
-
-func (k K3s) AppendArgs(other []string) []string {
-	if k.ReplaceArgs {
-		return k.Args
-	}
-
-	return append(other, k.Args...)
-}
-
 type K0s struct {
 	Env         map[string]string `yaml:"env,omitempty"`
 	ReplaceEnv  bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
 	Args        []string          `yaml:"args,omitempty"`
 	Enabled     bool              `yaml:"enabled,omitempty"`
-}
-
-func (k K0s) IsEnabled() bool {
-	return k.Enabled
-}
-
-func (k K0s) AppendArgs(other []string) []string {
-	if k.ReplaceArgs {
-		return k.Args
-	}
-
-	return append(other, k.Args...)
 }

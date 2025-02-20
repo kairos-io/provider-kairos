@@ -14,8 +14,11 @@ import (
 )
 
 const (
-	K3sMasterName = "server"
-	K3sWorkerName = "agent"
+	K3sDistroName        = "k3s"
+	K3sMasterName        = "server"
+	K3sWorkerName        = "agent"
+	K3sMasterServiceName = "k3s"
+	K3sWorkerServiceName = "k3s-agent"
 )
 
 type K3sNode struct {
@@ -73,9 +76,18 @@ func (k *K3sNode) GenArgs() ([]string, error) {
 		args = append(args, "--cluster-init")
 	}
 
-	args = pconfig.K3s.AppendArgs(args)
+	args = k.AppendArgs(args)
 
 	return args, nil
+}
+
+func (k *K3sNode) AppendArgs(other []string) []string {
+	c := k.ProviderConfig()
+	if c.K3s.ReplaceArgs {
+		return c.K3s.Args
+	}
+
+	return append(other, c.K3s.Args...)
 }
 
 func (k *K3sNode) EnvUnit() string {
@@ -114,10 +126,6 @@ func (k *K3sNode) GenerateEnv() (env map[string]string) {
 	}
 
 	return env
-}
-
-func (k *K3sNode) SetProviderConfig(c *providerConfig.Config) {
-	k.providerConfig = c
 }
 
 func (k *K3sNode) ProviderConfig() *providerConfig.Config {
@@ -245,10 +253,60 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 	return nil
 }
 
-func (k *K3sNode) CmdFirstArg() string {
+func (k *K3sNode) Role() string {
 	if k.IsWorker() {
 		return K3sWorkerName
 	}
 
 	return K3sMasterName
+}
+
+func (k *K3sNode) ServiceName() string {
+	if k.IsWorker() {
+		return K3sWorkerServiceName
+	}
+
+	return K3sMasterServiceName
+}
+
+func (k *K3sNode) Env() map[string]string {
+	c := k.ProviderConfig()
+	if k.IsWorker() {
+		return c.K3sAgent.Env
+	}
+
+	return c.K3s.Env
+}
+
+func (k *K3sNode) Args() []string {
+	c := k.ProviderConfig()
+	if k.IsWorker() {
+		return c.K3sAgent.Args
+	}
+
+	return c.K3s.Args
+}
+
+func (k *K3sNode) EnvFile() string {
+	return machine.K3sEnvUnit(k.ServiceName())
+}
+
+func (k *K3sNode) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K3sNode) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K3sNode) GuessInterface() {
+	iface := guessInterface(k.ProviderConfig())
+	ifaceIP := utils.GetInterfaceIP(iface)
+
+	k.iface = iface
+	k.ifaceIP = ifaceIP
+}
+
+func (k *K3sNode) Distro() string {
+	return K3sDistroName
 }

@@ -35,17 +35,9 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		distro := pconfig.K8sDistro()
-
-		var node K8sNode
-
-		if distro == providerConfig.K3sDistro {
-			node = &K3sNode{roleConfig: c, providerConfig: pconfig, role: RoleWorker}
-		}
-
-		if distro == providerConfig.K0sDistro {
-			node = &K0sNode{roleConfig: c, providerConfig: pconfig, role: RoleWorker}
-		}
+		node, _ := NewK8sNode(pconfig)
+		node.SetRole(RoleWorker)
+		node.SetRoleConfig(c)
 
 		nodeToken, _ := node.Token()
 		if nodeToken == "" {
@@ -62,7 +54,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 
 		k8sBin := node.K8sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", distro)
+			return fmt.Errorf("no %s binary found (?)", node.Distro())
 		}
 
 		args, err := node.WorkerArgs()
@@ -75,8 +67,8 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return err
 		}
 
-		c.Logger.Info(fmt.Sprintf("Configuring %s worker", distro))
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.CmdFirstArg(), strings.Join(args, " "))); err != nil {
+		c.Logger.Info(fmt.Sprintf("Configuring %s worker", node.Distro()))
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
 			return err
 		}
 
