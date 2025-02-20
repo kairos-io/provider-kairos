@@ -44,9 +44,9 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	var args []string
 
 	pconfig := k.ProviderConfig()
-	// if pconfig.P2P.UseVPNWithKubernetes() {
-	// k3s uses this check to connet using the interface; however k0s does not have a way to configure that
-	// }
+	if !pconfig.P2P.UseVPNWithKubernetes() {
+		return args, errors.New("Having a VPN but not using it for Kubernetes is not yet supported with k0s")
+	}
 
 	if pconfig.KubeVIP.IsEnabled() {
 		return args, errors.New("KubeVIP is not yet supported with k0s")
@@ -60,7 +60,9 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 		return args, errors.New("HA is not yet supported with k0s")
 	}
 
-	args = pconfig.K0s.AppendArgs(args)
+	// when we start implementing this functionality, remember to use
+	// AppendArgs, and not just return the args here, this is because the
+	// function understands if it needs to append or replace the args
 
 	return args, nil
 }
