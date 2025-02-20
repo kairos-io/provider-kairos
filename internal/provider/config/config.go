@@ -48,7 +48,7 @@ type Config struct {
 	K0s       K0s     `yaml:"k0s,omitempty"`
 }
 
-// K8sDistro returns the Kubernetes distribution. It defaults to K3s for backwards compatibility.
+// K8sDistro returns the Kubernetes distribution.
 func (c Config) K8sDistro() string {
 	if c.IsK3sEnabled() || c.IsK3sAgentEnabled() || utils.K3sBin() != "" {
 		return K3sDistro
@@ -58,7 +58,7 @@ func (c Config) K8sDistro() string {
 		return K0sDistro
 	}
 
-	return K3sDistro
+	return ""
 }
 
 func (c Config) IsK3sAgentEnabled() bool {
