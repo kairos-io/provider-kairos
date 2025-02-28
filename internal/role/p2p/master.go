@@ -35,7 +35,7 @@ func propagateMasterData(role string, k K8sNode) error {
 		return nil
 	}
 
-	err := k.propagateData()
+	err := k.PropagateData()
 	if err != nil {
 		c.Logger.Error(err)
 	}
