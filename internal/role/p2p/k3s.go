@@ -152,7 +152,7 @@ func (k *K3sNode) IP() string {
 	return k.ip
 }
 
-func (k *K3sNode) propagateData() error {
+func (k *K3sNode) PropagateData() error {
 	c := k.RoleConfig()
 	tokenB, err := os.ReadFile("/var/lib/rancher/k3s/server/node-token")
 	if err != nil {

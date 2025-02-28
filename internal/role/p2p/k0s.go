@@ -138,7 +138,7 @@ func (k *K0sNode) IP() string {
 	return k.ip
 }
 
-func (k *K0sNode) propagateData() error {
+func (k *K0sNode) PropagateData() error {
 	c := k.RoleConfig()
 	controllerToken, err := utils.SH("k0s token create --role=controller") //nolint:errcheck
 	if err != nil {

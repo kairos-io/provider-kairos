@@ -10,7 +10,7 @@ import (
 )
 
 type K8sNode interface {
-	propagateData() error
+	PropagateData() error
 	IP() string
 	ClusterInit() bool
 	HA() bool
