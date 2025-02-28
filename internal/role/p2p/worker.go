@@ -35,7 +35,11 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		node, _ := NewK8sNode(pconfig)
+		node, err := NewK8sNode(pconfig)
+		if err != nil {
+			return fmt.Errorf("failed to determine k8s distro: %w", err)
+		}
+
 		node.SetRole(RoleWorker)
 		node.SetRoleConfig(c)
 
