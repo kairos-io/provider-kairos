@@ -51,7 +51,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 
 		utils.SH("kairos-agent run-stage provider-kairos.bootstrap.before.worker") //nolint:errcheck
 
-		err := node.SetupWorker(masterIP, nodeToken)
+		err = node.SetupWorker(masterIP, nodeToken)
 		if err != nil {
 			return err
 		}
