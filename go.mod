@@ -18,7 +18,7 @@ require (
 	github.com/onsi/gomega v1.36.2
 	github.com/pterm/pterm v0.12.80
 	github.com/samber/lo v1.49.1
-	github.com/urfave/cli/v2 v2.27.5
+	github.com/urfave/cli/v2 v2.27.6
 	gopkg.in/yaml.v3 v3.0.1
 )
 
