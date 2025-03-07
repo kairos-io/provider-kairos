@@ -114,15 +114,15 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithRoles(
 			service.RoleKey{
 				Role:        "master",
-				RoleHandler: p2p.Master(c, prvConfig, false, false, "master"),
+				RoleHandler: p2p.Master(c, prvConfig, "master"),
 			},
 			service.RoleKey{
 				Role:        "master/clusterinit",
-				RoleHandler: p2p.Master(c, prvConfig, true, true, "master/clusterinit"),
+				RoleHandler: p2p.Master(c, prvConfig, "master/clusterinit"),
 			},
 			service.RoleKey{
 				Role:        "master/ha",
-				RoleHandler: p2p.Master(c, prvConfig, false, true, "master/ha"),
+				RoleHandler: p2p.Master(c, prvConfig, "master/ha"),
 			},
 			service.RoleKey{
 				Role:        "worker",
