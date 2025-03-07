@@ -3,6 +3,7 @@ package role
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -52,13 +53,19 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	if err != nil {
 		return args, err
 	}
+	args = append(args, "--config /etc/k0s/k0s.yaml")
+
+	// set the IP address of the node
+	_, err = utils.SH(fmt.Sprintf("sed -i 's/address: .*/address: %s/' /etc/k0s/k0s.yaml", k.IP()))
+	if err != nil {
+		return args, err
+	}
+
 	// replace the kube-proxy metrics port otherwise they conflict with EdgeVPN api (if it's deployed)
 	_, err = utils.SH("sed -i 's/metricsPort: 8080/metricsPort: 9090/' /etc/k0s/k0s.yaml")
 	if err != nil {
 		return args, err
 	}
-
-	args = append(args, "--config /etc/k0s/k0s.yaml")
 
 	pconfig := k.ProviderConfig()
 	if !pconfig.P2P.UseVPNWithKubernetes() {
