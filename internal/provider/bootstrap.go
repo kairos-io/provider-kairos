@@ -49,7 +49,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
 	node, _ := p2p.NewK8sNode(prvConfig)
-	if prvConfig.P2P == nil && node != nil {
+	if prvConfig.P2P == nil && node == nil {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
 	}
 
