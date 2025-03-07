@@ -1,5 +1,10 @@
 package config
 
+const (
+	K3sDistro = "k3s"
+	K0sDistro = "k0s"
+)
+
 type P2P struct {
 	NetworkToken string `yaml:"network_token,omitempty"`
 	NetworkID    string `yaml:"network_id,omitempty"`
@@ -39,34 +44,6 @@ type Config struct {
 	KubeVIP   KubeVIP `yaml:"kubevip,omitempty"`
 	K0sWorker K0s     `yaml:"k0s-worker,omitempty"`
 	K0s       K0s     `yaml:"k0s,omitempty"`
-}
-
-func (c Config) IsK3sAgentEnabled() bool {
-	return c.K3sAgent.IsEnabled()
-}
-
-func (c Config) IsK3sEnabled() bool {
-	return c.K3s.IsEnabled()
-}
-
-func (c Config) IsK3sDistributionEnabled() bool {
-	return c.IsK3sAgentEnabled() || c.IsK3sEnabled()
-}
-
-func (c Config) IsK0sEnabled() bool {
-	return c.K0s.IsEnabled()
-}
-
-func (c Config) IsK0sWorkerEnabled() bool {
-	return c.K0sWorker.IsEnabled()
-}
-
-func (c Config) IsK0sDistributionEnabled() bool {
-	return c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
-}
-
-func (c Config) IsAKubernetesDistributionEnabled() bool {
-	return c.IsK3sAgentEnabled() || c.IsK3sEnabled() || c.IsK0sEnabled() || c.IsK0sWorkerEnabled()
 }
 
 type KubeVIP struct {
@@ -110,19 +87,10 @@ type K3s struct {
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
 }
 
-func (k K3s) IsEnabled() bool {
-	return k.Enabled
-}
-
 type K0s struct {
-	Env              map[string]string `yaml:"env,omitempty"`
-	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
-	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
-	Args             []string          `yaml:"args,omitempty"`
-	Enabled          bool              `yaml:"enabled,omitempty"`
-	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
-}
-
-func (k K0s) IsEnabled() bool {
-	return k.Enabled
+	Env         map[string]string `yaml:"env,omitempty"`
+	ReplaceEnv  bool              `yaml:"replace_env,omitempty"`
+	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
+	Args        []string          `yaml:"args,omitempty"`
+	Enabled     bool              `yaml:"enabled,omitempty"`
 }

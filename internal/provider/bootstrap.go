@@ -48,7 +48,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	if prvConfig.P2P == nil && !prvConfig.IsAKubernetesDistributionEnabled() {
+	node, _ := p2p.NewK8sNode(prvConfig)
+	if prvConfig.P2P == nil && node == nil {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
 	}
 
@@ -66,7 +67,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && prvConfig.IsAKubernetesDistributionEnabled()) || skipAuto {
+	if (tokenNotDefined && node != nil) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -110,26 +111,26 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
 		service.WithNetworkToken(prvConfig.P2P.NetworkToken),
-		service.WithPersistentRoles("auto"),
+		service.WithPersistentRoles(p2p.RoleAuto),
 		service.WithRoles(
 			service.RoleKey{
-				Role:        "master",
-				RoleHandler: p2p.Master(c, prvConfig, false, false, "master"),
+				Role:        p2p.RoleMaster,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMaster),
 			},
 			service.RoleKey{
-				Role:        "master/clusterinit",
-				RoleHandler: p2p.Master(c, prvConfig, true, true, "master/clusterinit"),
+				Role:        p2p.RoleMasterClusterInit,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterClusterInit),
 			},
 			service.RoleKey{
-				Role:        "master/ha",
-				RoleHandler: p2p.Master(c, prvConfig, false, true, "master/ha"),
+				Role:        p2p.RoleMasterHA,
+				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterHA),
 			},
 			service.RoleKey{
-				Role:        "worker",
+				Role:        p2p.RoleWorker,
 				RoleHandler: p2p.Worker(c, prvConfig),
 			},
 			service.RoleKey{
-				Role:        "auto",
+				Role:        p2p.RoleAuto,
 				RoleHandler: role.Auto(c, prvConfig),
 			},
 		),
@@ -168,48 +169,18 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath, args string
 	var svcEnv map[string]string
 
-	if !c.IsAKubernetesDistributionEnabled() {
+	node, err := p2p.NewK8sNode(c)
+	if err != nil {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
 
-	if c.IsK3sAgentEnabled() {
-		svcName = "k3s-agent"
-		svcRole = "agent"
-		svcEnv = c.K3sAgent.Env
-		args = strings.Join(c.K3sAgent.Args, " ")
-	}
-
-	if c.IsK3sEnabled() {
-		svcName = "k3s"
-		svcRole = "server"
-		svcEnv = c.K3s.Env
-		args = strings.Join(c.K3s.Args, " ")
-	}
-
-	if c.IsK0sEnabled() {
-		svcName = "k0scontroller"
-		svcRole = "controller"
-		svcEnv = c.K0s.Env
-		args = strings.Join(c.K0s.Args, " ")
-	}
-
-	if c.IsK0sWorkerEnabled() {
-		svcName = "k0sworker"
-		svcRole = "worker"
-		svcEnv = c.K0sWorker.Env
-		args = strings.Join(c.K0sWorker.Args, " ")
-	}
-
-	if c.IsK3sDistributionEnabled() {
-		envFile = machine.K3sEnvUnit(svcName)
-		binPath = utils.K3sBin()
-	}
-
-	if c.IsK0sDistributionEnabled() {
-		envFile = machine.K0sEnvUnit(svcName)
-		binPath = utils.K0sBin()
-	}
+	svcName = node.ServiceName()
+	svcRole = node.Role()
+	svcEnv = node.Env()
+	args = strings.Join(node.Args(), " ")
+	binPath = node.K8sBin()
+	envFile = node.EnvFile()
 
 	if binPath == "" {
 		l.Errorf("no %s binary fouund", svcName)

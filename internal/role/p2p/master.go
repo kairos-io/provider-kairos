@@ -1,15 +1,12 @@
 package role
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil" // nolint
 	"strings"
 	"time"
 
 	"github.com/kairos-io/kairos-agent/v2/pkg/config"
-	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
@@ -17,7 +14,8 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool, role string) error {
+func propagateMasterData(role string, k K8sNode) error {
+	c := k.RoleConfig()
 	defer func() {
 		// Avoid polluting the API.
 		// The ledger already retries in the background to update the blockchain, but it has
@@ -33,79 +31,20 @@ func propagateMasterData(ip string, c *service.RoleConfig, clusterInit, ha bool,
 		return err
 	}
 
-	if ha && !clusterInit {
+	if k.HA() && !k.ClusterInit() {
 		return nil
 	}
 
-	tokenB, err := ioutil.ReadFile("/var/lib/rancher/k3s/server/node-token")
+	err := k.PropagateData()
 	if err != nil {
 		c.Logger.Error(err)
-		return err
 	}
 
-	nodeToken := string(tokenB)
-	nodeToken = strings.TrimRight(nodeToken, "\n")
-	if nodeToken != "" {
-		err := c.Client.Set("nodetoken", "token", nodeToken)
-		if err != nil {
-			c.Logger.Error(err)
-		}
-	}
-
-	kubeB, err := ioutil.ReadFile("/etc/rancher/k3s/k3s.yaml")
-	if err != nil {
-		c.Logger.Error(err)
-		return err
-	}
-	kubeconfig := string(kubeB)
-	if kubeconfig != "" {
-		err := c.Client.Set("kubeconfig", "master", base64.RawURLEncoding.EncodeToString(kubeB))
-		if err != nil {
-			c.Logger.Error(err)
-		}
-	}
-	err = c.Client.Set("master", "ip", ip)
+	err = c.Client.Set("master", "ip", k.IP())
 	if err != nil {
 		c.Logger.Error(err)
 	}
 	return nil
-}
-
-func genArgs(pconfig *providerConfig.Config, ip, ifaceIP string) (args []string) {
-
-	if pconfig.P2P.UseVPNWithKubernetes() {
-		args = append(args, "--flannel-iface=edgevpn0")
-	}
-
-	if pconfig.KubeVIP.IsEnabled() {
-		args = append(args, fmt.Sprintf("--tls-san=%s", ip), fmt.Sprintf("--node-ip=%s", ifaceIP))
-	}
-
-	if pconfig.K3s.EmbeddedRegistry {
-		args = append(args, "--embedded-registry")
-	}
-
-	return
-}
-
-func genEnv(ha, clusterInit bool, c *service.Client, k3sConfig providerConfig.K3s) (env map[string]string) {
-	env = make(map[string]string)
-
-	if ha && !clusterInit {
-		nodeToken, _ := c.Get("nodetoken", "token")
-		env["K3S_TOKEN"] = nodeToken
-	}
-
-	if !k3sConfig.ReplaceEnv {
-		// Override opts with user-supplied
-		for k, v := range k3sConfig.Env {
-			env[k] = v
-		}
-	} else {
-		env = k3sConfig.Env
-	}
-
-	return env
 }
 
 // we either return the ElasticIP or the IP from the edgevpn interface.
@@ -116,33 +55,39 @@ func guessIP(pconfig *providerConfig.Config) string {
 	return utils.GetInterfaceIP("edgevpn0")
 }
 
-func waitForMasterHAInfo(c *service.RoleConfig) bool {
-	nodeToken, _ := c.Client.Get("nodetoken", "token")
+func waitForMasterHAInfo(m K8sNode) bool {
+	var nodeToken string
+
+	nodeToken, _ = m.Token()
+	c := m.RoleConfig()
+
 	if nodeToken == "" {
-		c.Logger.Info("nodetoken not there still..")
+		c.Logger.Info("the nodetoken is not there yet..")
 		return true
 	}
 	clusterInitIP, _ := c.Client.Get("master", "ip")
 	if clusterInitIP == "" {
-		c.Logger.Info("clusterInitIP not there still..")
+		c.Logger.Info("the clusterInitIP is not there yet..")
 		return true
 	}
 
 	return false
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha bool, roleName string) role.Role { //nolint:revive
+func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
+		c.Logger.Info(fmt.Sprintf("Starting Master(%s)", roleName))
 
-		iface := guessInterface(pconfig)
-		ifaceIP := utils.GetInterfaceIP(iface)
 		ip := guessIP(pconfig)
 		// If we don't have an IP, we sit and wait
 		if ip == "" {
 			return errors.New("node doesn't have an ip yet")
 		}
 
+		c.Logger.Info("Checking role assignment")
+
 		if pconfig.P2P.Role != "" {
+			c.Logger.Info(fmt.Sprintf("Setting role from configuration: %s", pconfig.P2P.Role))
 			// propagate role if we were forced by configuration
 			// This unblocks eventual auto instances to try to assign roles
 			if err := c.Client.Set("role", c.UUID, pconfig.P2P.Role); err != nil {
@@ -150,84 +95,92 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, clusterInit, ha b
 			}
 		}
 
-		if role.SentinelExist() {
-			c.Logger.Info("Node already configured, backing off")
-			return propagateMasterData(ip, c, clusterInit, ha, roleName)
+		c.Logger.Info("Determining K8s distro")
+		node, err := NewK8sNode(pconfig)
+		if err != nil {
+			return fmt.Errorf("failed to determine k8s distro: %w", err)
 		}
 
-		if ha && !clusterInit && waitForMasterHAInfo(c) {
+		node.SetRole(roleName)
+		node.SetRoleConfig(c)
+		node.SetIP(ip)
+		node.GuessInterface()
+
+		c.Logger.Info("Verifying sentinel file")
+		if role.SentinelExist() {
+			c.Logger.Info("Node already configured, propagating master data and backing off")
+			return propagateMasterData(roleName, node)
+		}
+
+		c.Logger.Info("Checking HA")
+		if node.HA() && !node.ClusterInit() && waitForMasterHAInfo(node) {
 			return nil
 		}
 
-		k3sConfig := pconfig.K3s
+		c.Logger.Info("Generating env")
+		env := node.GenerateEnv()
 
-		env := genEnv(ha, clusterInit, c.Client, k3sConfig)
+		// Configure k8s service to start on edgevpn0
+		c.Logger.Info(fmt.Sprintf("Configuring %s", node.Distro()))
 
-		// Configure k3s service to start on edgevpn0
-		c.Logger.Info("Configuring k3s")
-
+		c.Logger.Info("Running bootstrap before stage")
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", roleName)) //nolint:errcheck
 
-		svc, err := machine.K3s()
+		svc, err := node.Service()
 		if err != nil {
-			return fmt.Errorf("failed to get k3s service: %w", err)
+			return fmt.Errorf("failed to get %s service: %w", node.Distro(), err)
 		}
 
-		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s"),
+		c.Logger.Info("Writing service Env %s")
+		envUnit := node.EnvUnit()
+		if err := utils.WriteEnv(envUnit,
 			env,
 		); err != nil {
-			return fmt.Errorf("failed to write the k3s service: %w", err)
+			return fmt.Errorf("failed to write the %s service: %w", node.Distro(), err)
 		}
 
-		args := genArgs(pconfig, ip, ifaceIP)
-		if pconfig.KubeVIP.IsEnabled() {
-			if err := deployKubeVIP(iface, ip, pconfig); err != nil {
+		c.Logger.Info("Generating args")
+		args, err := node.GenArgs()
+		if err != nil {
+			return fmt.Errorf("failed to generate %s args: %w", node.Distro(), err)
+		}
+
+		if node.ProviderConfig().KubeVIP.IsEnabled() {
+			c.Logger.Info("Configuring KubeVIP")
+			if err := node.DeployKubeVIP(); err != nil {
 				return fmt.Errorf("failed KubeVIP setup: %w", err)
 			}
 		}
 
-		if pconfig.P2P.Auto.HA.ExternalDB != "" {
-			args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.P2P.Auto.HA.ExternalDB)}
+		k8sBin := node.K8sBin()
+		if k8sBin == "" {
+			return fmt.Errorf("no %s binary found (?)", node.Distro())
 		}
 
-		if ha && !clusterInit {
-			clusterInitIP, _ := c.Client.Get("master", "ip")
-			args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
+		c.Logger.Info("Writing service override")
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
+			return fmt.Errorf("failed to override %s command: %w", node.Distro(), err)
 		}
 
-		if k3sConfig.ReplaceArgs {
-			args = k3sConfig.Args
-		} else {
-			args = append(args, k3sConfig.Args...)
-		}
-
-		if clusterInit && ha && pconfig.P2P.Auto.HA.ExternalDB == "" {
-			args = append(args, "--cluster-init")
-		}
-
-		k3sbin := utils.K3sBin()
-		if k3sbin == "" {
-			return fmt.Errorf("no k3s binary found (?)")
-		}
-
-		if err := svc.OverrideCmd(fmt.Sprintf("%s server %s", k3sbin, strings.Join(args, " "))); err != nil {
-			return fmt.Errorf("failed to override k3s command: %w", err)
-		}
-
+		c.Logger.Info("Starting service")
 		if err := svc.Start(); err != nil {
-			return fmt.Errorf("failed to start k3s service: %w", err)
+			return fmt.Errorf("failed to start %s service: %w", node.Distro(), err)
 		}
 
+		c.Logger.Info("Enabling service")
 		if err := svc.Enable(); err != nil {
-			return fmt.Errorf("failed to enable k3s service: %w", err)
+			return fmt.Errorf("failed to enable %s service: %w", node.Distro(), err)
 		}
 
-		if err := propagateMasterData(ip, c, clusterInit, ha, roleName); err != nil {
+		c.Logger.Info("Propagating master data")
+		if err := propagateMasterData(roleName, node); err != nil {
 			return fmt.Errorf("failed to propagate master data: %w", err)
 		}
 
+		c.Logger.Info("Running after bootstrap stage")
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.after.%s", roleName)) //nolint:errcheck
 
+		c.Logger.Info("Creating sentinel")
 		if err := role.CreateSentinel(); err != nil {
 			return fmt.Errorf("failed to create sentinel: %w", err)
 		}
