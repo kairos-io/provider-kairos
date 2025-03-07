@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"os"
+	"strings"
 
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/utils"
@@ -147,7 +148,7 @@ func (k *K0sNode) PropagateData() error {
 
 	// we don't want to set the output if there is an error
 	if err == nil && controllerToken != "" {
-		err := c.Client.Set("controllertoken", "token", controllerToken)
+		err := c.Client.Set("controllertoken", "token", strings.TrimSuffix(controllerToken, "\n"))
 		if err != nil {
 			c.Logger.Error(err)
 		}
@@ -159,7 +160,7 @@ func (k *K0sNode) PropagateData() error {
 	}
 	// we don't want to set the output if there is an error
 	if err == nil && workerToken != "" {
-		err := c.Client.Set("workertoken", "token", workerToken)
+		err := c.Client.Set("workertoken", "token", strings.TrimSuffix(workerToken, "\n"))
 		if err != nil {
 			c.Logger.Error(err)
 		}
