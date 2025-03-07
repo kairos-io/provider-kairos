@@ -47,6 +47,19 @@ func (k *K0sNode) DeployKubeVIP() error {
 func (k *K0sNode) GenArgs() ([]string, error) {
 	var args []string
 
+	// Generate a new k0s config
+	_, err := utils.SH("k0s config create > /etc/k0s/k0s.yaml")
+	if err != nil {
+		return args, err
+	}
+	// replace the kube-proxy metrics port otherwise they conflict with EdgeVPN api (if it's deployed)
+	_, err = utils.SH("sed -i 's/metricsPort: 8080/metricsPort: 9090/' /etc/k0s/k0s.yaml")
+	if err != nil {
+		return args, err
+	}
+
+	args = append(args, "--config /etc/k0s/k0s.yaml")
+
 	pconfig := k.ProviderConfig()
 	if !pconfig.P2P.UseVPNWithKubernetes() {
 		return args, errors.New("Having a VPN but not using it for Kubernetes is not yet supported with k0s")
