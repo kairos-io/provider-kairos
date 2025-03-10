@@ -3,7 +3,6 @@ package role
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	service "github.com/mudler/edgevpn/api/client/service"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -55,14 +55,67 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	}
 	args = append(args, "--config /etc/k0s/k0s.yaml")
 
-	// set the IP address of the node
-	_, err = utils.SH(fmt.Sprintf("sed -i 's/address: .*/address: %s/' /etc/k0s/k0s.yaml", k.IP()))
+	data, err := os.ReadFile("/etc/k0s/k0s.yaml")
+	if err != nil {
+		return nil, err
+	}
+
+	var k0sConfig map[any]any
+	err = yaml.Unmarshal(data, &k0sConfig)
 	if err != nil {
 		return args, err
 	}
 
-	// replace the kube-proxy metrics port otherwise they conflict with EdgeVPN api (if it's deployed)
-	_, err = utils.SH("sed -i 's/metricsPort: 8080/metricsPort: 9090/' /etc/k0s/k0s.yaml")
+	// check if the k0s config has an api address
+	spec, ok := k0sConfig["spec"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have a spec")
+	}
+	api, ok := spec["api"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have an api")
+	}
+	// by default k0s uses the first IP address of the machine as the api address, but we want to use the edgevpn IP
+	api["address"] = k.IP()
+
+	spec["api"] = api
+
+	network, ok := spec["network"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have a network")
+	}
+	kubeRouter, ok := network["kuberouter"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have a kuberouter")
+	}
+
+	// by default k0s uses the port 8080 for the metrics but this conflicts with the edgevpn API port
+	kubeRouter["metricsPort"] = 9090
+	network["kuberouter"] = kubeRouter
+	spec["network"] = network
+
+	storage, ok := spec["storage"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have a storage")
+	}
+	etcd, ok := storage["etcd"].(map[any]any)
+	if !ok {
+		return args, errors.New("k0s config does not have a etcd")
+	}
+	// just like the api address, we want to use the edgevpn IP for the etcd peer address
+	etcd["peerAddress"] = k.IP()
+
+	storage["etcd"] = etcd
+	spec["storage"] = storage
+
+	k0sConfig["spec"] = spec
+
+	// write the k0s config back to the file
+	data, err = yaml.Marshal(k0sConfig)
+	if err != nil {
+		return args, err
+	}
+	err = os.WriteFile("/etc/k0s/k0s.yaml", data, 0644)
 	if err != nil {
 		return args, err
 	}

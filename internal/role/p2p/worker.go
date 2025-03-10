@@ -40,8 +40,10 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return fmt.Errorf("failed to determine k8s distro: %w", err)
 		}
 
+		ip := guessIP(pconfig)
 		node.SetRole(RoleWorker)
 		node.SetRoleConfig(c)
+		node.SetIP(ip)
 
 		nodeToken, _ := node.Token()
 		if nodeToken == "" {
