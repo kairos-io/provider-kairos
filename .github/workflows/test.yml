@@ -23,11 +23,9 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
       - name: Install earthly
-        uses: Luet-lab/luet-install-action@v1
+        uses: earthly/actions-setup@v1
         with:
-          repository: quay.io/kairos/packages
-          packages: utils/earthly
-          repository_reference: 202503051357-git48eee6e8-repository.yaml 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run tests
         run: |
           earthly +test
