@@ -27,6 +27,7 @@ jobs:
         with:
           repository: quay.io/kairos/packages
           packages: utils/earthly
+          repository_reference: 202503051357-git48eee6e8-repository.yaml 
       - name: Run tests
         run: |
           earthly +test
