@@ -22,14 +22,10 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
-      - name: Install earthly
-        uses: Luet-lab/luet-install-action@v1
-        with:
-          repository: quay.io/kairos/packages
-          packages: utils/earthly
       - name: Run tests
         run: |
-          earthly +test
+          go mod download &&
+          go run github.com/onsi/ginkgo/v2/ginkgo --fail-fast --covermode=atomic --coverprofile=coverage.out -p -r ./internal
       - name: Codecov
         uses: codecov/codecov-action@v5
         with:
