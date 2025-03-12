@@ -1,12 +1,10 @@
 package role
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/kairos-io/kairos-agent/v2/pkg/config"
-	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/utils"
 
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
@@ -16,6 +14,7 @@ import (
 
 func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
+		c.Logger.Info("Starting Worker")
 
 		if pconfig.P2P.Role != "" {
 			// propagate role if we were forced by configuration
@@ -36,79 +35,46 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		nodeToken, _ := c.Client.Get("nodetoken", "token")
+		node, err := NewK8sNode(pconfig)
+		if err != nil {
+			return fmt.Errorf("failed to determine k8s distro: %w", err)
+		}
+
+		ip := guessIP(pconfig)
+		node.SetRole(RoleWorker)
+		node.SetRoleConfig(c)
+		node.SetIP(ip)
+
+		nodeToken, _ := node.Token()
 		if nodeToken == "" {
 			c.Logger.Info("node token not there still..")
 			return nil
 		}
 
-		nodeToken = strings.TrimRight(nodeToken, "\n")
+		utils.SH("kairos-agent run-stage provider-kairos.bootstrap.before.worker") //nolint:errcheck
 
-		svc, err := machine.K3sAgent()
+		err = node.SetupWorker(masterIP, nodeToken)
 		if err != nil {
 			return err
 		}
 
-		k3sConfig := providerConfig.K3s{}
-		if pconfig.K3sAgent.Enabled {
-			k3sConfig = pconfig.K3sAgent
+		k8sBin := node.K8sBin()
+		if k8sBin == "" {
+			return fmt.Errorf("no %s binary found (?)", node.Distro())
 		}
 
-		env := map[string]string{
-			"K3S_URL":   fmt.Sprintf("https://%s:6443", masterIP),
-			"K3S_TOKEN": nodeToken,
-		}
-
-		if !k3sConfig.ReplaceEnv {
-			// Override opts with user-supplied
-			for k, v := range k3sConfig.Env {
-				env[k] = v
-			}
-		} else {
-			env = k3sConfig.Env
-		}
-
-		args := []string{
-			"--with-node-id",
-		}
-
-		if pconfig.P2P.UseVPNWithKubernetes() {
-			ip := utils.GetInterfaceIP("edgevpn0")
-			if ip == "" {
-				return errors.New("node doesn't have an ip yet")
-			}
-			args = append(args,
-				fmt.Sprintf("--node-ip %s", ip),
-				"--flannel-iface=edgevpn0")
-		} else {
-			iface := guessInterface(pconfig)
-			ip := utils.GetInterfaceIP(iface)
-			args = append(args,
-				fmt.Sprintf("--node-ip %s", ip))
-		}
-
-		c.Logger.Info("Configuring k3s-agent", masterIP, nodeToken, args)
-
-		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", "worker")) //nolint:errcheck
-
-		// Setup systemd unit and starts it
-		if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
-			env,
-		); err != nil {
+		args, err := node.WorkerArgs()
+		if err != nil {
 			return err
 		}
 
-		if k3sConfig.ReplaceArgs {
-			args = k3sConfig.Args
-		} else {
-			args = append(args, k3sConfig.Args...)
+		svc, err := node.Service()
+		if err != nil {
+			return err
 		}
 
-		k3sbin := utils.K3sBin()
-		if k3sbin == "" {
-			return fmt.Errorf("no k3s binary found (?)")
-		}
-		if err := svc.OverrideCmd(fmt.Sprintf("%s agent %s", k3sbin, strings.Join(args, " "))); err != nil {
+		c.Logger.Info(fmt.Sprintf("Configuring %s worker", node.Distro()))
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
 			return err
 		}
 
@@ -120,7 +86,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return err
 		}
 
-		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.after.%s", "worker")) //nolint:errcheck
+		utils.SH("kairos-agent run-stage provider-kairos.bootstrap.after.worker") //nolint:errcheck
 
 		return role.CreateSentinel()
 	}
