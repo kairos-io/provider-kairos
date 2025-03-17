@@ -14,29 +14,32 @@ import (
 )
 
 const (
-	K0sDistroName        = "k0s"
-	K0sMasterName        = "controller"
-	K0sWorkerName        = "worker"
-	K0sMasterServiceName = "k0scontroller"
-	K0sWorkerServiceName = "k0sworker"
+	K0sDistroName = "k0s"
 )
 
-type K0sNode struct {
+type K0sControlPlane struct {
 	providerConfig *providerConfig.Config
 	roleConfig     *service.RoleConfig
 	ip             string
 	role           string
 }
 
-func (k *K0sNode) IsWorker() bool {
-	return k.role == RoleWorker
+type K0sWorker struct {
+	providerConfig *providerConfig.Config
+	roleConfig     *service.RoleConfig
+	ip             string
+	role           string
 }
 
-func (k *K0sNode) K8sBin() string {
+func (k *K0sControlPlane) K8sBin() string {
 	return utils.K0sBin()
 }
 
-func (k *K0sNode) DeployKubeVIP() error {
+func (k *K0sWorker) K8sBin() string {
+	return utils.K0sBin()
+}
+
+func (k *K0sControlPlane) DeployKubeVIP() error {
 	pconfig := k.ProviderConfig()
 	if pconfig.KubeVIP.IsEnabled() {
 		return errors.New("KubeVIP is not yet supported with k0s")
@@ -45,7 +48,7 @@ func (k *K0sNode) DeployKubeVIP() error {
 	return nil
 }
 
-func (k *K0sNode) GenArgs() ([]string, error) {
+func (k *K0sControlPlane) GenArgs() ([]string, error) {
 	var args []string
 
 	// Generate a new k0s config
@@ -144,27 +147,26 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	return args, nil
 }
 
-func (k *K0sNode) EnvUnit() string {
+func (k *K0sControlPlane) EnvUnit() string {
 	return machine.K0sEnvUnit("k0scontroller")
 }
 
-func (k *K0sNode) Service() (machine.Service, error) {
-	if k.IsWorker() {
-		return machine.K0sWorker()
-	}
-
+func (k *K0sControlPlane) Service() (machine.Service, error) {
 	return machine.K0s()
 }
+func (k *K0sWorker) Service() (machine.Service, error) {
+	return machine.K0sWorker()
+}
 
-func (k *K0sNode) Token() (string, error) {
-	if k.IsWorker() {
-		return k.RoleConfig().Client.Get("workertoken", "token")
-	}
-
+func (k *K0sControlPlane) Token() (string, error) {
 	return k.RoleConfig().Client.Get("controllertoken", "token")
 }
 
-func (k *K0sNode) GenerateEnv() (env map[string]string) {
+func (k *K0sWorker) Token() (string, error) {
+	return k.RoleConfig().Client.Get("workertoken", "token")
+}
+
+func (k *K0sControlPlane) GenerateEnv() (env map[string]string) {
 	env = make(map[string]string)
 
 	if k.HA() && !k.ClusterInit() {
@@ -186,33 +188,49 @@ func (k *K0sNode) GenerateEnv() (env map[string]string) {
 	return env
 }
 
-func (k *K0sNode) ProviderConfig() *providerConfig.Config {
+func (k *K0sControlPlane) ProviderConfig() *providerConfig.Config {
 	return k.providerConfig
 }
 
-func (k *K0sNode) SetRoleConfig(c *service.RoleConfig) {
+func (k *K0sWorker) ProviderConfig() *providerConfig.Config {
+	return k.providerConfig
+}
+
+func (k *K0sControlPlane) SetRoleConfig(c *service.RoleConfig) {
 	k.roleConfig = c
 }
 
-func (k *K0sNode) RoleConfig() *service.RoleConfig {
+func (k *K0sWorker) SetRoleConfig(c *service.RoleConfig) {
+	k.roleConfig = c
+}
+
+func (k *K0sControlPlane) RoleConfig() *service.RoleConfig {
 	return k.roleConfig
 }
 
-func (k *K0sNode) HA() bool {
-	return k.role == RoleMasterHA
+func (k *K0sWorker) RoleConfig() *service.RoleConfig {
+	return k.roleConfig
 }
 
-func (k *K0sNode) ClusterInit() bool {
+func (k *K0sControlPlane) HA() bool {
+	return k.role == RoleControlPlaneHA
+}
+
+func (k *K0sControlPlane) ClusterInit() bool {
 	// k0s does not have a cluster init role like k3s. Instead we should have a way to set in the config
 	// if the user wants a single node cluster, multi-node cluster, or HA cluster
 	return false
 }
 
-func (k *K0sNode) IP() string {
+func (k *K0sControlPlane) IP() string {
 	return k.ip
 }
 
-func (k *K0sNode) PropagateData() error {
+func (k *K0sWorker) IP() string {
+	return k.ip
+}
+
+func (k *K0sControlPlane) PropagateData() error {
 	c := k.RoleConfig()
 	controllerToken, err := utils.SH("k0s token create --role=controller") //nolint:errcheck
 	if err != nil {
@@ -245,7 +263,7 @@ func (k *K0sNode) PropagateData() error {
 		return err
 	}
 	if kubeconfig != "" {
-		err := c.Client.Set("kubeconfig", "master", base64.RawURLEncoding.EncodeToString([]byte(kubeconfig)))
+		err := c.Client.Set("kubeconfig", "control-plane", base64.RawURLEncoding.EncodeToString([]byte(kubeconfig)))
 		if err != nil {
 			c.Logger.Error(err)
 		}
@@ -254,7 +272,7 @@ func (k *K0sNode) PropagateData() error {
 	return nil
 }
 
-func (k *K0sNode) WorkerArgs() ([]string, error) {
+func (k *K0sWorker) WorkerArgs() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k0sConfig := pconfig.K0sWorker
 	args := []string{"--token-file /etc/k0s/token"}
@@ -268,7 +286,7 @@ func (k *K0sNode) WorkerArgs() ([]string, error) {
 	return args, nil
 }
 
-func (k *K0sNode) SetupWorker(_, nodeToken string) error {
+func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
 	if err := os.WriteFile("/etc/k0s/token", []byte(nodeToken), 0644); err != nil {
 		return err
 	}
@@ -276,56 +294,78 @@ func (k *K0sNode) SetupWorker(_, nodeToken string) error {
 	return nil
 }
 
-func (k *K0sNode) Role() string {
-	if k.IsWorker() {
-		return K0sWorkerName
-	}
-
-	return K0sMasterName
+func (k *K0sControlPlane) Role() string {
+	return "controller"
 }
 
-func (k *K0sNode) ServiceName() string {
-	if k.IsWorker() {
-		return K0sWorkerServiceName
-	}
-
-	return K0sMasterServiceName
+func (k *K0sWorker) Role() string {
+	return "worker"
 }
 
-func (k *K0sNode) Env() map[string]string {
+func (k *K0sControlPlane) ServiceName() string {
+	return "k0scontroller"
+}
+
+func (k *K0sWorker) ServiceName() string {
+	return "k0sworker"
+}
+
+func (k *K0sControlPlane) Env() map[string]string {
 	c := k.ProviderConfig()
-	if k.IsWorker() {
-		return c.K0sWorker.Env
-	}
-
 	return c.K0s.Env
 }
 
-func (k *K0sNode) Args() []string {
+func (k *K0sWorker) Env() map[string]string {
 	c := k.ProviderConfig()
-	if k.IsWorker() {
-		return c.K0sWorker.Args
-	}
+	return c.K0sWorker.Env
+}
 
+func (k *K0sControlPlane) Args() []string {
+	c := k.ProviderConfig()
 	return c.K0s.Args
 }
 
-func (k *K0sNode) EnvFile() string {
+func (k *K0sWorker) Args() []string {
+	c := k.ProviderConfig()
+	return c.K0sWorker.Args
+}
+
+func (k *K0sControlPlane) EnvFile() string {
 	return machine.K0sEnvUnit(k.ServiceName())
 }
 
-func (k *K0sNode) SetRole(role string) {
+func (k *K0sWorker) EnvFile() string {
+	return machine.K0sEnvUnit(k.ServiceName())
+}
+
+func (k *K0sControlPlane) SetRole(role string) {
 	k.role = role
 }
 
-func (k *K0sNode) SetIP(ip string) {
+func (k *K0sWorker) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K0sControlPlane) SetIP(ip string) {
 	k.ip = ip
 }
 
-func (k *K0sNode) GuessInterface() {
+func (k *K0sWorker) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K0sControlPlane) GuessInterface() {
 	// not used in k0s
 }
 
-func (k *K0sNode) Distro() string {
+func (k *K0sWorker) GuessInterface() {
+	// not used in k0s
+}
+
+func (k *K0sControlPlane) Distro() string {
+	return K0sDistroName
+}
+
+func (k *K0sWorker) Distro() string {
 	return K0sDistroName
 }

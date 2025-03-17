@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	RoleWorker            = "worker"
-	RoleMaster            = "master"
-	RoleMasterHA          = "master/ha"
-	RoleMasterClusterInit = "master/clusterinit"
-	RoleAuto              = "auto"
+	RoleWorker                  = "worker"
+	RoleControlPlane            = "master"
+	RoleControlPlaneHA          = "master/ha"
+	RoleControlPlaneClusterInit = "master/clusterinit"
+	RoleAuto                    = "auto"
 )
 
 func guessInterface(pconfig *providerConfig.Config) string {

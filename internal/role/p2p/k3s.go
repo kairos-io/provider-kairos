@@ -14,14 +14,10 @@ import (
 )
 
 const (
-	K3sDistroName        = "k3s"
-	K3sMasterName        = "server"
-	K3sWorkerName        = "agent"
-	K3sMasterServiceName = "k3s"
-	K3sWorkerServiceName = "k3s-agent"
+	K3sDistroName = "k3s"
 )
 
-type K3sNode struct {
+type K3sControlPlane struct {
 	providerConfig *providerConfig.Config
 	roleConfig     *service.RoleConfig
 	ip             string
@@ -30,15 +26,24 @@ type K3sNode struct {
 	role           string
 }
 
-func (k *K3sNode) IsWorker() bool {
-	return k.role == RoleWorker
+type K3sWorker struct {
+	providerConfig *providerConfig.Config
+	roleConfig     *service.RoleConfig
+	ip             string
+	iface          string
+	ifaceIP        string
+	role           string
 }
 
-func (k *K3sNode) K8sBin() string {
+func (k *K3sControlPlane) K8sBin() string {
 	return utils.K3sBin()
 }
 
-func (k *K3sNode) DeployKubeVIP() error {
+func (k *K3sWorker) K8sBin() string {
+	return utils.K3sBin()
+}
+
+func (k *K3sControlPlane) DeployKubeVIP() error {
 	pconfig := k.ProviderConfig()
 	if !pconfig.KubeVIP.IsEnabled() {
 		return nil
@@ -47,7 +52,7 @@ func (k *K3sNode) DeployKubeVIP() error {
 	return deployKubeVIP(k.iface, k.ip, pconfig)
 }
 
-func (k *K3sNode) GenArgs() ([]string, error) {
+func (k *K3sControlPlane) GenArgs() ([]string, error) {
 	var args []string
 	pconfig := k.ProviderConfig()
 
@@ -68,7 +73,7 @@ func (k *K3sNode) GenArgs() ([]string, error) {
 	}
 
 	if k.HA() && !k.ClusterInit() {
-		clusterInitIP, _ := k.roleConfig.Client.Get("master", "ip")
+		clusterInitIP, _ := k.roleConfig.Client.Get("control-plane", "ip")
 		args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 	}
 	// The --cluster-init flag changes the embedded SQLite DB to etcd. We don't
@@ -82,7 +87,7 @@ func (k *K3sNode) GenArgs() ([]string, error) {
 	return args, nil
 }
 
-func (k *K3sNode) AppendArgs(other []string) []string {
+func (k *K3sControlPlane) AppendArgs(other []string) []string {
 	c := k.ProviderConfig()
 	if c.K3s.ReplaceArgs {
 		return c.K3s.Args
@@ -91,23 +96,40 @@ func (k *K3sNode) AppendArgs(other []string) []string {
 	return append(other, c.K3s.Args...)
 }
 
-func (k *K3sNode) EnvUnit() string {
+func (k *K3sWorker) AppendArgs(other []string) []string {
+	c := k.ProviderConfig()
+	if c.K3s.ReplaceArgs {
+		return c.K3s.Args
+	}
+
+	return append(other, c.K3s.Args...)
+}
+
+func (k *K3sControlPlane) EnvUnit() string {
 	return machine.K3sEnvUnit("k3s")
 }
 
-func (k *K3sNode) Service() (machine.Service, error) {
-	if k.role == "worker" {
-		return machine.K3sAgent()
-	}
+func (k *K3sWorker) EnvUnit() string {
+	return machine.K3sEnvUnit("k3s")
+}
 
+func (k *K3sControlPlane) Service() (machine.Service, error) {
 	return machine.K3s()
 }
 
-func (k *K3sNode) Token() (string, error) {
+func (k *K3sWorker) Service() (machine.Service, error) {
+	return machine.K3sAgent()
+}
+
+func (k *K3sControlPlane) Token() (string, error) {
 	return k.RoleConfig().Client.Get("nodetoken", "token")
 }
 
-func (k *K3sNode) GenerateEnv() (env map[string]string) {
+func (k *K3sWorker) Token() (string, error) {
+	return k.RoleConfig().Client.Get("nodetoken", "token")
+}
+
+func (k *K3sControlPlane) GenerateEnv() (env map[string]string) {
 	env = make(map[string]string)
 
 	if k.HA() && !k.ClusterInit() {
@@ -129,31 +151,47 @@ func (k *K3sNode) GenerateEnv() (env map[string]string) {
 	return env
 }
 
-func (k *K3sNode) ProviderConfig() *providerConfig.Config {
+func (k *K3sControlPlane) ProviderConfig() *providerConfig.Config {
 	return k.providerConfig
 }
 
-func (k *K3sNode) SetRoleConfig(c *service.RoleConfig) {
+func (k *K3sWorker) ProviderConfig() *providerConfig.Config {
+	return k.providerConfig
+}
+
+func (k *K3sControlPlane) SetRoleConfig(c *service.RoleConfig) {
 	k.roleConfig = c
 }
 
-func (k *K3sNode) RoleConfig() *service.RoleConfig {
+func (k *K3sWorker) SetRoleConfig(c *service.RoleConfig) {
+	k.roleConfig = c
+}
+
+func (k *K3sControlPlane) RoleConfig() *service.RoleConfig {
 	return k.roleConfig
 }
 
-func (k *K3sNode) HA() bool {
-	return k.role == "master/ha"
+func (k *K3sWorker) RoleConfig() *service.RoleConfig {
+	return k.roleConfig
 }
 
-func (k *K3sNode) ClusterInit() bool {
-	return k.role == "master/clusterinit"
+func (k *K3sControlPlane) HA() bool {
+	return k.role == "control-plane/ha"
 }
 
-func (k *K3sNode) IP() string {
+func (k *K3sControlPlane) ClusterInit() bool {
+	return k.role == "control-plane/clusterinit"
+}
+
+func (k *K3sControlPlane) IP() string {
 	return k.ip
 }
 
-func (k *K3sNode) PropagateData() error {
+func (k *K3sWorker) IP() string {
+	return k.ip
+}
+
+func (k *K3sControlPlane) PropagateData() error {
 	c := k.RoleConfig()
 	tokenB, err := os.ReadFile("/var/lib/rancher/k3s/server/node-token")
 	if err != nil {
@@ -177,7 +215,7 @@ func (k *K3sNode) PropagateData() error {
 	}
 	kubeconfig := string(kubeB)
 	if kubeconfig != "" {
-		err := c.Client.Set("kubeconfig", "master", base64.RawURLEncoding.EncodeToString(kubeB))
+		err := c.Client.Set("kubeconfig", "control-plane", base64.RawURLEncoding.EncodeToString(kubeB))
 		if err != nil {
 			c.Logger.Error(err)
 		}
@@ -186,7 +224,7 @@ func (k *K3sNode) PropagateData() error {
 	return nil
 }
 
-func (k *K3sNode) WorkerArgs() ([]string, error) {
+func (k *K3sWorker) WorkerArgs() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k3sConfig := providerConfig.K3s{}
 	if pconfig.K3sAgent.Enabled {
@@ -221,7 +259,7 @@ func (k *K3sNode) WorkerArgs() ([]string, error) {
 	return args, nil
 }
 
-func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
+func (k *K3sWorker) SetupWorker(controlPlaneIP, nodeToken string) error {
 	pconfig := k.ProviderConfig()
 
 	nodeToken = strings.TrimRight(nodeToken, "\n")
@@ -232,7 +270,7 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 	}
 
 	env := map[string]string{
-		"K3S_URL":   fmt.Sprintf("https://%s:6443", masterIP),
+		"K3S_URL":   fmt.Sprintf("https://%s:6443", controlPlaneIP),
 		"K3S_TOKEN": nodeToken,
 	}
 
@@ -254,53 +292,69 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 	return nil
 }
 
-func (k *K3sNode) Role() string {
-	if k.IsWorker() {
-		return K3sWorkerName
-	}
-
-	return K3sMasterName
+func (k *K3sControlPlane) Role() string {
+	return "server"
 }
 
-func (k *K3sNode) ServiceName() string {
-	if k.IsWorker() {
-		return K3sWorkerServiceName
-	}
-
-	return K3sMasterServiceName
+func (k *K3sWorker) Role() string {
+	return "agent"
 }
 
-func (k *K3sNode) Env() map[string]string {
+func (k *K3sControlPlane) ServiceName() string {
+	return "k3s"
+}
+
+func (k *K3sWorker) ServiceName() string {
+	return "k3s-agent"
+}
+
+func (k *K3sControlPlane) Env() map[string]string {
 	c := k.ProviderConfig()
-	if k.IsWorker() {
-		return c.K3sAgent.Env
-	}
 
 	return c.K3s.Env
 }
 
-func (k *K3sNode) Args() []string {
+func (k *K3sWorker) Env() map[string]string {
 	c := k.ProviderConfig()
-	if k.IsWorker() {
-		return c.K3sAgent.Args
-	}
+	return c.K3sAgent.Env
+}
+
+func (k *K3sControlPlane) Args() []string {
+	c := k.ProviderConfig()
 
 	return c.K3s.Args
 }
 
-func (k *K3sNode) EnvFile() string {
+func (k *K3sWorker) Args() []string {
+	c := k.ProviderConfig()
+	return c.K3sAgent.Args
+}
+
+func (k *K3sControlPlane) EnvFile() string {
 	return machine.K3sEnvUnit(k.ServiceName())
 }
 
-func (k *K3sNode) SetRole(role string) {
+func (k *K3sWorker) EnvFile() string {
+	return machine.K3sEnvUnit(k.ServiceName())
+}
+
+func (k *K3sControlPlane) SetRole(role string) {
 	k.role = role
 }
 
-func (k *K3sNode) SetIP(ip string) {
+func (k *K3sWorker) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K3sControlPlane) SetIP(ip string) {
 	k.ip = ip
 }
 
-func (k *K3sNode) GuessInterface() {
+func (k *K3sWorker) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K3sControlPlane) GuessInterface() {
 	iface := guessInterface(k.ProviderConfig())
 	ifaceIP := utils.GetInterfaceIP(iface)
 
@@ -308,6 +362,18 @@ func (k *K3sNode) GuessInterface() {
 	k.ifaceIP = ifaceIP
 }
 
-func (k *K3sNode) Distro() string {
+func (k *K3sWorker) GuessInterface() {
+	iface := guessInterface(k.ProviderConfig())
+	ifaceIP := utils.GetInterfaceIP(iface)
+
+	k.iface = iface
+	k.ifaceIP = ifaceIP
+}
+
+func (k *K3sControlPlane) Distro() string {
+	return K3sDistroName
+}
+
+func (k *K3sWorker) Distro() string {
 	return K3sDistroName
 }

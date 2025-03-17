@@ -73,9 +73,10 @@ func (ha HA) IsEnabled() bool {
 }
 
 type HA struct {
-	Enable      *bool  `yaml:"enable,omitempty"`
-	ExternalDB  string `yaml:"external_db,omitempty"`
-	MasterNodes *int   `yaml:"master_nodes,omitempty"`
+	Enable        *bool  `yaml:"enable,omitempty"`
+	ExternalDB    string `yaml:"external_db,omitempty"`
+	MasterNodes   *int   `yaml:"master_nodes,omitempty"`
+	ControlPlanes *int   `yaml:"control_planes,omitempty"`
 }
 
 type K3s struct {

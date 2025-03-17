@@ -9,7 +9,16 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-type K8sNode interface {
+type ServiceDefinition interface {
+	ServiceName() string
+	Role() string
+	Env() map[string]string
+	Args() []string
+	K8sBin() string
+	EnvFile() string
+}
+
+type K8sControlPlane interface {
 	PropagateData() error
 	IP() string
 	ClusterInit() bool
@@ -24,7 +33,26 @@ type K8sNode interface {
 	DeployKubeVIP() error
 	Token() (string, error)
 	K8sBin() string
-	SetupWorker(masterIP, nodeToken string) error
+	Role() string
+	ServiceName() string
+	Env() map[string]string
+	Args() []string
+	EnvFile() string
+	SetRole(role string)
+	SetIP(ip string)
+	GuessInterface()
+	Distro() string
+}
+
+type K8sWorker interface {
+	IP() string
+	ProviderConfig() *providerConfig.Config
+	SetRoleConfig(c *service.RoleConfig)
+	RoleConfig() *service.RoleConfig
+	Service() (machine.Service, error)
+	Token() (string, error)
+	K8sBin() string
+	SetupWorker(controlPlaneIP, nodeToken string) error
 	Role() string
 	WorkerArgs() ([]string, error)
 	ServiceName() string
@@ -37,20 +65,46 @@ type K8sNode interface {
 	Distro() string
 }
 
-func NewK8sNode(c *providerConfig.Config) (K8sNode, error) {
+func NewServiceDefinition(c *providerConfig.Config) (ServiceDefinition, error) {
 	switch {
 	case c.K3s.Enabled:
-		return &K3sNode{providerConfig: c, role: "master"}, nil
-	case c.K3sAgent.Enabled:
-		return &K3sNode{providerConfig: c, role: "worker"}, nil
+		return &K3sControlPlane{providerConfig: c}, nil
 	case c.K0s.Enabled:
-		return &K0sNode{providerConfig: c, role: "master"}, nil
+		return &K0sControlPlane{providerConfig: c}, nil
+	case c.K3sAgent.Enabled:
+		return &K3sWorker{providerConfig: c}, nil
 	case c.K0sWorker.Enabled:
-		return &K0sNode{providerConfig: c, role: "worker"}, nil
+		return &K0sWorker{providerConfig: c}, nil
+	}
+
+	return nil, errors.New("no k8s distro found")
+}
+
+func NewK8sControlPlane(c *providerConfig.Config) (K8sControlPlane, error) {
+	switch {
+	case c.K3s.Enabled:
+		return &K3sControlPlane{providerConfig: c, role: "control-plane"}, nil
+	case c.K0s.Enabled:
+		return &K0sControlPlane{providerConfig: c, role: "control-plane"}, nil
 	case utils.K3sBin() != "":
-		return &K3sNode{providerConfig: c}, nil
+		return &K3sControlPlane{providerConfig: c}, nil
 	case utils.K0sBin() != "":
-		return &K0sNode{providerConfig: c}, nil
+		return &K0sControlPlane{providerConfig: c}, nil
+	}
+
+	return nil, errors.New("no k8s distro found")
+}
+
+func NewK8sWorker(c *providerConfig.Config) (K8sWorker, error) {
+	switch {
+	case c.K3sAgent.Enabled:
+		return &K3sWorker{providerConfig: c, role: "worker"}, nil
+	case c.K0sWorker.Enabled:
+		return &K0sWorker{providerConfig: c, role: "worker"}, nil
+	case utils.K3sBin() != "":
+		return &K3sWorker{providerConfig: c}, nil
+	case utils.K0sBin() != "":
+		return &K0sWorker{providerConfig: c}, nil
 	}
 
 	return nil, errors.New("no k8s distro found")
