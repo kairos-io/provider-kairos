@@ -29,52 +29,52 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		masterIP, _ := c.Client.Get("master", "ip")
-		if masterIP == "" {
-			c.Logger.Info("MasterIP not there still..")
+		cpIP, _ := c.Client.Get("control-plane", "ip")
+		if cpIP == "" {
+			c.Logger.Info("Control plane IP not there still..")
 			return nil
 		}
 
-		node, err := NewK8sNode(pconfig)
+		worker, err := NewK8sWorker(pconfig)
 		if err != nil {
 			return fmt.Errorf("failed to determine k8s distro: %w", err)
 		}
 
 		ip := guessIP(pconfig)
-		node.SetRole(RoleWorker)
-		node.SetRoleConfig(c)
-		node.SetIP(ip)
+		worker.SetRole(RoleWorker)
+		worker.SetRoleConfig(c)
+		worker.SetIP(ip)
 
-		nodeToken, _ := node.Token()
-		if nodeToken == "" {
-			c.Logger.Info("node token not there still..")
+		workerToken, _ := worker.Token()
+		if workerToken == "" {
+			c.Logger.Info("worker token not there still..")
 			return nil
 		}
 
 		utils.SH("kairos-agent run-stage provider-kairos.bootstrap.before.worker") //nolint:errcheck
 
-		err = node.SetupWorker(masterIP, nodeToken)
+		err = worker.SetupWorker(cpIP, workerToken)
 		if err != nil {
 			return err
 		}
 
-		k8sBin := node.K8sBin()
+		k8sBin := worker.K8sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", node.Distro())
+			return fmt.Errorf("no %s binary found (?)", worker.Distro())
 		}
 
-		args, err := node.WorkerArgs()
+		args, err := worker.WorkerArgs()
 		if err != nil {
 			return err
 		}
 
-		svc, err := node.Service()
+		svc, err := worker.Service()
 		if err != nil {
 			return err
 		}
 
-		c.Logger.Info(fmt.Sprintf("Configuring %s worker", node.Distro()))
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
+		c.Logger.Info(fmt.Sprintf("Configuring %s worker", worker.Distro()))
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, worker.Role(), strings.Join(args, " "))); err != nil {
 			return err
 		}
 

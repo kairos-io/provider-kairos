@@ -17,7 +17,7 @@ var GetKubeConfigCMD = cli.Command{
 	Description: `
 		Retrieve a network kubeconfig and prints out to screen.
 		
-		If a deployment was bootstrapped with a network token, you can use this command to retrieve the master node kubeconfig of a network id.
+		If a deployment was bootstrapped with a network token, you can use this command to retrieve the control-plane node kubeconfig of a network id.
 		
 		For example:
 		
@@ -28,9 +28,9 @@ var GetKubeConfigCMD = cli.Command{
 		cc := service.NewClient(
 			c.String("network-id"),
 			edgeVPNClient.NewClient(edgeVPNClient.WithHost(c.String("api"))))
-		str, _ := cc.Get("kubeconfig", "master")
+		str, _ := cc.Get("kubeconfig", "control-plane")
 		b, _ := base64.RawURLEncoding.DecodeString(str)
-		masterIP, _ := cc.Get("master", "ip")
+		masterIP, _ := cc.Get("control-plane", "ip")
 		fmt.Println(strings.ReplaceAll(string(b), "127.0.0.1", masterIP))
 		return nil
 	},
