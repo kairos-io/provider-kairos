@@ -183,7 +183,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	envFile = node.EnvFile()
 
 	if binPath == "" {
-		l.Errorf("no %s binary fouund", svcName)
+		l.Errorf("no %s binary found", svcName)
 		return fmt.Errorf("no %s binary found", svcName)
 	}
 
