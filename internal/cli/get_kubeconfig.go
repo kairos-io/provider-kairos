@@ -30,8 +30,8 @@ var GetKubeConfigCMD = cli.Command{
 			edgeVPNClient.NewClient(edgeVPNClient.WithHost(c.String("api"))))
 		str, _ := cc.Get("kubeconfig", "control-plane")
 		b, _ := base64.RawURLEncoding.DecodeString(str)
-		masterIP, _ := cc.Get("control-plane", "ip")
-		fmt.Println(strings.ReplaceAll(string(b), "127.0.0.1", masterIP))
+		cpIP, _ := cc.Get("control-plane", "ip")
+		fmt.Println(strings.ReplaceAll(string(b), "127.0.0.1", cpIP))
 		return nil
 	},
 }
