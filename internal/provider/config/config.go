@@ -69,13 +69,20 @@ func (a Auto) IsEnabled() bool {
 }
 
 func (ha HA) IsEnabled() bool {
-	return (ha.Enable != nil && *ha.Enable) || (ha.Enable == nil && ha.MasterNodes != nil)
+	return (ha.Enable != nil && *ha.Enable) || (ha.Enable == nil && ha.ExtraControlPlanes() != nil)
+}
+
+func (ha HA) ExtraControlPlanes() *int {
+	if ha.ControlPlanes != nil {
+		return ha.ControlPlanes
+	}
+	return ha.MasterNodes
 }
 
 type HA struct {
 	Enable        *bool  `yaml:"enable,omitempty"`
 	ExternalDB    string `yaml:"external_db,omitempty"`
-	MasterNodes   *int   `yaml:"master_nodes,omitempty"`
+	MasterNodes   *int   `yaml:"master_nodes,omitempty"` // kept to avoid breaking older configs
 	ControlPlanes *int   `yaml:"control_planes,omitempty"`
 }
 

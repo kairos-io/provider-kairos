@@ -31,30 +31,30 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		}
 	}
 
-	existsMaster := false
+	hasControlPlane := false
 
-	masterRole := "master"
+	controlPlaneRole := "master"
 	workerRole := "worker"
-	masterHA := "master/ha"
+	controlPlaneHA := "master/ha"
 
 	if pconfig.P2P.Auto.HA.IsEnabled() {
-		masterRole = "master/clusterinit"
+		controlPlaneRole = "master/clusterinit"
 	}
-	mastersHA := 0
+	controlPlaneCounter := 0
 
 	for _, r := range currentRoles {
 		switch r {
-		case masterRole:
-			existsMaster = true
-		case masterHA:
-			mastersHA++
+		case controlPlaneRole:
+			hasControlPlane = true
+		case controlPlaneHA:
+			controlPlaneCounter++
 		}
 	}
 
-	c.Logger.Infof("Master already present: %t", existsMaster)
+	c.Logger.Infof("Control Plane already present: %t", hasControlPlane)
 	c.Logger.Infof("Unassigned nodes: %+v", unassignedNodes)
 
-	if !existsMaster && len(unassignedNodes) > 0 {
+	if !hasControlPlane && len(unassignedNodes) > 0 {
 		var selected string
 		toSelect := unassignedNodes
 
@@ -68,26 +68,26 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 			}
 		}
 
-		// select one node without roles to become master
+		// select one node without roles to become control-plane
 		if len(toSelect) == 1 {
 			selected = toSelect[0]
 		} else {
 			selected = toSelect[rand.Intn(len(toSelect)-1)]
 		}
 
-		if err := c.Client.Set("role", selected, masterRole); err != nil {
+		if err := c.Client.Set("role", selected, controlPlaneRole); err != nil {
 			return err
 		}
-		c.Logger.Infof("-> Set %s to %s", masterRole, selected)
-		currentRoles[selected] = masterRole
+		c.Logger.Infof("-> Set %s to %s", controlPlaneRole, selected)
+		currentRoles[selected] = controlPlaneRole
 		// Return here, so next time we get called
 		// makes sure master is set.
 		return nil
 	}
 
-	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.MasterNodes != nil && *pconfig.P2P.Auto.HA.MasterNodes != mastersHA {
+	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.ExtraControlPlanes != nil && *pconfig.P2P.Auto.HA.ExtraControlPlanes() != controlPlaneCounter {
 		if len(unassignedNodes) > 0 {
-			if err := c.Client.Set("role", unassignedNodes[0], masterHA); err != nil {
+			if err := c.Client.Set("role", unassignedNodes[0], controlPlaneHA); err != nil {
 				c.Logger.Error(err)
 				return err
 			}
