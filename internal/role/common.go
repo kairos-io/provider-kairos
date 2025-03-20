@@ -1,10 +1,17 @@
 package role
 
 import (
-	"io/ioutil" // nolint
 	"os"
 
 	service "github.com/mudler/edgevpn/api/client/service"
+)
+
+const (
+	RoleWorker                  = "worker"
+	RoleControlPlane            = "master"
+	RoleControlPlaneHA          = "master/ha"
+	RoleControlPlaneClusterInit = "master/clusterinit"
+	RoleAuto                    = "auto"
 )
 
 type Role func(*service.RoleConfig) error
@@ -17,7 +24,7 @@ func SentinelExist() bool {
 }
 
 func CreateSentinel() error {
-	return ioutil.WriteFile("/usr/local/.kairos/deployed", []byte{}, os.ModePerm)
+	return os.WriteFile("/usr/local/.kairos/deployed", []byte{}, os.ModePerm)
 }
 
 func getRoles(client *service.Client, nodes []string) ([]string, map[string]string) {

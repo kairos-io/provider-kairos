@@ -34,8 +34,6 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 	hasControlPlane := false
 
 	controlPlaneRole := "master"
-	workerRole := "worker"
-	controlPlaneHA := "master/ha"
 
 	if pconfig.P2P.Auto.HA.IsEnabled() {
 		controlPlaneRole = "master/clusterinit"
@@ -46,7 +44,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		switch r {
 		case controlPlaneRole:
 			hasControlPlane = true
-		case controlPlaneHA:
+		case RoleControlPlaneHA:
 			controlPlaneCounter++
 		}
 	}
@@ -87,7 +85,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 
 	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.ExtraControlPlanes != nil && *pconfig.P2P.Auto.HA.ExtraControlPlanes() != controlPlaneCounter {
 		if len(unassignedNodes) > 0 {
-			if err := c.Client.Set("role", unassignedNodes[0], controlPlaneHA); err != nil {
+			if err := c.Client.Set("role", unassignedNodes[0], RoleControlPlaneHA); err != nil {
 				c.Logger.Error(err)
 				return err
 			}
@@ -99,11 +97,11 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 
 	// cycle all empty roles and assign worker roles
 	for _, uuid := range unassignedNodes {
-		if err := c.Client.Set("role", uuid, workerRole); err != nil {
+		if err := c.Client.Set("role", uuid, RoleWorker); err != nil {
 			c.Logger.Error(err)
 			return err
 		}
-		c.Logger.Infof("-> Set %s to %s", workerRole, uuid)
+		c.Logger.Infof("-> Set %s to %s", RoleWorker, uuid)
 	}
 
 	c.Logger.Info("Done scheduling")

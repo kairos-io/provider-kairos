@@ -14,6 +14,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
@@ -111,26 +112,26 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
 		service.WithNetworkToken(prvConfig.P2P.NetworkToken),
-		service.WithPersistentRoles(p2p.RoleAuto),
+		service.WithPersistentRoles(common.RoleAuto),
 		service.WithRoles(
 			service.RoleKey{
-				Role:        p2p.RoleControlPlane,
-				RoleHandler: p2p.ControlPlane(c, prvConfig, p2p.RoleControlPlane),
+				Role:        common.RoleControlPlane,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleControlPlaneClusterInit,
-				RoleHandler: p2p.ControlPlane(c, prvConfig, p2p.RoleControlPlaneClusterInit),
+				Role:        common.RoleControlPlaneClusterInit,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneClusterInit),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleControlPlaneHA,
-				RoleHandler: p2p.ControlPlane(c, prvConfig, p2p.RoleControlPlaneHA),
+				Role:        common.RoleControlPlaneHA,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneHA),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleWorker,
+				Role:        common.RoleWorker,
 				RoleHandler: p2p.Worker(c, prvConfig),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleAuto,
+				Role:        common.RoleAuto,
 				RoleHandler: role.Auto(c, prvConfig),
 			},
 		),
