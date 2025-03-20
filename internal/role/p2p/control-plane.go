@@ -140,7 +140,7 @@ func ControlPlane(cc *config.Config, pconfig *providerConfig.Config, roleName st
 		}
 
 		c.Logger.Info("Generating args")
-		args, err := controlPlane.GenArgs()
+		args, err := controlPlane.Args()
 		if err != nil {
 			return fmt.Errorf("failed to generate %s args: %w", controlPlane.Distro(), err)
 		}

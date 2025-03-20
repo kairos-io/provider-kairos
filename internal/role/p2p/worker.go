@@ -63,7 +63,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return fmt.Errorf("no %s binary found (?)", worker.Distro())
 		}
 
-		args, err := worker.WorkerArgs()
+		args, err := worker.Args()
 		if err != nil {
 			return err
 		}
