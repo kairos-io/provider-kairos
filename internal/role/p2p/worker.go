@@ -9,6 +9,7 @@ import (
 
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
@@ -41,7 +42,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 		}
 
 		ip := guessIP(pconfig)
-		worker.SetRole(RoleWorker)
+		worker.SetRole(common.RoleWorker)
 		worker.SetRoleConfig(c)
 		worker.SetIP(ip)
 

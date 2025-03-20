@@ -10,6 +10,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
@@ -176,11 +177,11 @@ func (k *K3sWorker) RoleConfig() *service.RoleConfig {
 }
 
 func (k *K3sControlPlane) HA() bool {
-	return k.role == RoleControlPlaneHA
+	return k.role == common.RoleControlPlaneHA
 }
 
 func (k *K3sControlPlane) ClusterInit() bool {
-	return k.role == RoleControlPlaneClusterInit
+	return k.role == common.RoleControlPlaneClusterInit
 }
 
 func (k *K3sControlPlane) IP() string {
