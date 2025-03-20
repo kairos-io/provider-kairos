@@ -71,8 +71,9 @@ func (k *K3sNode) GenArgs() ([]string, error) {
 		clusterInitIP, _ := k.roleConfig.Client.Get("master", "ip")
 		args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 	}
-
-	if k.ClusterInit() && k.HA() && pconfig.P2P.Auto.HA.ExternalDB == "" {
+	// The --cluster-init flag switchs the embeded SQLite DB to etcd. We don't
+	// want to do this if we're using an external DB.
+	if k.ClusterInit() && pconfig.P2P.Auto.HA.ExternalDB == "" {
 		args = append(args, "--cluster-init")
 	}
 
