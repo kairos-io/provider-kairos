@@ -13,7 +13,7 @@ type ServiceDefinition interface {
 	ServiceName() string
 	Role() string
 	Env() map[string]string
-	Args() []string
+	Args() ([]string, error)
 	K8sBin() string
 	EnvFile() string
 }
@@ -29,14 +29,13 @@ type K8sControlPlane interface {
 	GenerateEnv() map[string]string
 	Service() (machine.Service, error)
 	EnvUnit() string
-	GenArgs() ([]string, error)
+	Args() ([]string, error)
 	DeployKubeVIP() error
 	Token() (string, error)
 	K8sBin() string
 	Role() string
 	ServiceName() string
 	Env() map[string]string
-	Args() []string
 	EnvFile() string
 	SetRole(role string)
 	SetIP(ip string)
@@ -54,10 +53,9 @@ type K8sWorker interface {
 	K8sBin() string
 	SetupWorker(controlPlaneIP, nodeToken string) error
 	Role() string
-	WorkerArgs() ([]string, error)
+	Args() ([]string, error)
 	ServiceName() string
 	Env() map[string]string
-	Args() []string
 	EnvFile() string
 	SetRole(role string)
 	SetIP(ip string)

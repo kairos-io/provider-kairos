@@ -48,7 +48,7 @@ func (k *K0sControlPlane) DeployKubeVIP() error {
 	return nil
 }
 
-func (k *K0sControlPlane) GenArgs() ([]string, error) {
+func (k *K0sControlPlane) Args() ([]string, error) {
 	var args []string
 
 	// Generate a new k0s config
@@ -272,7 +272,7 @@ func (k *K0sControlPlane) PropagateData() error {
 	return nil
 }
 
-func (k *K0sWorker) WorkerArgs() ([]string, error) {
+func (k *K0sWorker) Args() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k0sConfig := pconfig.K0sWorker
 	args := []string{"--token-file /etc/k0s/token"}
@@ -318,16 +318,6 @@ func (k *K0sControlPlane) Env() map[string]string {
 func (k *K0sWorker) Env() map[string]string {
 	c := k.ProviderConfig()
 	return c.K0sWorker.Env
-}
-
-func (k *K0sControlPlane) Args() []string {
-	c := k.ProviderConfig()
-	return c.K0s.Args
-}
-
-func (k *K0sWorker) Args() []string {
-	c := k.ProviderConfig()
-	return c.K0sWorker.Args
 }
 
 func (k *K0sControlPlane) EnvFile() string {

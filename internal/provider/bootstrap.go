@@ -207,7 +207,12 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	}
 
 	// Override the service command and start it
-	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", sd.K8sBin(), sd.Role(), strings.Join(sd.Args(), " "))); err != nil {
+	args, err := sd.Args()
+	if err != nil {
+		l.Errorf("Failed to generate %s args: %s", sd.ServiceName(), err.Error())
+		return err
+	}
+	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", sd.K8sBin(), sd.Role(), strings.Join(args, " "))); err != nil {
 		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}

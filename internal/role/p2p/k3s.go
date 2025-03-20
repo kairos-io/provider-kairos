@@ -52,7 +52,7 @@ func (k *K3sControlPlane) DeployKubeVIP() error {
 	return deployKubeVIP(k.iface, k.ip, pconfig)
 }
 
-func (k *K3sControlPlane) GenArgs() ([]string, error) {
+func (k *K3sControlPlane) Args() ([]string, error) {
 	var args []string
 	pconfig := k.ProviderConfig()
 
@@ -176,11 +176,11 @@ func (k *K3sWorker) RoleConfig() *service.RoleConfig {
 }
 
 func (k *K3sControlPlane) HA() bool {
-	return k.role == "control-plane/ha"
+	return k.role == RoleControlPlaneHA
 }
 
 func (k *K3sControlPlane) ClusterInit() bool {
-	return k.role == "control-plane/clusterinit"
+	return k.role == RoleControlPlaneClusterInit
 }
 
 func (k *K3sControlPlane) IP() string {
@@ -224,7 +224,7 @@ func (k *K3sControlPlane) PropagateData() error {
 	return nil
 }
 
-func (k *K3sWorker) WorkerArgs() ([]string, error) {
+func (k *K3sWorker) Args() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k3sConfig := providerConfig.K3s{}
 	if pconfig.K3sAgent.Enabled {
@@ -317,17 +317,6 @@ func (k *K3sControlPlane) Env() map[string]string {
 func (k *K3sWorker) Env() map[string]string {
 	c := k.ProviderConfig()
 	return c.K3sAgent.Env
-}
-
-func (k *K3sControlPlane) Args() []string {
-	c := k.ProviderConfig()
-
-	return c.K3s.Args
-}
-
-func (k *K3sWorker) Args() []string {
-	c := k.ProviderConfig()
-	return c.K3sAgent.Args
 }
 
 func (k *K3sControlPlane) EnvFile() string {
