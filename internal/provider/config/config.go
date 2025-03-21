@@ -69,21 +69,32 @@ func (a Auto) IsEnabled() bool {
 }
 
 func (ha HA) IsEnabled() bool {
-	return (ha.Enable != nil && *ha.Enable) || (ha.Enable == nil && ha.ExtraControlPlanes() != nil)
+	return (ha.Enable != nil && *ha.Enable) || (ha.Enable == nil && ha.HasControlPlanes())
 }
 
-func (ha HA) ExtraControlPlanes() *int {
-	if ha.ControlPlanes != nil {
-		return ha.ControlPlanes
+func (ha HA) HasControlPlanes() bool {
+	return ha.ControlPlanes != nil || ha.MasterNodes != nil
+}
+
+// GetControlPlanes returns the total number of control planes including the init node.
+// For backward compatibility, if master_nodes is set, it returns that value + 1 (to include the init node).
+// Otherwise, it returns the control_planes value directly.
+func (ha HA) GetControlPlanes() int {
+	if ha.MasterNodes != nil {
+		// Convert master_nodes to total control planes by adding 1 (for the init node)
+		return *ha.MasterNodes + 1
 	}
-	return ha.MasterNodes
+	if ha.ControlPlanes != nil {
+		return *ha.ControlPlanes
+	}
+	return 0
 }
 
 type HA struct {
 	Enable        *bool  `yaml:"enable,omitempty"`
 	ExternalDB    string `yaml:"external_db,omitempty"`
-	MasterNodes   *int   `yaml:"master_nodes,omitempty"` // kept to avoid breaking older configs
-	ControlPlanes *int   `yaml:"control_planes,omitempty"`
+	MasterNodes   *int   `yaml:"master_nodes,omitempty"`   // Legacy field for backward compatibility
+	ControlPlanes *int   `yaml:"control_planes,omitempty"` // Total number of control planes including the init node
 }
 
 type K3s struct {
