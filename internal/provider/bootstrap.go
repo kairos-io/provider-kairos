@@ -158,15 +158,6 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-type BootstrapObj struct {
-	Name    string
-	Role    string
-	Env     map[string]string
-	Args    string
-	BinPath string
-	EnvFile string
-}
-
 func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
