@@ -83,6 +83,9 @@ func ControlPlane(cc *config.Config, pconfig *providerConfig.Config, roleName st
 		if ip == "" {
 			return errors.New("control plane doesn't have an ip yet")
 		}
+		if err := c.Client.Set("ip", c.UUID, ip); err != nil {
+			c.Logger.Error(err)
+		}
 
 		c.Logger.Info("Checking role assignment")
 

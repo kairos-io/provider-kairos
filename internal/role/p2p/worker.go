@@ -42,6 +42,12 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 		}
 
 		ip := guessIP(pconfig)
+		if ip != "" {
+			if err := c.Client.Set("ip", c.UUID, ip); err != nil {
+				c.Logger.Error(err)
+			}
+		}
+
 		worker.SetRole(common.RoleWorker)
 		worker.SetRoleConfig(c)
 		worker.SetIP(ip)
