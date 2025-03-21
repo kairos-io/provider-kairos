@@ -126,6 +126,13 @@ func ControlPlane(cc *config.Config, pconfig *providerConfig.Config, roleName st
 		c.Logger.Info("Running bootstrap before stage")
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", roleName)) //nolint:errcheck
 
+		if controlPlane.HA() {
+			err = controlPlane.SetupHAToken()
+			if err != nil {
+				return err
+			}
+		}
+
 		svc, err := controlPlane.Service()
 		if err != nil {
 			return fmt.Errorf("failed to get %s service: %w", controlPlane.Distro(), err)

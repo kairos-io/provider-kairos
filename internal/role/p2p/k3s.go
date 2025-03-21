@@ -260,6 +260,11 @@ func (k *K3sWorker) Args() ([]string, error) {
 	return args, nil
 }
 
+func (k *K3sControlPlane) SetupHAToken() error {
+	// K3s doesn't need a token for HA, it uses the node-token
+	return nil
+}
+
 func (k *K3sWorker) SetupWorker(controlPlaneIP, nodeToken string) error {
 	pconfig := k.ProviderConfig()
 
