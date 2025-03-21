@@ -41,6 +41,7 @@ type K8sControlPlane interface {
 	SetIP(ip string)
 	GuessInterface()
 	Distro() string
+	SetupHAToken() error
 }
 
 type K8sWorker interface {

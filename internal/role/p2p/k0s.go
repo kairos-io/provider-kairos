@@ -137,8 +137,8 @@ func (k *K0sControlPlane) Args() ([]string, error) {
 		return args, errors.New("ExternalDB is not yet supported with k0s")
 	}
 
-	if k.HA() && !k.ClusterInit() {
-		return args, errors.New("HA is not yet supported with k0s")
+	if k.HA() {
+		args = append(args, "--token-file /etc/k0s/token")
 	}
 
 	// when we start implementing this functionality, remember to use
@@ -218,9 +218,7 @@ func (k *K0sControlPlane) HA() bool {
 }
 
 func (k *K0sControlPlane) ClusterInit() bool {
-	// k0s does not have a cluster init role like k3s. Instead we should have a way to set in the config
-	// if the user wants a single node cluster, multi-node cluster, or HA cluster
-	return false
+	return k.role == common.RoleControlPlaneClusterInit
 }
 
 func (k *K0sControlPlane) IP() string {
@@ -285,6 +283,23 @@ func (k *K0sWorker) Args() ([]string, error) {
 	}
 
 	return args, nil
+}
+
+func (k *K0sControlPlane) SetupHAToken() error {
+	controlPlaneToken, err := k.Token()
+	if err != nil {
+		return err
+	}
+
+	if controlPlaneToken == "" {
+		return errors.New("control plane token is not there")
+	}
+
+	if err := os.WriteFile("/etc/k0s/token", []byte(controlPlaneToken), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
