@@ -10,58 +10,51 @@ import (
 )
 
 type ServiceDefinition interface {
-	ServiceName() string
-	Role() string
-	Env() map[string]string
 	Args() ([]string, error)
-	K8sBin() string
+	Env() map[string]string
 	EnvFile() string
+	K8sBin() string
+	Role() string
+	ServiceName() string
 }
 
 type K8sControlPlane interface {
-	PropagateData() error
-	IP() string
-	ClusterInit() bool
-	HA() bool
-	ProviderConfig() *providerConfig.Config
-	SetRoleConfig(c *service.RoleConfig)
-	RoleConfig() *service.RoleConfig
-	GenerateEnv() map[string]string
-	Service() (machine.Service, error)
-	EnvUnit() string
 	Args() ([]string, error)
+	ClusterInit() bool
 	DeployKubeVIP() error
-	Token() (string, error)
-	K8sBin() string
-	Role() string
-	ServiceName() string
-	Env() map[string]string
-	EnvFile() string
-	SetRole(role string)
-	SetIP(ip string)
-	GuessInterface()
 	Distro() string
+	EnvUnit() string
+	GenerateEnv() map[string]string
+	GuessInterface()
+	HA() bool
+	IP() string
+	K8sBin() string
+	PropagateData() error
+	ProviderConfig() *providerConfig.Config
+	Role() string
+	RoleConfig() *service.RoleConfig
+	Service() (machine.Service, error)
+	SetIP(ip string)
+	SetRole(role string)
+	SetRoleConfig(c *service.RoleConfig)
 	SetupHAToken() error
+	Token() (string, error)
 }
 
 type K8sWorker interface {
+	Args() ([]string, error)
+	Distro() string
 	IP() string
+	K8sBin() string
 	ProviderConfig() *providerConfig.Config
-	SetRoleConfig(c *service.RoleConfig)
+	Role() string
 	RoleConfig() *service.RoleConfig
 	Service() (machine.Service, error)
-	Token() (string, error)
-	K8sBin() string
-	SetupWorker(controlPlaneIP, nodeToken string) error
-	Role() string
-	Args() ([]string, error)
-	ServiceName() string
-	Env() map[string]string
-	EnvFile() string
-	SetRole(role string)
 	SetIP(ip string)
-	GuessInterface()
-	Distro() string
+	SetRole(role string)
+	SetRoleConfig(c *service.RoleConfig)
+	SetupWorker(controlPlaneIP, nodeToken string) error
+	Token() (string, error)
 }
 
 func NewServiceDefinition(c *providerConfig.Config) (ServiceDefinition, error) {
