@@ -67,6 +67,11 @@ func NewServiceDefinition(c *providerConfig.Config) (ServiceDefinition, error) {
 		return &K3sWorker{providerConfig: c}, nil
 	case c.K0sWorker.Enabled:
 		return &K0sWorker{providerConfig: c}, nil
+	// we don't know if it's a control plane or a worker
+	case utils.K3sBin() != "":
+		return &K3sControlPlane{providerConfig: c}, nil
+	case utils.K0sBin() != "":
+		return &K0sControlPlane{providerConfig: c}, nil
 	}
 
 	return nil, errors.New("no k8s distro found")
@@ -75,9 +80,9 @@ func NewServiceDefinition(c *providerConfig.Config) (ServiceDefinition, error) {
 func NewK8sControlPlane(c *providerConfig.Config) (K8sControlPlane, error) {
 	switch {
 	case c.K3s.Enabled:
-		return &K3sControlPlane{providerConfig: c, role: "control-plane"}, nil
+		return &K3sControlPlane{providerConfig: c}, nil
 	case c.K0s.Enabled:
-		return &K0sControlPlane{providerConfig: c, role: "control-plane"}, nil
+		return &K0sControlPlane{providerConfig: c}, nil
 	case utils.K3sBin() != "":
 		return &K3sControlPlane{providerConfig: c}, nil
 	case utils.K0sBin() != "":
@@ -90,9 +95,9 @@ func NewK8sControlPlane(c *providerConfig.Config) (K8sControlPlane, error) {
 func NewK8sWorker(c *providerConfig.Config) (K8sWorker, error) {
 	switch {
 	case c.K3sAgent.Enabled:
-		return &K3sWorker{providerConfig: c, role: "worker"}, nil
+		return &K3sWorker{providerConfig: c}, nil
 	case c.K0sWorker.Enabled:
-		return &K0sWorker{providerConfig: c, role: "worker"}, nil
+		return &K0sWorker{providerConfig: c}, nil
 	case utils.K3sBin() != "":
 		return &K3sWorker{providerConfig: c}, nil
 	case utils.K0sBin() != "":

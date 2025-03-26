@@ -8,10 +8,14 @@ import (
 
 const (
 	RoleWorker                  = "worker"
-	RoleControlPlane            = "master"
-	RoleControlPlaneHA          = "master/ha"
-	RoleControlPlaneClusterInit = "master/clusterinit"
+	RoleControlPlane            = "control-plane"
+	RoleControlPlaneHA          = "control-plane/ha"
+	RoleControlPlaneClusterInit = "control-plane/clusterinit"
 	RoleAuto                    = "auto"
+	// these are kept for backwards compatibility with old configs
+	RoleMaster     = "master"
+	RoleMasterHA   = "master/ha"
+	RoleMasterInit = "master/clusterinit"
 )
 
 type Role func(*service.RoleConfig) error

@@ -357,14 +357,6 @@ func (k *K3sControlPlane) GuessInterface() {
 	k.ifaceIP = ifaceIP
 }
 
-func (k *K3sWorker) GuessInterface() {
-	iface := guessInterface(k.ProviderConfig())
-	ifaceIP := utils.GetInterfaceIP(iface)
-
-	k.iface = iface
-	k.ifaceIP = ifaceIP
-}
-
 func (k *K3sControlPlane) Distro() string {
 	return K3sDistroName
 }

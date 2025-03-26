@@ -33,10 +33,10 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 
 	hasControlPlane := false
 
-	controlPlaneRole := "master"
+	controlPlaneRole := RoleControlPlane
 
 	if pconfig.P2P.Auto.HA.IsEnabled() {
-		controlPlaneRole = "master/clusterinit"
+		controlPlaneRole = RoleControlPlaneClusterInit
 	}
 	controlPlaneCounter := 1 // Start at 1 to account for the init node
 
@@ -79,7 +79,7 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		c.Logger.Infof("-> Set %s to %s", controlPlaneRole, selected)
 		currentRoles[selected] = controlPlaneRole
 		// Return here, so next time we get called
-		// makes sure master is set.
+		// makes sure control-plane is set.
 		return nil
 	}
 

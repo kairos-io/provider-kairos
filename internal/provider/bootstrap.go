@@ -49,8 +49,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	worker, _ := p2p.NewK8sWorker(prvConfig)
-	if prvConfig.P2P == nil && worker == nil {
+	sd, _ := p2p.NewServiceDefinition(prvConfig)
+	if prvConfig.P2P == nil && sd == nil {
 		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
 	}
 
@@ -68,7 +68,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && worker != nil) || skipAuto {
+	if (tokenNotDefined && sd != nil) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -133,6 +133,18 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 			service.RoleKey{
 				Role:        common.RoleAuto,
 				RoleHandler: role.Auto(c, prvConfig),
+			},
+			service.RoleKey{
+				Role:        common.RoleControlPlane,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
+			},
+			service.RoleKey{
+				Role:        common.RoleMasterInit,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneClusterInit),
+			},
+			service.RoleKey{
+				Role:        common.RoleMasterHA,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneHA),
 			},
 		),
 	}

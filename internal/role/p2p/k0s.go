@@ -52,6 +52,10 @@ func (k *K0sControlPlane) DeployKubeVIP() error {
 func (k *K0sControlPlane) Args() ([]string, error) {
 	var args []string
 
+	// if k.IsSingleNode() {
+	// 	args = append(args, "--single")
+	// }
+
 	// Generate a new k0s config
 	_, err := utils.SH("k0s config create > /etc/k0s/k0s.yaml")
 	if err != nil {
@@ -213,6 +217,10 @@ func (k *K0sWorker) RoleConfig() *service.RoleConfig {
 	return k.roleConfig
 }
 
+func (k *K0sControlPlane) IsSingleNode() bool {
+	return k.role == common.RoleControlPlane
+}
+
 func (k *K0sControlPlane) HA() bool {
 	return k.role == common.RoleControlPlaneHA
 }
@@ -361,10 +369,6 @@ func (k *K0sWorker) SetIP(ip string) {
 }
 
 func (k *K0sControlPlane) GuessInterface() {
-	// not used in k0s
-}
-
-func (k *K0sWorker) GuessInterface() {
 	// not used in k0s
 }
 
