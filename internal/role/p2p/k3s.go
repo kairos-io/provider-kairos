@@ -18,34 +18,150 @@ const (
 	K3sDistroName = "k3s"
 )
 
+// K3sNode implements the base Node interface for K3s
+type K3sNode struct {
+	providerConfig *providerConfig.Config
+	roleConfig     *service.RoleConfig
+	ip             string
+	iface          string
+	ifaceIP        string
+	role           string
+}
+
+// K3sControlPlane extends K3sNode with control plane functionality
 type K3sControlPlane struct {
-	providerConfig *providerConfig.Config
-	roleConfig     *service.RoleConfig
-	ip             string
-	iface          string
-	ifaceIP        string
-	role           string
+	*K3sNode
 }
 
+// K3sWorker extends K3sNode with worker functionality
 type K3sWorker struct {
-	providerConfig *providerConfig.Config
-	roleConfig     *service.RoleConfig
-	ip             string
-	iface          string
-	ifaceIP        string
-	role           string
+	*K3sNode
 }
 
-func (k *K3sControlPlane) K8sBin() string {
+// Node interface implementation
+func (k *K3sNode) GetIP() string {
+	return k.ip
+}
+
+func (k *K3sNode) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K3sNode) GetRole() string {
+	if k.role == common.RoleControlPlane ||
+		k.role == common.RoleControlPlaneHA ||
+		k.role == common.RoleControlPlaneClusterInit ||
+		k.role == common.RoleMaster ||
+		k.role == common.RoleMasterHA ||
+		k.role == common.RoleMasterInit {
+		return "server"
+	}
+	return "agent"
+}
+
+func (k *K3sNode) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K3sNode) GetDistro() string {
+	return K3sDistroName
+}
+
+func (k *K3sNode) K8sBin() string {
 	return utils.K3sBin()
 }
 
-func (k *K3sWorker) K8sBin() string {
-	return utils.K3sBin()
+func (k *K3sNode) GetConfig() *providerConfig.Config {
+	return k.providerConfig
+}
+
+func (k *K3sNode) SetRoleConfig(c *service.RoleConfig) {
+	k.roleConfig = c
+}
+
+func (k *K3sNode) GetRoleConfig() *service.RoleConfig {
+	return k.roleConfig
+}
+
+func (k *K3sNode) GetService() (machine.Service, error) {
+	if k.role == common.RoleWorker {
+		return machine.K3sAgent()
+	}
+	return machine.K3s()
+}
+
+func (k *K3sNode) GetServiceName() string {
+	if k.role == common.RoleWorker {
+		return "k3s-agent"
+	}
+	return "k3s"
+}
+
+func (k *K3sNode) GetEnvFile() string {
+	return machine.K3sEnvUnit(k.GetServiceName())
+}
+
+func (k *K3sNode) GenerateEnv() map[string]string {
+	env := make(map[string]string)
+
+	if k.role == common.RoleControlPlaneHA && k.role != common.RoleControlPlaneClusterInit {
+		nodeToken, _ := k.GetToken()
+		env["K3S_TOKEN"] = nodeToken
+	}
+
+	pConfig := k.GetConfig()
+
+	if k.role == common.RoleWorker {
+		if pConfig.K3sAgent.ReplaceEnv {
+			env = pConfig.K3sAgent.Env
+		} else {
+			for k, v := range pConfig.K3sAgent.Env {
+				env[k] = v
+			}
+		}
+	} else {
+		if pConfig.K3s.ReplaceEnv {
+			env = pConfig.K3s.Env
+		} else {
+			for k, v := range pConfig.K3s.Env {
+				env[k] = v
+			}
+		}
+	}
+
+	return env
+}
+
+func (k *K3sNode) GenerateArgs() ([]string, error) {
+	if k.role == common.RoleWorker {
+		return k.generateWorkerArgs()
+	}
+	return k.generateControlPlaneArgs()
+}
+
+func (k *K3sNode) GetToken() (string, error) {
+	if k.role == common.RoleWorker {
+		return k.GetRoleConfig().Client.Get("nodetoken", "token")
+	}
+	return k.GetRoleConfig().Client.Get("nodetoken", "token")
+}
+
+// ControlPlane interface implementation
+func (k *K3sControlPlane) IsHA() bool {
+	return k.role == common.RoleControlPlaneHA
+}
+
+func (k *K3sControlPlane) IsClusterInit() bool {
+	return k.role == common.RoleControlPlaneClusterInit
+}
+
+func (k *K3sControlPlane) SetupHAToken() error {
+	// K3s doesn't need a token for HA, it uses the node-token
+	return nil
 }
 
 func (k *K3sControlPlane) DeployKubeVIP() error {
-	pconfig := k.ProviderConfig()
+	pconfig := k.GetConfig()
 	if !pconfig.KubeVIP.IsEnabled() {
 		return nil
 	}
@@ -53,9 +169,43 @@ func (k *K3sControlPlane) DeployKubeVIP() error {
 	return deployKubeVIP(k.iface, k.ip, pconfig)
 }
 
-func (k *K3sControlPlane) Args() ([]string, error) {
+// Worker interface implementation
+func (k *K3sWorker) SetupWorker(controlPlaneIP, nodeToken string) error {
+	pconfig := k.GetConfig()
+
+	nodeToken = strings.TrimRight(nodeToken, "\n")
+
+	k3sConfig := providerConfig.K3s{}
+	if pconfig.K3sAgent.Enabled {
+		k3sConfig = pconfig.K3sAgent
+	}
+
+	env := map[string]string{
+		"K3S_URL":   fmt.Sprintf("https://%s:6443", controlPlaneIP),
+		"K3S_TOKEN": nodeToken,
+	}
+
+	if k3sConfig.ReplaceEnv {
+		env = k3sConfig.Env
+	} else {
+		for k, v := range k3sConfig.Env {
+			env[k] = v
+		}
+	}
+
+	if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
+		env,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Helper methods
+func (k *K3sNode) generateControlPlaneArgs() ([]string, error) {
 	var args []string
-	pconfig := k.ProviderConfig()
+	pconfig := k.GetConfig()
 
 	if pconfig.P2P.UseVPNWithKubernetes() {
 		args = append(args, "--flannel-iface=edgevpn0")
@@ -73,127 +223,58 @@ func (k *K3sControlPlane) Args() ([]string, error) {
 		args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.P2P.Auto.HA.ExternalDB)}
 	}
 
-	if k.HA() && !k.ClusterInit() {
-		clusterInitIP, _ := k.roleConfig.Client.Get("control-plane", "ip")
+	if k.role == common.RoleControlPlaneHA && k.role != common.RoleControlPlaneClusterInit {
+		clusterInitIP, _ := k.GetRoleConfig().Client.Get("control-plane", "ip")
 		args = append(args, fmt.Sprintf("--server=https://%s:6443", clusterInitIP))
 	}
 	// The --cluster-init flag changes the embedded SQLite DB to etcd. We don't
 	// want to do this if we're using an external DB.
-	if k.ClusterInit() && pconfig.P2P.Auto.HA.ExternalDB == "" {
+	if k.role == common.RoleControlPlaneClusterInit && pconfig.P2P.Auto.HA.ExternalDB == "" {
 		args = append(args, "--cluster-init")
 	}
 
-	args = k.AppendArgs(args)
-
-	return args, nil
-}
-
-func (k *K3sControlPlane) AppendArgs(other []string) []string {
-	c := k.ProviderConfig()
-	if c.K3s.ReplaceArgs {
-		return c.K3s.Args
+	if pconfig.K3s.ReplaceArgs {
+		return pconfig.K3s.Args, nil
 	}
 
-	return append(other, c.K3s.Args...)
+	return append(args, pconfig.K3s.Args...), nil
 }
 
-func (k *K3sWorker) AppendArgs(other []string) []string {
-	c := k.ProviderConfig()
-	if c.K3s.ReplaceArgs {
-		return c.K3s.Args
+func (k *K3sNode) generateWorkerArgs() ([]string, error) {
+	pconfig := k.GetConfig()
+	k3sConfig := providerConfig.K3s{}
+	if pconfig.K3sAgent.Enabled {
+		k3sConfig = pconfig.K3sAgent
 	}
 
-	return append(other, c.K3s.Args...)
-}
-
-func (k *K3sControlPlane) EnvUnit() string {
-	return machine.K3sEnvUnit("k3s")
-}
-
-func (k *K3sWorker) EnvUnit() string {
-	return machine.K3sEnvUnit("k3s")
-}
-
-func (k *K3sControlPlane) Service() (machine.Service, error) {
-	return machine.K3s()
-}
-
-func (k *K3sWorker) Service() (machine.Service, error) {
-	return machine.K3sAgent()
-}
-
-func (k *K3sControlPlane) Token() (string, error) {
-	return k.RoleConfig().Client.Get("nodetoken", "token")
-}
-
-func (k *K3sWorker) Token() (string, error) {
-	return k.RoleConfig().Client.Get("nodetoken", "token")
-}
-
-func (k *K3sControlPlane) GenerateEnv() (env map[string]string) {
-	env = make(map[string]string)
-
-	if k.HA() && !k.ClusterInit() {
-		nodeToken, _ := k.Token()
-		env["K3S_TOKEN"] = nodeToken
+	args := []string{
+		"--with-node-id",
 	}
 
-	pConfig := k.ProviderConfig()
-
-	if pConfig.K3s.ReplaceEnv {
-		env = pConfig.K3s.Env
-	} else {
-		// Override opts with user-supplied
-		for k, v := range pConfig.K3s.Env {
-			env[k] = v
+	if pconfig.P2P.UseVPNWithKubernetes() {
+		ip := utils.GetInterfaceIP("edgevpn0")
+		if ip == "" {
+			return nil, errors.New("node doesn't have an ip yet")
 		}
+		args = append(args,
+			fmt.Sprintf("--node-ip %s", ip),
+			"--flannel-iface=edgevpn0")
+	} else {
+		iface := guessInterface(pconfig)
+		ip := utils.GetInterfaceIP(iface)
+		args = append(args,
+			fmt.Sprintf("--node-ip %s", ip))
 	}
 
-	return env
+	if k3sConfig.ReplaceArgs {
+		return k3sConfig.Args, nil
+	}
+
+	return append(args, k3sConfig.Args...), nil
 }
 
-func (k *K3sControlPlane) ProviderConfig() *providerConfig.Config {
-	return k.providerConfig
-}
-
-func (k *K3sWorker) ProviderConfig() *providerConfig.Config {
-	return k.providerConfig
-}
-
-func (k *K3sControlPlane) SetRoleConfig(c *service.RoleConfig) {
-	k.roleConfig = c
-}
-
-func (k *K3sWorker) SetRoleConfig(c *service.RoleConfig) {
-	k.roleConfig = c
-}
-
-func (k *K3sControlPlane) RoleConfig() *service.RoleConfig {
-	return k.roleConfig
-}
-
-func (k *K3sWorker) RoleConfig() *service.RoleConfig {
-	return k.roleConfig
-}
-
-func (k *K3sControlPlane) HA() bool {
-	return k.role == common.RoleControlPlaneHA
-}
-
-func (k *K3sControlPlane) ClusterInit() bool {
-	return k.role == common.RoleControlPlaneClusterInit
-}
-
-func (k *K3sControlPlane) IP() string {
-	return k.ip
-}
-
-func (k *K3sWorker) IP() string {
-	return k.ip
-}
-
-func (k *K3sControlPlane) PropagateData() error {
-	c := k.RoleConfig()
+func (k *K3sNode) PropagateData() error {
+	c := k.GetRoleConfig()
 	tokenB, err := os.ReadFile("/var/lib/rancher/k3s/server/node-token")
 	if err != nil {
 		c.Logger.Error(err)
@@ -225,142 +306,22 @@ func (k *K3sControlPlane) PropagateData() error {
 	return nil
 }
 
-func (k *K3sWorker) Args() ([]string, error) {
-	pconfig := k.ProviderConfig()
-	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
-		k3sConfig = pconfig.K3sAgent
-	}
-
-	args := []string{
-		"--with-node-id",
-	}
-
-	if pconfig.P2P.UseVPNWithKubernetes() {
-		ip := utils.GetInterfaceIP("edgevpn0")
-		if ip == "" {
-			return nil, errors.New("node doesn't have an ip yet")
-		}
-		args = append(args,
-			fmt.Sprintf("--node-ip %s", ip),
-			"--flannel-iface=edgevpn0")
-	} else {
-		iface := guessInterface(pconfig)
-		ip := utils.GetInterfaceIP(iface)
-		args = append(args,
-			fmt.Sprintf("--node-ip %s", ip))
-	}
-
-	if k3sConfig.ReplaceArgs {
-		args = k3sConfig.Args
-	} else {
-		args = append(args, k3sConfig.Args...)
-	}
-
-	return args, nil
-}
-
-func (k *K3sControlPlane) SetupHAToken() error {
-	// K3s doesn't need a token for HA, it uses the node-token
-	return nil
-}
-
-func (k *K3sWorker) SetupWorker(controlPlaneIP, nodeToken string) error {
-	pconfig := k.ProviderConfig()
-
-	nodeToken = strings.TrimRight(nodeToken, "\n")
-
-	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
-		k3sConfig = pconfig.K3sAgent
-	}
-
-	env := map[string]string{
-		"K3S_URL":   fmt.Sprintf("https://%s:6443", controlPlaneIP),
-		"K3S_TOKEN": nodeToken,
-	}
-
-	if k3sConfig.ReplaceEnv {
-		env = k3sConfig.Env
-	} else {
-		// Override opts with user-supplied
-		for k, v := range k3sConfig.Env {
-			env[k] = v
-		}
-	}
-
-	if err := utils.WriteEnv(machine.K3sEnvUnit("k3s-agent"),
-		env,
-	); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k *K3sControlPlane) Role() string {
-	return "server"
-}
-
-func (k *K3sWorker) Role() string {
-	return "agent"
-}
-
-func (k *K3sControlPlane) ServiceName() string {
-	return "k3s"
-}
-
-func (k *K3sWorker) ServiceName() string {
-	return "k3s-agent"
-}
-
-func (k *K3sControlPlane) Env() map[string]string {
-	c := k.ProviderConfig()
-
-	return c.K3s.Env
-}
-
-func (k *K3sWorker) Env() map[string]string {
-	c := k.ProviderConfig()
-	return c.K3sAgent.Env
-}
-
-func (k *K3sControlPlane) EnvFile() string {
-	return machine.K3sEnvUnit(k.ServiceName())
-}
-
-func (k *K3sWorker) EnvFile() string {
-	return machine.K3sEnvUnit(k.ServiceName())
-}
-
-func (k *K3sControlPlane) SetRole(role string) {
-	k.role = role
-}
-
-func (k *K3sWorker) SetRole(role string) {
-	k.role = role
-}
-
-func (k *K3sControlPlane) SetIP(ip string) {
-	k.ip = ip
-}
-
-func (k *K3sWorker) SetIP(ip string) {
-	k.ip = ip
-}
-
-func (k *K3sControlPlane) GuessInterface() {
-	iface := guessInterface(k.ProviderConfig())
+func (k *K3sNode) GuessInterface() {
+	iface := guessInterface(k.GetConfig())
 	ifaceIP := utils.GetInterfaceIP(iface)
 
 	k.iface = iface
 	k.ifaceIP = ifaceIP
 }
 
-func (k *K3sControlPlane) Distro() string {
-	return K3sDistroName
-}
-
-func (k *K3sWorker) Distro() string {
-	return K3sDistroName
+func (k *K3sNode) GetCommandRole() string {
+	if k.role == common.RoleControlPlane ||
+		k.role == common.RoleControlPlaneHA ||
+		k.role == common.RoleControlPlaneClusterInit ||
+		k.role == common.RoleMaster ||
+		k.role == common.RoleMasterHA ||
+		k.role == common.RoleMasterInit {
+		return "server"
+	}
+	return "agent"
 }

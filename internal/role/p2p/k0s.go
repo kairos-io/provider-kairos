@@ -18,30 +18,152 @@ const (
 	K0sDistroName = "k0s"
 )
 
+// K0sNode implements the base Node interface for K0s
+type K0sNode struct {
+	providerConfig *providerConfig.Config
+	roleConfig     *service.RoleConfig
+	ip             string
+	role           string
+}
+
+// K0sControlPlane extends K0sNode with control plane functionality
 type K0sControlPlane struct {
-	providerConfig *providerConfig.Config
-	roleConfig     *service.RoleConfig
-	ip             string
-	role           string
+	*K0sNode
 }
 
+// K0sWorker extends K0sNode with worker functionality
 type K0sWorker struct {
-	providerConfig *providerConfig.Config
-	roleConfig     *service.RoleConfig
-	ip             string
-	role           string
+	*K0sNode
 }
 
-func (k *K0sControlPlane) K8sBin() string {
+// Node interface implementation
+func (k *K0sNode) GetIP() string {
+	return k.ip
+}
+
+func (k *K0sNode) SetIP(ip string) {
+	k.ip = ip
+}
+
+func (k *K0sNode) GetRole() string {
+	return k.role
+}
+
+func (k *K0sNode) SetRole(role string) {
+	k.role = role
+}
+
+func (k *K0sNode) GetDistro() string {
+	return K0sDistroName
+}
+
+func (k *K0sNode) K8sBin() string {
 	return utils.K0sBin()
 }
 
-func (k *K0sWorker) K8sBin() string {
-	return utils.K0sBin()
+func (k *K0sNode) GetConfig() *providerConfig.Config {
+	return k.providerConfig
+}
+
+func (k *K0sNode) SetRoleConfig(c *service.RoleConfig) {
+	k.roleConfig = c
+}
+
+func (k *K0sNode) GetRoleConfig() *service.RoleConfig {
+	return k.roleConfig
+}
+
+func (k *K0sNode) GetService() (machine.Service, error) {
+	if k.role == common.RoleWorker {
+		return machine.K0sWorker()
+	}
+	return machine.K0s()
+}
+
+func (k *K0sNode) GetServiceName() string {
+	if k.role == common.RoleWorker {
+		return "k0sworker"
+	}
+	return "k0scontroller"
+}
+
+func (k *K0sNode) GetEnvFile() string {
+	return machine.K0sEnvUnit(k.GetServiceName())
+}
+
+func (k *K0sNode) GenerateEnv() map[string]string {
+	env := make(map[string]string)
+
+	if k.role == common.RoleControlPlaneHA && k.role != common.RoleControlPlaneClusterInit {
+		nodeToken, _ := k.GetToken()
+		env["K0S_TOKEN"] = nodeToken
+	}
+
+	pConfig := k.GetConfig()
+
+	if k.role == common.RoleWorker {
+		if pConfig.K0sWorker.ReplaceEnv {
+			env = pConfig.K0sWorker.Env
+		} else {
+			for k, v := range pConfig.K0sWorker.Env {
+				env[k] = v
+			}
+		}
+	} else {
+		if pConfig.K0s.ReplaceEnv {
+			env = pConfig.K0s.Env
+		} else {
+			for k, v := range pConfig.K0s.Env {
+				env[k] = v
+			}
+		}
+	}
+
+	return env
+}
+
+func (k *K0sNode) GenerateArgs() ([]string, error) {
+	if k.role == common.RoleWorker {
+		return k.generateWorkerArgs()
+	}
+	return k.generateControlPlaneArgs()
+}
+
+func (k *K0sNode) GetToken() (string, error) {
+	if k.role == common.RoleWorker {
+		return k.GetRoleConfig().Client.Get("workertoken", "token")
+	}
+	return k.GetRoleConfig().Client.Get("controllertoken", "token")
+}
+
+// ControlPlaneNode interface implementation
+func (k *K0sControlPlane) IsHA() bool {
+	return k.role == common.RoleControlPlaneHA
+}
+
+func (k *K0sControlPlane) IsClusterInit() bool {
+	return k.role == common.RoleControlPlaneClusterInit
+}
+
+func (k *K0sControlPlane) SetupHAToken() error {
+	controlPlaneToken, err := k.GetToken()
+	if err != nil {
+		return err
+	}
+
+	if controlPlaneToken == "" {
+		return errors.New("control plane token is not there")
+	}
+
+	if err := os.WriteFile("/etc/k0s/token", []byte(controlPlaneToken), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (k *K0sControlPlane) DeployKubeVIP() error {
-	pconfig := k.ProviderConfig()
+	pconfig := k.GetConfig()
 	if pconfig.KubeVIP.IsEnabled() {
 		return errors.New("KubeVIP is not yet supported with k0s")
 	}
@@ -49,12 +171,18 @@ func (k *K0sControlPlane) DeployKubeVIP() error {
 	return nil
 }
 
-func (k *K0sControlPlane) Args() ([]string, error) {
-	var args []string
+// WorkerNode interface implementation
+func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
+	if err := os.WriteFile("/etc/k0s/token", []byte(nodeToken), 0644); err != nil {
+		return err
+	}
 
-	// if k.IsSingleNode() {
-	// 	args = append(args, "--single")
-	// }
+	return nil
+}
+
+// Helper methods
+func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
+	var args []string
 
 	// Generate a new k0s config
 	_, err := utils.SH("k0s config create > /etc/k0s/k0s.yaml")
@@ -84,7 +212,7 @@ func (k *K0sControlPlane) Args() ([]string, error) {
 		return args, errors.New("k0s config does not have an api")
 	}
 	// by default k0s uses the first IP address of the machine as the api address, but we want to use the edgevpn IP
-	api["address"] = k.IP()
+	api["address"] = k.GetIP()
 
 	spec["api"] = api
 
@@ -111,7 +239,7 @@ func (k *K0sControlPlane) Args() ([]string, error) {
 		return args, errors.New("k0s config does not have a etcd")
 	}
 	// just like the api address, we want to use the edgevpn IP for the etcd peer address
-	etcd["peerAddress"] = k.IP()
+	etcd["peerAddress"] = k.GetIP()
 
 	storage["etcd"] = etcd
 	spec["storage"] = storage
@@ -128,7 +256,7 @@ func (k *K0sControlPlane) Args() ([]string, error) {
 		return args, err
 	}
 
-	pconfig := k.ProviderConfig()
+	pconfig := k.GetConfig()
 	if !pconfig.P2P.UseVPNWithKubernetes() {
 		return args, errors.New("Having a VPN but not using it for Kubernetes is not yet supported with k0s")
 	}
@@ -141,104 +269,27 @@ func (k *K0sControlPlane) Args() ([]string, error) {
 		return args, errors.New("ExternalDB is not yet supported with k0s")
 	}
 
-	if k.HA() {
+	if k.role == common.RoleControlPlaneHA {
 		args = append(args, "--token-file /etc/k0s/token")
 	}
-
-	// when we start implementing this functionality, remember to use
-	// AppendArgs, and not just return the args here, this is because the
-	// function understands if it needs to append or replace the args
 
 	return args, nil
 }
 
-func (k *K0sControlPlane) EnvUnit() string {
-	return machine.K0sEnvUnit("k0scontroller")
-}
+func (k *K0sNode) generateWorkerArgs() ([]string, error) {
+	pconfig := k.GetConfig()
+	k0sConfig := pconfig.K0sWorker
+	args := []string{"--token-file /etc/k0s/token"}
 
-func (k *K0sControlPlane) Service() (machine.Service, error) {
-	return machine.K0s()
-}
-func (k *K0sWorker) Service() (machine.Service, error) {
-	return machine.K0sWorker()
-}
-
-func (k *K0sControlPlane) Token() (string, error) {
-	return k.RoleConfig().Client.Get("controllertoken", "token")
-}
-
-func (k *K0sWorker) Token() (string, error) {
-	return k.RoleConfig().Client.Get("workertoken", "token")
-}
-
-func (k *K0sControlPlane) GenerateEnv() (env map[string]string) {
-	env = make(map[string]string)
-
-	if k.HA() && !k.ClusterInit() {
-		nodeToken, _ := k.Token()
-		env["K0S_TOKEN"] = nodeToken
+	if k0sConfig.ReplaceArgs {
+		return k0sConfig.Args, nil
 	}
 
-	pConfig := k.ProviderConfig()
-
-	if pConfig.K0s.ReplaceEnv {
-		env = pConfig.K0s.Env
-	} else {
-		// Override opts with user-supplied
-		for k, v := range pConfig.K0s.Env {
-			env[k] = v
-		}
-	}
-
-	return env
+	return append(args, k0sConfig.Args...), nil
 }
 
-func (k *K0sControlPlane) ProviderConfig() *providerConfig.Config {
-	return k.providerConfig
-}
-
-func (k *K0sWorker) ProviderConfig() *providerConfig.Config {
-	return k.providerConfig
-}
-
-func (k *K0sControlPlane) SetRoleConfig(c *service.RoleConfig) {
-	k.roleConfig = c
-}
-
-func (k *K0sWorker) SetRoleConfig(c *service.RoleConfig) {
-	k.roleConfig = c
-}
-
-func (k *K0sControlPlane) RoleConfig() *service.RoleConfig {
-	return k.roleConfig
-}
-
-func (k *K0sWorker) RoleConfig() *service.RoleConfig {
-	return k.roleConfig
-}
-
-func (k *K0sControlPlane) IsSingleNode() bool {
-	return k.role == common.RoleControlPlane
-}
-
-func (k *K0sControlPlane) HA() bool {
-	return k.role == common.RoleControlPlaneHA
-}
-
-func (k *K0sControlPlane) ClusterInit() bool {
-	return k.role == common.RoleControlPlaneClusterInit
-}
-
-func (k *K0sControlPlane) IP() string {
-	return k.ip
-}
-
-func (k *K0sWorker) IP() string {
-	return k.ip
-}
-
-func (k *K0sControlPlane) PropagateData() error {
-	c := k.RoleConfig()
+func (k *K0sNode) PropagateData() error {
+	c := k.GetRoleConfig()
 	controllerToken, err := utils.SH("k0s token create --role=controller") //nolint:errcheck
 	if err != nil {
 		c.Logger.Errorf("failed to create controller token: %s", err)
@@ -277,105 +328,4 @@ func (k *K0sControlPlane) PropagateData() error {
 	}
 
 	return nil
-}
-
-func (k *K0sWorker) Args() ([]string, error) {
-	pconfig := k.ProviderConfig()
-	k0sConfig := pconfig.K0sWorker
-	args := []string{"--token-file /etc/k0s/token"}
-
-	if k0sConfig.ReplaceArgs {
-		args = k0sConfig.Args
-	} else {
-		args = append(args, k0sConfig.Args...)
-	}
-
-	return args, nil
-}
-
-func (k *K0sControlPlane) SetupHAToken() error {
-	controlPlaneToken, err := k.Token()
-	if err != nil {
-		return err
-	}
-
-	if controlPlaneToken == "" {
-		return errors.New("control plane token is not there")
-	}
-
-	if err := os.WriteFile("/etc/k0s/token", []byte(controlPlaneToken), 0644); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
-	if err := os.WriteFile("/etc/k0s/token", []byte(nodeToken), 0644); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k *K0sControlPlane) Role() string {
-	return "controller"
-}
-
-func (k *K0sWorker) Role() string {
-	return "worker"
-}
-
-func (k *K0sControlPlane) ServiceName() string {
-	return "k0scontroller"
-}
-
-func (k *K0sWorker) ServiceName() string {
-	return "k0sworker"
-}
-
-func (k *K0sControlPlane) Env() map[string]string {
-	c := k.ProviderConfig()
-	return c.K0s.Env
-}
-
-func (k *K0sWorker) Env() map[string]string {
-	c := k.ProviderConfig()
-	return c.K0sWorker.Env
-}
-
-func (k *K0sControlPlane) EnvFile() string {
-	return machine.K0sEnvUnit(k.ServiceName())
-}
-
-func (k *K0sWorker) EnvFile() string {
-	return machine.K0sEnvUnit(k.ServiceName())
-}
-
-func (k *K0sControlPlane) SetRole(role string) {
-	k.role = role
-}
-
-func (k *K0sWorker) SetRole(role string) {
-	k.role = role
-}
-
-func (k *K0sControlPlane) SetIP(ip string) {
-	k.ip = ip
-}
-
-func (k *K0sWorker) SetIP(ip string) {
-	k.ip = ip
-}
-
-func (k *K0sControlPlane) GuessInterface() {
-	// not used in k0s
-}
-
-func (k *K0sControlPlane) Distro() string {
-	return K0sDistroName
-}
-
-func (k *K0sWorker) Distro() string {
-	return K0sDistroName
 }

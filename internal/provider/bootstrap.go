@@ -43,15 +43,15 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
-	// TODO: this belong to a systemd service that is started instead
 
 	p2pBlockDefined := prvConfig.P2P != nil
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	sd, _ := p2p.NewServiceDefinition(prvConfig)
-	if prvConfig.P2P == nil && sd == nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
+	// Try to create a node first - this validates we can actually create a working node
+	_, err = p2p.NewNode(prvConfig, common.RoleAuto)
+	if err != nil {
+		return ErrorEvent("Cannot create Kubernetes node: %s", err.Error())
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -65,10 +65,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logger := types.NewKairosLogger("provider", logLevel, false)
 
-	// Do onetimebootstrap if a Kubernetes distribution is enabled.
-	// Those blocks are not required to be enabled in case of a kairos
-	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && sd != nil) || skipAuto {
+	// Do onetimebootstrap if needed - we already validated we can create a node
+	if tokenNotDefined || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -79,7 +77,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	if tokenNotDefined {
-		return ErrorEvent("No network token provided, or kubernetes distribution (k3s, k0s) block configured. Exiting")
+		return ErrorEvent("No network token provided. Exiting")
 	}
 
 	// We might still want a VPN, but not to route traffic into
@@ -135,7 +133,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 				RoleHandler: role.Auto(c, prvConfig),
 			},
 			service.RoleKey{
-				Role:        common.RoleControlPlane,
+				Role:        common.RoleMaster,
 				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
 			},
 			service.RoleKey{
@@ -179,27 +177,28 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	l.Info("One time bootstrap starting")
 
 	var svc machine.Service
-	sd, err := p2p.NewServiceDefinition(c)
+	node, err := p2p.NewNode(c, common.RoleAuto)
 	if err != nil {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
 
-	if sd.K8sBin() == "" {
-		l.Errorf("no %s binary fouund", sd.ServiceName())
-		return fmt.Errorf("no %s binary found", sd.ServiceName())
+	k8sBin := node.K8sBin()
+	if k8sBin == "" {
+		l.Errorf("no kubernetes binary found")
+		return fmt.Errorf("no kubernetes binary found")
 	}
 
-	if err := utils.WriteEnv(sd.EnvFile(), sd.Env()); err != nil {
-		l.Errorf("Failed to write %s env file: %s", sd.ServiceName(), err.Error())
+	if err := utils.WriteEnv(node.GetEnvFile(), node.GenerateEnv()); err != nil {
+		l.Errorf("Failed to write env file: %s", err.Error())
 		return err
 	}
 
 	// Initialize the service based on the system's init system
 	if utils.IsOpenRCBased() {
-		svc, err = openrc.NewService(openrc.WithName(sd.ServiceName()))
+		svc, err = openrc.NewService(openrc.WithName(node.GetServiceName()))
 	} else {
-		svc, err = systemd.NewService(systemd.WithName(sd.ServiceName()))
+		svc, err = systemd.NewService(systemd.WithName(node.GetServiceName()))
 	}
 
 	if err != nil {
@@ -211,12 +210,12 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	}
 
 	// Override the service command and start it
-	args, err := sd.Args()
+	args, err := node.GenerateArgs()
 	if err != nil {
-		l.Errorf("Failed to generate %s args: %s", sd.ServiceName(), err.Error())
+		l.Errorf("Failed to generate args: %s", err.Error())
 		return err
 	}
-	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", sd.K8sBin(), sd.Role(), strings.Join(args, " "))); err != nil {
+	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.GetRole(), strings.Join(args, " "))); err != nil {
 		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}

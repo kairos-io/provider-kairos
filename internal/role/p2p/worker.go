@@ -36,9 +36,14 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		worker, err := NewK8sWorker(pconfig)
+		node, err := NewNode(pconfig, common.RoleWorker)
 		if err != nil {
 			return fmt.Errorf("failed to determine k8s distro: %w", err)
+		}
+
+		worker, ok := AsWorker(node)
+		if !ok {
+			return fmt.Errorf("failed to convert node to worker")
 		}
 
 		ip := guessIP(pconfig)
@@ -52,7 +57,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 		worker.SetRoleConfig(c)
 		worker.SetIP(ip)
 
-		workerToken, _ := worker.Token()
+		workerToken, _ := worker.GetToken()
 		if workerToken == "" {
 			c.Logger.Info("worker token not there still..")
 			return nil
@@ -65,23 +70,26 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return err
 		}
 
-		k8sBin := worker.K8sBin()
+		k8sBin := utils.K3sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", worker.Distro())
+			k8sBin = utils.K0sBin()
+		}
+		if k8sBin == "" {
+			return fmt.Errorf("no %s binary found (?)", worker.GetDistro())
 		}
 
-		args, err := worker.Args()
+		args, err := worker.GenerateArgs()
 		if err != nil {
 			return err
 		}
 
-		svc, err := worker.Service()
+		svc, err := worker.GetService()
 		if err != nil {
 			return err
 		}
 
-		c.Logger.Info(fmt.Sprintf("Configuring %s worker", worker.Distro()))
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, worker.Role(), strings.Join(args, " "))); err != nil {
+		c.Logger.Info(fmt.Sprintf("Configuring %s worker", worker.GetDistro()))
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, worker.GetRole(), strings.Join(args, " "))); err != nil {
 			return err
 		}
 

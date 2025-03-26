@@ -6,103 +6,91 @@ import (
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-type ServiceDefinition interface {
-	Args() ([]string, error)
-	Env() map[string]string
-	EnvFile() string
-	K8sBin() string
-	Role() string
-	ServiceName() string
-}
+// Node represents any kubernetes node, regardless of its role
+type Node interface {
+	// Core node functionality
+	GetIP() string
+	SetIP(string)
+	GetRole() string
+	SetRole(string)
+	GetDistro() string // k3s, k0s
+	K8sBin() string    // Returns the path to the Kubernetes binary
 
-type K8sControlPlane interface {
-	Args() ([]string, error)
-	ClusterInit() bool
-	DeployKubeVIP() error
-	Distro() string
-	EnvUnit() string
+	// Configuration
+	GetConfig() *providerConfig.Config
+	SetRoleConfig(*service.RoleConfig)
+	GetRoleConfig() *service.RoleConfig
+
+	// Service management
+	GetService() (machine.Service, error)
+	GetServiceName() string
+	GetEnvFile() string
 	GenerateEnv() map[string]string
-	GuessInterface()
-	HA() bool
-	IP() string
-	K8sBin() string
+
+	// Node operations
+	GenerateArgs() ([]string, error)
 	PropagateData() error
-	ProviderConfig() *providerConfig.Config
-	Role() string
-	RoleConfig() *service.RoleConfig
-	Service() (machine.Service, error)
-	SetIP(ip string)
-	SetRole(role string)
-	SetRoleConfig(c *service.RoleConfig)
+	GetToken() (string, error)
+}
+
+// ControlPlaneNode represents additional functionality specific to control plane nodes
+type ControlPlaneNode interface {
+	Node
+	IsHA() bool
+	IsClusterInit() bool
 	SetupHAToken() error
-	Token() (string, error)
+	DeployKubeVIP() error
 }
 
-type K8sWorker interface {
-	Args() ([]string, error)
-	Distro() string
-	IP() string
-	K8sBin() string
-	ProviderConfig() *providerConfig.Config
-	Role() string
-	RoleConfig() *service.RoleConfig
-	Service() (machine.Service, error)
-	SetIP(ip string)
-	SetRole(role string)
-	SetRoleConfig(c *service.RoleConfig)
+// WorkerNode represents additional functionality specific to worker nodes
+type WorkerNode interface {
+	Node
 	SetupWorker(controlPlaneIP, nodeToken string) error
-	Token() (string, error)
 }
 
-func NewServiceDefinition(c *providerConfig.Config) (ServiceDefinition, error) {
+func NewNode(config *providerConfig.Config, role string) (Node, error) {
 	switch {
-	case c.K3s.Enabled:
-		return &K3sControlPlane{providerConfig: c}, nil
-	case c.K0s.Enabled:
-		return &K0sControlPlane{providerConfig: c}, nil
-	case c.K3sAgent.Enabled:
-		return &K3sWorker{providerConfig: c}, nil
-	case c.K0sWorker.Enabled:
-		return &K0sWorker{providerConfig: c}, nil
-	// we don't know if it's a control plane or a worker
+	case config.K3s.Enabled:
+		base := &K3sNode{providerConfig: config}
+		if role == common.RoleWorker {
+			return &K3sWorker{K3sNode: base}, nil
+		}
+		return &K3sControlPlane{K3sNode: base}, nil
+	case config.K0s.Enabled:
+		base := &K0sNode{providerConfig: config}
+		if role == common.RoleWorker {
+			return &K0sWorker{K0sNode: base}, nil
+		}
+		return &K0sControlPlane{K0sNode: base}, nil
 	case utils.K3sBin() != "":
-		return &K3sControlPlane{providerConfig: c}, nil
+		base := &K3sNode{providerConfig: config}
+		if role == common.RoleWorker {
+			return &K3sWorker{K3sNode: base}, nil
+		}
+		return &K3sControlPlane{K3sNode: base}, nil
 	case utils.K0sBin() != "":
-		return &K0sControlPlane{providerConfig: c}, nil
+		base := &K0sNode{providerConfig: config}
+		if role == common.RoleWorker {
+			return &K0sWorker{K0sNode: base}, nil
+		}
+		return &K0sControlPlane{K0sNode: base}, nil
 	}
 
 	return nil, errors.New("no k8s distro found")
 }
 
-func NewK8sControlPlane(c *providerConfig.Config) (K8sControlPlane, error) {
-	switch {
-	case c.K3s.Enabled:
-		return &K3sControlPlane{providerConfig: c}, nil
-	case c.K0s.Enabled:
-		return &K0sControlPlane{providerConfig: c}, nil
-	case utils.K3sBin() != "":
-		return &K3sControlPlane{providerConfig: c}, nil
-	case utils.K0sBin() != "":
-		return &K0sControlPlane{providerConfig: c}, nil
-	}
-
-	return nil, errors.New("no k8s distro found")
+// Helper function to convert Node to ControlPlaneNode
+func AsControlPlane(n Node) (ControlPlaneNode, bool) {
+	cp, ok := n.(ControlPlaneNode)
+	return cp, ok
 }
 
-func NewK8sWorker(c *providerConfig.Config) (K8sWorker, error) {
-	switch {
-	case c.K3sAgent.Enabled:
-		return &K3sWorker{providerConfig: c}, nil
-	case c.K0sWorker.Enabled:
-		return &K0sWorker{providerConfig: c}, nil
-	case utils.K3sBin() != "":
-		return &K3sWorker{providerConfig: c}, nil
-	case utils.K0sBin() != "":
-		return &K0sWorker{providerConfig: c}, nil
-	}
-
-	return nil, errors.New("no k8s distro found")
+// Helper function to convert Node to WorkerNode
+func AsWorker(n Node) (WorkerNode, bool) {
+	w, ok := n.(WorkerNode)
+	return w, ok
 }
