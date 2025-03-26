@@ -46,7 +46,15 @@ func (k *K0sNode) SetIP(ip string) {
 }
 
 func (k *K0sNode) GetRole() string {
-	return k.role
+	if k.role == common.RoleControlPlane ||
+		k.role == common.RoleControlPlaneHA ||
+		k.role == common.RoleControlPlaneClusterInit ||
+		k.role == common.RoleMaster ||
+		k.role == common.RoleMasterHA ||
+		k.role == common.RoleMasterInit {
+		return "controller"
+	}
+	return "worker"
 }
 
 func (k *K0sNode) SetRole(role string) {
