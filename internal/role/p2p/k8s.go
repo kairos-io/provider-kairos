@@ -55,29 +55,27 @@ type WorkerNode interface {
 func NewNode(config *providerConfig.Config, role string) (Node, error) {
 	switch {
 	case config.K3s.Enabled:
-		base := &K3sNode{providerConfig: config}
-		if role == common.RoleWorker {
-			return &K3sWorker{K3sNode: base}, nil
-		}
-		return &K3sControlPlane{K3sNode: base}, nil
+		return &K3sControlPlane{K3sNode: &K3sNode{providerConfig: config}}, nil
+	case config.K3sAgent.Enabled:
+		return &K3sWorker{K3sNode: &K3sNode{providerConfig: config}}, nil
 	case config.K0s.Enabled:
-		base := &K0sNode{providerConfig: config}
-		if role == common.RoleWorker {
-			return &K0sWorker{K0sNode: base}, nil
+		return &K0sControlPlane{K0sNode: &K0sNode{providerConfig: config}}, nil
+	case config.K0sWorker.Enabled:
+		return &K0sWorker{K0sNode: &K0sNode{providerConfig: config}}, nil
+	case role == common.RoleWorker:
+		if utils.K3sBin() != "" {
+			return &K3sWorker{K3sNode: &K3sNode{providerConfig: config}}, nil
 		}
-		return &K0sControlPlane{K0sNode: base}, nil
-	case utils.K3sBin() != "":
-		base := &K3sNode{providerConfig: config}
-		if role == common.RoleWorker {
-			return &K3sWorker{K3sNode: base}, nil
+		if utils.K0sBin() != "" {
+			return &K0sWorker{K0sNode: &K0sNode{providerConfig: config}}, nil
 		}
-		return &K3sControlPlane{K3sNode: base}, nil
-	case utils.K0sBin() != "":
-		base := &K0sNode{providerConfig: config}
-		if role == common.RoleWorker {
-			return &K0sWorker{K0sNode: base}, nil
+	default:
+		if utils.K3sBin() != "" {
+			return &K3sControlPlane{K3sNode: &K3sNode{providerConfig: config}}, nil
 		}
-		return &K0sControlPlane{K0sNode: base}, nil
+		if utils.K0sBin() != "" {
+			return &K0sControlPlane{K0sNode: &K0sNode{providerConfig: config}}, nil
+		}
 	}
 
 	return nil, errors.New("no k8s distro found")
