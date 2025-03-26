@@ -46,15 +46,11 @@ func (k *K0sNode) SetIP(ip string) {
 }
 
 func (k *K0sNode) GetRole() string {
-	if k.role == common.RoleControlPlane ||
-		k.role == common.RoleControlPlaneHA ||
-		k.role == common.RoleControlPlaneClusterInit ||
-		k.role == common.RoleMaster ||
-		k.role == common.RoleMasterHA ||
-		k.role == common.RoleMasterInit {
-		return "controller"
+	if k.role == common.RoleWorker {
+		return "worker"
 	}
-	return "worker"
+
+	return "controller"
 }
 
 func (k *K0sNode) SetRole(role string) {
@@ -191,6 +187,10 @@ func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
 // Helper methods
 func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
 	var args []string
+
+	if k.role == common.RoleControlPlaneSingle {
+		args = append(args, "--single")
+	}
 
 	// Generate a new k0s config
 	_, err := utils.SH("k0s config create > /etc/k0s/k0s.yaml")

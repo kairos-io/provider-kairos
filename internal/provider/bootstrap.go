@@ -113,6 +113,10 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithPersistentRoles(common.RoleAuto),
 		service.WithRoles(
 			service.RoleKey{
+				Role:        common.RoleControlPlaneSingle,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneSingle),
+			},
+			service.RoleKey{
 				Role:        common.RoleControlPlane,
 				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
 			},

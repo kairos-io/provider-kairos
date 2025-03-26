@@ -11,7 +11,9 @@ const (
 	RoleControlPlane            = "control-plane"
 	RoleControlPlaneHA          = "control-plane/ha"
 	RoleControlPlaneClusterInit = "control-plane/clusterinit"
-	RoleAuto                    = "auto"
+	RoleControlPlaneSingle      = "control-plane/single"
+
+	RoleAuto = "auto"
 	// these are kept for backwards compatibility with old configs
 	RoleMaster     = "master"
 	RoleMasterHA   = "master/ha"

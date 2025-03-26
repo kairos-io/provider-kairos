@@ -48,15 +48,11 @@ func (k *K3sNode) SetIP(ip string) {
 }
 
 func (k *K3sNode) GetRole() string {
-	if k.role == common.RoleControlPlane ||
-		k.role == common.RoleControlPlaneHA ||
-		k.role == common.RoleControlPlaneClusterInit ||
-		k.role == common.RoleMaster ||
-		k.role == common.RoleMasterHA ||
-		k.role == common.RoleMasterInit {
-		return "server"
+	if k.role == common.RoleWorker {
+		return "agent"
 	}
-	return "agent"
+
+	return "server"
 }
 
 func (k *K3sNode) SetRole(role string) {
@@ -312,16 +308,4 @@ func (k *K3sNode) GuessInterface() {
 
 	k.iface = iface
 	k.ifaceIP = ifaceIP
-}
-
-func (k *K3sNode) GetCommandRole() string {
-	if k.role == common.RoleControlPlane ||
-		k.role == common.RoleControlPlaneHA ||
-		k.role == common.RoleControlPlaneClusterInit ||
-		k.role == common.RoleMaster ||
-		k.role == common.RoleMasterHA ||
-		k.role == common.RoleMasterInit {
-		return "server"
-	}
-	return "agent"
 }
