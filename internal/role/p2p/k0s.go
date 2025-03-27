@@ -187,6 +187,7 @@ func (k *K0sWorker) SetupWorker(_, nodeToken string) error {
 // Helper methods
 func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
 	var args []string
+	pconfig := k.GetConfig()
 
 	if k.role == common.RoleControlPlaneSingle {
 		args = append(args, "--single")
@@ -199,73 +200,75 @@ func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
 	}
 	args = append(args, "--config /etc/k0s/k0s.yaml")
 
-	data, err := os.ReadFile("/etc/k0s/k0s.yaml")
-	if err != nil {
-		return nil, err
+	if pconfig.P2P != nil {
+
+		data, err := os.ReadFile("/etc/k0s/k0s.yaml")
+		if err != nil {
+			return nil, err
+		}
+
+		var k0sConfig map[any]any
+		err = yaml.Unmarshal(data, &k0sConfig)
+		if err != nil {
+			return args, err
+		}
+
+		// check if the k0s config has an api address
+		spec, ok := k0sConfig["spec"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have a spec")
+		}
+		api, ok := spec["api"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have an api")
+		}
+		// by default k0s uses the first IP address of the machine as the api address, but we want to use the edgevpn IP
+		api["address"] = k.GetIP()
+
+		spec["api"] = api
+
+		network, ok := spec["network"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have a network")
+		}
+		kubeRouter, ok := network["kuberouter"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have a kuberouter")
+		}
+
+		// by default k0s uses the port 8080 for the metrics but this conflicts with the edgevpn API port
+		kubeRouter["metricsPort"] = 9090
+		network["kuberouter"] = kubeRouter
+		spec["network"] = network
+
+		storage, ok := spec["storage"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have a storage")
+		}
+		etcd, ok := storage["etcd"].(map[any]any)
+		if !ok {
+			return args, errors.New("k0s config does not have a etcd")
+		}
+		// just like the api address, we want to use the edgevpn IP for the etcd peer address
+		etcd["peerAddress"] = k.GetIP()
+
+		storage["etcd"] = etcd
+		spec["storage"] = storage
+
+		k0sConfig["spec"] = spec
+
+		// write the k0s config back to the file
+		data, err = yaml.Marshal(k0sConfig)
+		if err != nil {
+			return args, err
+		}
+		err = os.WriteFile("/etc/k0s/k0s.yaml", data, 0644)
+		if err != nil {
+			return args, err
+		}
 	}
 
-	var k0sConfig map[any]any
-	err = yaml.Unmarshal(data, &k0sConfig)
-	if err != nil {
-		return args, err
-	}
-
-	// check if the k0s config has an api address
-	spec, ok := k0sConfig["spec"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a spec")
-	}
-	api, ok := spec["api"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have an api")
-	}
-	// by default k0s uses the first IP address of the machine as the api address, but we want to use the edgevpn IP
-	api["address"] = k.GetIP()
-
-	spec["api"] = api
-
-	network, ok := spec["network"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a network")
-	}
-	kubeRouter, ok := network["kuberouter"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a kuberouter")
-	}
-
-	// by default k0s uses the port 8080 for the metrics but this conflicts with the edgevpn API port
-	kubeRouter["metricsPort"] = 9090
-	network["kuberouter"] = kubeRouter
-	spec["network"] = network
-
-	storage, ok := spec["storage"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a storage")
-	}
-	etcd, ok := storage["etcd"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a etcd")
-	}
-	// just like the api address, we want to use the edgevpn IP for the etcd peer address
-	etcd["peerAddress"] = k.GetIP()
-
-	storage["etcd"] = etcd
-	spec["storage"] = storage
-
-	k0sConfig["spec"] = spec
-
-	// write the k0s config back to the file
-	data, err = yaml.Marshal(k0sConfig)
-	if err != nil {
-		return args, err
-	}
-	err = os.WriteFile("/etc/k0s/k0s.yaml", data, 0644)
-	if err != nil {
-		return args, err
-	}
-
-	pconfig := k.GetConfig()
-	if !pconfig.P2P.UseVPNWithKubernetes() {
+	if pconfig.P2P != nil && !pconfig.P2P.UseVPNWithKubernetes() {
 		return args, errors.New("Having a VPN but not using it for Kubernetes is not yet supported with k0s")
 	}
 
@@ -273,7 +276,7 @@ func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
 		return args, errors.New("KubeVIP is not yet supported with k0s")
 	}
 
-	if pconfig.P2P.Auto.HA.ExternalDB != "" {
+	if pconfig.P2P != nil && pconfig.P2P.Auto.HA.ExternalDB != "" {
 		return args, errors.New("ExternalDB is not yet supported with k0s")
 	}
 
@@ -281,7 +284,11 @@ func (k *K0sNode) generateControlPlaneArgs() ([]string, error) {
 		args = append(args, "--token-file /etc/k0s/token")
 	}
 
-	return args, nil
+	if pconfig.K0s.ReplaceArgs {
+		return pconfig.K0s.Args, nil
+	}
+
+	return append(args, pconfig.K0s.Args...), nil
 }
 
 func (k *K0sNode) generateWorkerArgs() ([]string, error) {

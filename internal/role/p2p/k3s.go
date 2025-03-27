@@ -203,7 +203,7 @@ func (k *K3sNode) generateControlPlaneArgs() ([]string, error) {
 	var args []string
 	pconfig := k.GetConfig()
 
-	if pconfig.P2P.UseVPNWithKubernetes() {
+	if pconfig.P2P != nil && pconfig.P2P.UseVPNWithKubernetes() {
 		args = append(args, "--flannel-iface=edgevpn0")
 	}
 
@@ -215,7 +215,7 @@ func (k *K3sNode) generateControlPlaneArgs() ([]string, error) {
 		args = append(args, "--embedded-registry")
 	}
 
-	if pconfig.P2P.Auto.HA.ExternalDB != "" {
+	if pconfig.P2P != nil && pconfig.P2P.Auto.HA.ExternalDB != "" {
 		args = []string{fmt.Sprintf("--datastore-endpoint=%s", pconfig.P2P.Auto.HA.ExternalDB)}
 	}
 
@@ -225,7 +225,7 @@ func (k *K3sNode) generateControlPlaneArgs() ([]string, error) {
 	}
 	// The --cluster-init flag changes the embedded SQLite DB to etcd. We don't
 	// want to do this if we're using an external DB.
-	if k.role == common.RoleControlPlaneClusterInit && pconfig.P2P.Auto.HA.ExternalDB == "" {
+	if k.role == common.RoleControlPlaneClusterInit && pconfig.P2P != nil && pconfig.P2P.Auto.HA.ExternalDB == "" {
 		args = append(args, "--cluster-init")
 	}
 

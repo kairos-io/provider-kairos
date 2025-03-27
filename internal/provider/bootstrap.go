@@ -173,13 +173,16 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 }
 
 func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+	l.Info("One time bootstrap starting")
+
+	l.Info("Checking if sentinel exists")
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
 		return nil
 	}
-	l.Info("One time bootstrap starting")
 
+	l.Info("Creating new kubernetes node")
 	var svc machine.Service
 	node, err := p2p.NewNode(c, common.RoleAuto)
 	if err != nil {
@@ -187,24 +190,25 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		return nil
 	}
 
+	l.Info("Getting kubernetes binary")
 	k8sBin := node.K8sBin()
 	if k8sBin == "" {
 		l.Errorf("no kubernetes binary found")
 		return fmt.Errorf("no kubernetes binary found")
 	}
 
+	l.Info("Writing Environment file")
 	if err := utils.WriteEnv(node.GetEnvFile(), node.GenerateEnv()); err != nil {
 		l.Errorf("Failed to write env file: %s", err.Error())
 		return err
 	}
 
-	// Initialize the service based on the system's init system
+	l.Info("Creating init service")
 	if utils.IsOpenRCBased() {
 		svc, err = openrc.NewService(openrc.WithName(node.GetServiceName()))
 	} else {
 		svc, err = systemd.NewService(systemd.WithName(node.GetServiceName()))
 	}
-
 	if err != nil {
 		l.Errorf("Failed to instantiate service: %s", err.Error())
 		return err
@@ -213,27 +217,33 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		return fmt.Errorf("could not detect OS")
 	}
 
-	// Override the service command and start it
+	l.Info("Generating service args")
 	args, err := node.GenerateArgs()
 	if err != nil {
 		l.Errorf("Failed to generate args: %s", err.Error())
 		return err
 	}
+
+	l.Info("Overriding service command")
 	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.GetRole(), strings.Join(args, " "))); err != nil {
 		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}
+
+	l.Info("Starting service")
 	if err := svc.Start(); err != nil {
 		l.Errorf("Failed to start service: %s", err.Error())
 		return err
 	}
 
+	l.Info("Enabling service")
 	// When this fails, it doesn't produce an error!
 	if err := svc.Enable(); err != nil {
 		l.Errorf("Failed to enable service: %s", err.Error())
 		return err
 	}
 
+	l.Info("Setting up VPN")
 	// Setup VPN if required
 	if c.P2P != nil && c.P2P.VPNNeedsCreation() {
 		if err := vpnSetupFN(); err != nil {
@@ -242,5 +252,6 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		}
 	}
 
+	l.Info("Creating sentinel")
 	return role.CreateSentinel()
 }
