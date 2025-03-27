@@ -14,6 +14,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
 
@@ -42,15 +43,15 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
-	// TODO: this belong to a systemd service that is started instead
 
 	p2pBlockDefined := prvConfig.P2P != nil
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	node, _ := p2p.NewK8sNode(prvConfig)
-	if prvConfig.P2P == nil && node == nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
+	// Try to create a node first - this validates we can actually create a working node
+	_, err = p2p.NewNode(prvConfig, common.RoleAuto)
+	if err != nil {
+		return ErrorEvent("Cannot create Kubernetes node: %s", err.Error())
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -64,10 +65,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logger := types.NewKairosLogger("provider", logLevel, false)
 
-	// Do onetimebootstrap if a Kubernetes distribution is enabled.
-	// Those blocks are not required to be enabled in case of a kairos
-	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && node != nil) || skipAuto {
+	// Do onetimebootstrap if needed - we already validated we can create a node
+	if tokenNotDefined || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -78,7 +77,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 
 	if tokenNotDefined {
-		return ErrorEvent("No network token provided, or kubernetes distribution (k3s, k0s) block configured. Exiting")
+		return ErrorEvent("No network token provided. Exiting")
 	}
 
 	// We might still want a VPN, but not to route traffic into
@@ -111,27 +110,43 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		service.WithUUID(machine.UUID()),
 		service.WithStateDir("/usr/local/.kairos/state"),
 		service.WithNetworkToken(prvConfig.P2P.NetworkToken),
-		service.WithPersistentRoles(p2p.RoleAuto),
+		service.WithPersistentRoles(common.RoleAuto),
 		service.WithRoles(
 			service.RoleKey{
-				Role:        p2p.RoleMaster,
-				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMaster),
+				Role:        common.RoleControlPlaneSingle,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneSingle),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleMasterClusterInit,
-				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterClusterInit),
+				Role:        common.RoleControlPlane,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleMasterHA,
-				RoleHandler: p2p.Master(c, prvConfig, p2p.RoleMasterHA),
+				Role:        common.RoleControlPlaneClusterInit,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneClusterInit),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleWorker,
+				Role:        common.RoleControlPlaneHA,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneHA),
+			},
+			service.RoleKey{
+				Role:        common.RoleWorker,
 				RoleHandler: p2p.Worker(c, prvConfig),
 			},
 			service.RoleKey{
-				Role:        p2p.RoleAuto,
+				Role:        common.RoleAuto,
 				RoleHandler: role.Auto(c, prvConfig),
+			},
+			service.RoleKey{
+				Role:        common.RoleMaster,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlane),
+			},
+			service.RoleKey{
+				Role:        common.RoleMasterInit,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneClusterInit),
+			},
+			service.RoleKey{
+				Role:        common.RoleMasterHA,
+				RoleHandler: p2p.ControlPlane(c, prvConfig, common.RoleControlPlaneHA),
 			},
 		),
 	}
@@ -158,47 +173,42 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 }
 
 func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+	l.Info("One time bootstrap starting")
+
+	l.Info("Checking if sentinel exists")
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
 		return nil
 	}
-	l.Info("One time bootstrap starting")
 
+	l.Info("Creating new kubernetes node")
 	var svc machine.Service
-	var svcName, svcRole, envFile, binPath, args string
-	var svcEnv map[string]string
-
-	node, err := p2p.NewK8sNode(c)
+	node, err := p2p.NewNode(c, common.RoleAuto)
 	if err != nil {
 		l.Info("No Kubernetes configuration found, skipping bootstrap.")
 		return nil
 	}
 
-	svcName = node.ServiceName()
-	svcRole = node.Role()
-	svcEnv = node.Env()
-	args = strings.Join(node.Args(), " ")
-	binPath = node.K8sBin()
-	envFile = node.EnvFile()
-
-	if binPath == "" {
-		l.Errorf("no %s binary fouund", svcName)
-		return fmt.Errorf("no %s binary found", svcName)
+	l.Info("Getting kubernetes binary")
+	k8sBin := node.K8sBin()
+	if k8sBin == "" {
+		l.Errorf("no kubernetes binary found")
+		return fmt.Errorf("no kubernetes binary found")
 	}
 
-	if err := utils.WriteEnv(envFile, svcEnv); err != nil {
-		l.Errorf("Failed to write %s env file: %s", svcName, err.Error())
+	l.Info("Writing Environment file")
+	if err := utils.WriteEnv(node.GetEnvFile(), node.GenerateEnv()); err != nil {
+		l.Errorf("Failed to write env file: %s", err.Error())
 		return err
 	}
 
-	// Initialize the service based on the system's init system
+	l.Info("Creating init service")
 	if utils.IsOpenRCBased() {
-		svc, err = openrc.NewService(openrc.WithName(svcName))
+		svc, err = openrc.NewService(openrc.WithName(node.GetServiceName()))
 	} else {
-		svc, err = systemd.NewService(systemd.WithName(svcName))
+		svc, err = systemd.NewService(systemd.WithName(node.GetServiceName()))
 	}
-
 	if err != nil {
 		l.Errorf("Failed to instantiate service: %s", err.Error())
 		return err
@@ -207,22 +217,33 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		return fmt.Errorf("could not detect OS")
 	}
 
-	// Override the service command and start it
-	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", binPath, svcRole, args)); err != nil {
+	l.Info("Generating service args")
+	args, err := node.GenerateArgs()
+	if err != nil {
+		l.Errorf("Failed to generate args: %s", err.Error())
+		return err
+	}
+
+	l.Info("Overriding service command")
+	if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.GetRole(), strings.Join(args, " "))); err != nil {
 		l.Errorf("Failed to override service command: %s", err.Error())
 		return err
 	}
+
+	l.Info("Starting service")
 	if err := svc.Start(); err != nil {
 		l.Errorf("Failed to start service: %s", err.Error())
 		return err
 	}
 
+	l.Info("Enabling service")
 	// When this fails, it doesn't produce an error!
 	if err := svc.Enable(); err != nil {
 		l.Errorf("Failed to enable service: %s", err.Error())
 		return err
 	}
 
+	l.Info("Setting up VPN")
 	// Setup VPN if required
 	if c.P2P != nil && c.P2P.VPNNeedsCreation() {
 		if err := vpnSetupFN(); err != nil {
@@ -231,5 +252,6 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 		}
 	}
 
+	l.Info("Creating sentinel")
 	return role.CreateSentinel()
 }

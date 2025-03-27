@@ -1,0 +1,9 @@
+# Go version file
+.go-version
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib 

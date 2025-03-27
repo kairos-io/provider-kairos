@@ -9,6 +9,7 @@ import (
 
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
+	common "github.com/kairos-io/provider-kairos/v2/internal/role"
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
@@ -29,52 +30,66 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 			return nil
 		}
 
-		masterIP, _ := c.Client.Get("master", "ip")
-		if masterIP == "" {
-			c.Logger.Info("MasterIP not there still..")
+		cpIP, _ := c.Client.Get("control-plane", "ip")
+		if cpIP == "" {
+			c.Logger.Info("Control plane IP not there still..")
 			return nil
 		}
 
-		node, err := NewK8sNode(pconfig)
+		node, err := NewNode(pconfig, common.RoleWorker)
 		if err != nil {
 			return fmt.Errorf("failed to determine k8s distro: %w", err)
 		}
 
-		ip := guessIP(pconfig)
-		node.SetRole(RoleWorker)
-		node.SetRoleConfig(c)
-		node.SetIP(ip)
+		worker, ok := AsWorker(node)
+		if !ok {
+			return fmt.Errorf("failed to convert node to worker")
+		}
 
-		nodeToken, _ := node.Token()
-		if nodeToken == "" {
-			c.Logger.Info("node token not there still..")
+		ip := guessIP(pconfig)
+		if ip != "" {
+			if err := c.Client.Set("ip", c.UUID, ip); err != nil {
+				c.Logger.Error(err)
+			}
+		}
+
+		worker.SetRole(common.RoleWorker)
+		worker.SetRoleConfig(c)
+		worker.SetIP(ip)
+
+		workerToken, _ := worker.GetToken()
+		if workerToken == "" {
+			c.Logger.Info("worker token not there still..")
 			return nil
 		}
 
 		utils.SH("kairos-agent run-stage provider-kairos.bootstrap.before.worker") //nolint:errcheck
 
-		err = node.SetupWorker(masterIP, nodeToken)
+		err = worker.SetupWorker(cpIP, workerToken)
 		if err != nil {
 			return err
 		}
 
-		k8sBin := node.K8sBin()
+		k8sBin := utils.K3sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", node.Distro())
+			k8sBin = utils.K0sBin()
+		}
+		if k8sBin == "" {
+			return fmt.Errorf("no %s binary found (?)", worker.GetDistro())
 		}
 
-		args, err := node.WorkerArgs()
+		args, err := worker.GenerateArgs()
 		if err != nil {
 			return err
 		}
 
-		svc, err := node.Service()
+		svc, err := worker.GetService()
 		if err != nil {
 			return err
 		}
 
-		c.Logger.Info(fmt.Sprintf("Configuring %s worker", node.Distro()))
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
+		c.Logger.Info(fmt.Sprintf("Configuring %s worker", worker.GetDistro()))
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, worker.GetRole(), strings.Join(args, " "))); err != nil {
 			return err
 		}
 

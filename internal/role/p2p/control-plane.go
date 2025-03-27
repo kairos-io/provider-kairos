@@ -14,8 +14,8 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func propagateMasterData(role string, k K8sNode) error {
-	c := k.RoleConfig()
+func propagateControlPlaneData(role string, k ControlPlaneNode) error {
+	c := k.GetRoleConfig()
 	defer func() {
 		// Avoid polluting the API.
 		// The ledger already retries in the background to update the blockchain, but it has
@@ -25,13 +25,13 @@ func propagateMasterData(role string, k K8sNode) error {
 		time.Sleep(30 * time.Second)
 	}()
 
-	// If we are configured as master, always signal our role
+	// If we are configured as control plane, always signal our role
 	if err := c.Client.Set("role", c.UUID, role); err != nil {
 		c.Logger.Error(err)
 		return err
 	}
 
-	if k.HA() && !k.ClusterInit() {
+	if k.IsHA() && !k.IsClusterInit() {
 		return nil
 	}
 
@@ -40,7 +40,7 @@ func propagateMasterData(role string, k K8sNode) error {
 		c.Logger.Error(err)
 	}
 
-	err = c.Client.Set("master", "ip", k.IP())
+	err = c.Client.Set("control-plane", "ip", k.GetIP())
 	if err != nil {
 		c.Logger.Error(err)
 	}
@@ -55,17 +55,17 @@ func guessIP(pconfig *providerConfig.Config) string {
 	return utils.GetInterfaceIP("edgevpn0")
 }
 
-func waitForMasterHAInfo(m K8sNode) bool {
-	var nodeToken string
+func waitForControlPlaneHAInfo(m ControlPlaneNode) bool {
+	var controlPlaneToken string
 
-	nodeToken, _ = m.Token()
-	c := m.RoleConfig()
+	controlPlaneToken, _ = m.GetToken()
+	c := m.GetRoleConfig()
 
-	if nodeToken == "" {
-		c.Logger.Info("the nodetoken is not there yet..")
+	if controlPlaneToken == "" {
+		c.Logger.Info("Control Plane's token is not there yet..")
 		return true
 	}
-	clusterInitIP, _ := c.Client.Get("master", "ip")
+	clusterInitIP, _ := c.Client.Get("control-plane", "ip")
 	if clusterInitIP == "" {
 		c.Logger.Info("the clusterInitIP is not there yet..")
 		return true
@@ -74,14 +74,17 @@ func waitForMasterHAInfo(m K8sNode) bool {
 	return false
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) role.Role { //nolint:revive
+func ControlPlane(cc *config.Config, pconfig *providerConfig.Config, roleName string) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
-		c.Logger.Info(fmt.Sprintf("Starting Master(%s)", roleName))
+		c.Logger.Info(fmt.Sprintf("Starting ControlPlane(%s)", roleName))
 
 		ip := guessIP(pconfig)
 		// If we don't have an IP, we sit and wait
 		if ip == "" {
-			return errors.New("node doesn't have an ip yet")
+			return errors.New("control plane doesn't have an ip yet")
+		}
+		if err := c.Client.Set("ip", c.UUID, ip); err != nil {
+			c.Logger.Error(err)
 		}
 
 		c.Logger.Info("Checking role assignment")
@@ -96,85 +99,99 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 		}
 
 		c.Logger.Info("Determining K8s distro")
-		node, err := NewK8sNode(pconfig)
+		node, err := NewNode(pconfig, roleName)
 		if err != nil {
 			return fmt.Errorf("failed to determine k8s distro: %w", err)
 		}
 
-		node.SetRole(roleName)
-		node.SetRoleConfig(c)
-		node.SetIP(ip)
-		node.GuessInterface()
+		controlPlane, ok := AsControlPlane(node)
+		if !ok {
+			return fmt.Errorf("failed to convert node to control plane")
+		}
+
+		controlPlane.SetRole(roleName)
+		controlPlane.SetRoleConfig(c)
+		controlPlane.SetIP(ip)
+		if k3sNode, ok := node.(*K3sNode); ok {
+			k3sNode.GuessInterface()
+		}
 
 		c.Logger.Info("Verifying sentinel file")
 		if role.SentinelExist() {
-			c.Logger.Info("Node already configured, propagating master data and backing off")
-			return propagateMasterData(roleName, node)
+			c.Logger.Info("Control Plane already configured, propagating control plane data and backing off")
+			return propagateControlPlaneData(roleName, controlPlane)
 		}
 
 		c.Logger.Info("Checking HA")
-		if node.HA() && !node.ClusterInit() && waitForMasterHAInfo(node) {
+		if controlPlane.IsHA() && !controlPlane.IsClusterInit() && waitForControlPlaneHAInfo(controlPlane) {
 			return nil
 		}
 
 		c.Logger.Info("Generating env")
-		env := node.GenerateEnv()
+		env := controlPlane.GenerateEnv()
 
 		// Configure k8s service to start on edgevpn0
-		c.Logger.Info(fmt.Sprintf("Configuring %s", node.Distro()))
+		c.Logger.Info(fmt.Sprintf("Configuring %s", controlPlane.GetDistro()))
 
 		c.Logger.Info("Running bootstrap before stage")
 		utils.SH(fmt.Sprintf("kairos-agent run-stage provider-kairos.bootstrap.before.%s", roleName)) //nolint:errcheck
 
-		svc, err := node.Service()
+		if controlPlane.IsHA() {
+			err = controlPlane.SetupHAToken()
+			if err != nil {
+				return err
+			}
+		}
+
+		svc, err := controlPlane.GetService()
 		if err != nil {
-			return fmt.Errorf("failed to get %s service: %w", node.Distro(), err)
+			return fmt.Errorf("failed to get %s service: %w", controlPlane.GetDistro(), err)
 		}
 
 		c.Logger.Info("Writing service Env %s")
-		envUnit := node.EnvUnit()
+		envUnit := controlPlane.GetEnvFile()
 		if err := utils.WriteEnv(envUnit,
 			env,
 		); err != nil {
-			return fmt.Errorf("failed to write the %s service: %w", node.Distro(), err)
+			return fmt.Errorf("failed to write the %s service: %w", controlPlane.GetDistro(), err)
 		}
 
 		c.Logger.Info("Generating args")
-		args, err := node.GenArgs()
+		args, err := controlPlane.GenerateArgs()
 		if err != nil {
-			return fmt.Errorf("failed to generate %s args: %w", node.Distro(), err)
+			return fmt.Errorf("failed to generate %s args: %w", controlPlane.GetDistro(), err)
 		}
 
-		if node.ProviderConfig().KubeVIP.IsEnabled() {
+		if controlPlane.GetConfig().KubeVIP.IsEnabled() {
 			c.Logger.Info("Configuring KubeVIP")
-			if err := node.DeployKubeVIP(); err != nil {
+			if err := controlPlane.DeployKubeVIP(); err != nil {
 				return fmt.Errorf("failed KubeVIP setup: %w", err)
 			}
 		}
 
-		k8sBin := node.K8sBin()
+		k8sBin := controlPlane.K8sBin()
 		if k8sBin == "" {
-			return fmt.Errorf("no %s binary found (?)", node.Distro())
+			return fmt.Errorf("no %s binary found (?)", controlPlane.GetDistro())
 		}
 
 		c.Logger.Info("Writing service override")
-		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, node.Role(), strings.Join(args, " "))); err != nil {
-			return fmt.Errorf("failed to override %s command: %w", node.Distro(), err)
+		if err := svc.OverrideCmd(fmt.Sprintf("%s %s %s", k8sBin, controlPlane.GetRole(), strings.Join(args, " "))); err != nil {
+			return fmt.Errorf("failed to override %s command: %w", controlPlane.GetDistro(), err)
 		}
 
 		c.Logger.Info("Starting service")
 		if err := svc.Start(); err != nil {
-			return fmt.Errorf("failed to start %s service: %w", node.Distro(), err)
+			return fmt.Errorf("failed to start %s service: %w", controlPlane.GetDistro(), err)
 		}
 
 		c.Logger.Info("Enabling service")
 		if err := svc.Enable(); err != nil {
-			return fmt.Errorf("failed to enable %s service: %w", node.Distro(), err)
+			return fmt.Errorf("failed to enable %s service: %w", controlPlane.GetDistro(), err)
 		}
 
-		c.Logger.Info("Propagating master data")
-		if err := propagateMasterData(roleName, node); err != nil {
-			return fmt.Errorf("failed to propagate master data: %w", err)
+		c.Logger.Info("Propagating control plane data")
+		if err := propagateControlPlaneData(roleName, controlPlane); err != nil {
+			return fmt.Errorf("failed to propagate control plane data: %w", err)
 		}
 
 		c.Logger.Info("Running after bootstrap stage")
