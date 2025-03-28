@@ -134,7 +134,7 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	}
 
 	if k.HA() && !k.ClusterInit() {
-		return args, errors.New("HA is not yet supported with k0s")
+		args = append(args, "--token-file /etc/k0s/token")
 	}
 
 	// when we start implementing this functionality, remember to use
