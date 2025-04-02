@@ -1,8 +1,6 @@
 module github.com/kairos-io/provider-kairos/v2
 
-go 1.23.6
-
-toolchain go1.24.2
+go 1.24.2
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
@@ -12,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.17.0
-	github.com/kairos-io/kairos-sdk v0.7.3
+	github.com/kairos-io/kairos-sdk v0.8.1
 	github.com/mudler/edgevpn v0.30.2
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.0.0-20240820160718-8b802d3ecf82
@@ -53,7 +51,7 @@ require (
 	github.com/containerd/cgroups v1.1.0 // indirect
 	github.com/containerd/cgroups/v3 v3.0.5 // indirect
 	github.com/containerd/console v1.0.4 // indirect
-	github.com/containerd/containerd v1.7.25 // indirect
+	github.com/containerd/containerd v1.7.27 // indirect
 	github.com/containerd/continuity v0.4.5 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
@@ -68,7 +66,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/diskfs/go-diskfs v1.4.2 // indirect
+	github.com/diskfs/go-diskfs v1.5.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/docker/cli v27.5.0+incompatible // indirect
@@ -84,7 +82,7 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/flynn/noise v1.1.0 // indirect
-	github.com/foxboron/go-uefi v0.0.0-20241219185318-19dc140271bf // indirect
+	github.com/foxboron/go-uefi v0.0.0-20250207204325-69fb7dba244f // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect
@@ -302,8 +300,8 @@ require (
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/image v0.20.0 // indirect
-	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/mod v0.24.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
