@@ -103,12 +103,12 @@ func register(loglevel, arg, configFile, device string, reboot, poweroff bool) e
 	if arg != "" {
 		isDir, err := isDirectory(arg)
 		if err == nil && isDir {
-			return fmt.Errorf("Cannot register with a directory, please pass a file.") //nolint:revive // This is a message printed to the user.
+			return fmt.Errorf("cannot register with a directory, please pass a file")
 		} else if err != nil {
 			return err
 		}
 		if !isReadable(arg) {
-			return fmt.Errorf("Cannot register with a file that is not readable.") //nolint:revive // This is a message printed to the user.
+			return fmt.Errorf("cannot register with a file that is not readable")
 		}
 	}
 	// dmesg -D to suppress tty ev

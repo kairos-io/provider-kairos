@@ -43,10 +43,15 @@ var RoleCMD = cli.Command{
 					c.String("network-id"),
 					edgeVPNClient.NewClient(edgeVPNClient.WithHost(c.String("api"))))
 				advertizing, _ := cc.AdvertizingNodes()
-				fmt.Println("Node\tRole")
+				fmt.Printf("%-47s  %-30s  %-15s\n", "Node", "Role", "IP")
+				fmt.Printf("%s  %s  %s\n",
+					"-----------------------------------------------",
+					"------------------------------",
+					"---------------")
 				for _, a := range advertizing {
 					role, _ := cc.Get("role", a)
-					fmt.Printf("%s\t%s\n", a, role)
+					ip, _ := cc.Get("ip", a)
+					fmt.Printf("%-47s  %-30s  %-15s\n", a, role, ip)
 				}
 				return nil
 			},

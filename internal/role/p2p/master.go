@@ -83,6 +83,9 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 		if ip == "" {
 			return errors.New("node doesn't have an ip yet")
 		}
+		if err := c.Client.Set("ip", c.UUID, ip); err != nil {
+			c.Logger.Error(err)
+		}
 
 		c.Logger.Info("Checking role assignment")
 
