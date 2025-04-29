@@ -122,6 +122,7 @@ archives:
   - id: default-archive-ctl
     ids:
       - default-ctl
+      - default-ctl-win
     name_template: 'kairosctl-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}-{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}'
   - id: fips-archive-ctl
     ids:
