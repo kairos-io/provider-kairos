@@ -3,6 +3,7 @@ package role
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"reflect"
@@ -10,13 +11,17 @@ import (
 
 	"github.com/kairos-io/provider-kairos/v2/internal/assets"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
-	kubeVipCmd "github.com/kube-vip/kube-vip/cmd"
 	"github.com/kube-vip/kube-vip/pkg/kubevip"
 )
 
 var (
 	initConfig       kubevip.Config
 	initLoadBalancer kubevip.LoadBalancer
+)
+
+const (
+	// DefaultKubeVIPVersion is the default version of kube-vip to use
+	DefaultKubeVIPVersion = "v0.9.0"
 )
 
 // Generates the kube-vip manifest based on the command type
@@ -49,17 +54,23 @@ func generateKubeVIPv2(command string, iface, ip string, kConfig *providerConfig
 
 	// Ensure there is an address to generate the CIDR from
 	if initConfig.VIPSubnet == "" && initConfig.Address != "" {
-		initConfig.VIPSubnet, err = kubeVipCmd.GenerateCidrRange(initConfig.Address)
+		initConfig.VIPSubnet, err = GenerateCidrRange(initConfig.Address)
 		if err != nil {
 			return "", fmt.Errorf("config parse: %w", err)
 		}
 	}
+	var kubeVipVersion string
+	if kConfig.KubeVIP.Version != "" {
+		kubeVipVersion = kConfig.KubeVIP.Version
+	} else {
+		kubeVipVersion = DefaultKubeVIPVersion
+	}
 
 	switch strings.ToLower(command) {
 	case "daemonset":
-		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipCmd.Release.Version, true, true), nil
+		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
 	case "pod":
-		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipCmd.Release.Version, true), nil
+		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipVersion, true), nil
 	}
 	return "", fmt.Errorf("unknown manifest type %s", command)
 }
@@ -160,4 +171,28 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	}
 
 	return nil
+}
+
+func GenerateCidrRange(address string) (string, error) {
+	var cidrs []string
+
+	addresses := strings.Split(address, ",")
+	for _, a := range addresses {
+		ip := net.ParseIP(a)
+		if ip == nil {
+			ips, err := net.LookupIP(a)
+			if len(ips) == 0 || err != nil {
+				return "", fmt.Errorf("invalid IP address: %s from [%s], %v", a, address, err)
+			}
+			ip = ips[0]
+		}
+
+		if ip.To4() != nil {
+			cidrs = append(cidrs, "32")
+		} else {
+			cidrs = append(cidrs, "128")
+		}
+	}
+
+	return strings.Join(cidrs, ","), nil
 }

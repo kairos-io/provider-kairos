@@ -54,6 +54,7 @@ type KubeVIP struct {
 	Interface   string `yaml:"interface,omitempty"`
 	Enable      *bool  `yaml:"enable,omitempty"`
 	StaticPod   bool   `yaml:"static_pod,omitempty"`
+	Version     string `yaml:"version,omitempty"`
 	kubevip.Config
 }
 
