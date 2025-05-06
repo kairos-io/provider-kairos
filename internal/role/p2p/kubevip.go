@@ -66,6 +66,22 @@ func generateKubeVIPv2(command string, iface, ip string, kConfig *providerConfig
 		kubeVipVersion = DefaultKubeVIPVersion
 	}
 
+	// Some fixes for the default values if they are emtpy
+	if initConfig.LeaseDuration == 0 {
+		initConfig.LeaseDuration = 5
+	}
+	if initConfig.RenewDeadline == 0 {
+		initConfig.RenewDeadline = 3
+	}
+	if initConfig.RetryPeriod == 0 {
+		initConfig.RetryPeriod = 1
+	}
+	if initConfig.PrometheusHTTPServer == "" {
+		initConfig.PrometheusHTTPServer = ":2112"
+	}
+	if initConfig.Port == 0 {
+		initConfig.Port = 6443
+	}
 	switch strings.ToLower(command) {
 	case "daemonset":
 		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
@@ -159,7 +175,6 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
-	fmt.Println(content)
 
 	f, err := os.Create(targetFile)
 	if err != nil {
