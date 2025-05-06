@@ -21,11 +21,13 @@ var (
 
 const (
 	// DefaultKubeVIPVersion is the default version of kube-vip to use
+	// Should be automatically bumped by renovate as it uses this version to set the 
+	// image version to use in the generated manifest
 	DefaultKubeVIPVersion = "v0.9.0"
 )
 
 // Generates the kube-vip manifest based on the command type
-func generateKubeVIPv2(command string, iface, ip string, kConfig *providerConfig.Config) (string, error) {
+func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.Config) (string, error) {
 	// Comand can be "manifest" or "daemonset"
 	// iface is the interface name
 	// ip is the VIP address
@@ -171,7 +173,7 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 		}
 	}
 
-	content, err := generateKubeVIPv2(command, iface, ip, pconfig)
+	content, err := generateKubeVIP(command, iface, ip, pconfig)
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
