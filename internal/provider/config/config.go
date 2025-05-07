@@ -1,5 +1,7 @@
 package config
 
+import "github.com/kube-vip/kube-vip/pkg/kubevip"
+
 const (
 	K3sDistro = "k3s"
 	K0sDistro = "k0s"
@@ -47,12 +49,13 @@ type Config struct {
 }
 
 type KubeVIP struct {
-	Args        []string `yaml:"args,omitempty"`
-	EIP         string   `yaml:"eip,omitempty"`
-	ManifestURL string   `yaml:"manifest_url,omitempty"`
-	Interface   string   `yaml:"interface,omitempty"`
-	Enable      *bool    `yaml:"enable,omitempty"`
-	StaticPod   bool     `yaml:"static_pod,omitempty"`
+	EIP         string `yaml:"eip,omitempty"`
+	ManifestURL string `yaml:"manifest_url,omitempty"`
+	Interface   string `yaml:"interface,omitempty"`
+	Enable      *bool  `yaml:"enable,omitempty"`
+	StaticPod   bool   `yaml:"static_pod,omitempty"`
+	Version     string `yaml:"version,omitempty"`
+	kubevip.Config
 }
 
 func (k KubeVIP) IsEnabled() bool {

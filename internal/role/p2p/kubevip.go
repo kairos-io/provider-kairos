@@ -3,23 +3,115 @@ package role
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
+	"reflect"
 	"strings"
 
-	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/kairos-io/provider-kairos/v2/internal/assets"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
+	"github.com/kube-vip/kube-vip/pkg/kubevip"
 )
 
-func generateKubeVIP(command string, iface, ip string, args []string) (string, error) {
-	out, err := utils.SH(fmt.Sprintf("kube-vip manifest %s --interface %s --address %s --inCluster --taint --controlplane --arp --leaderElection %s", command, iface, ip, strings.Join(args, " ")))
+var (
+	initConfig       kubevip.Config
+	initLoadBalancer kubevip.LoadBalancer
+)
 
-	if err != nil {
-		return "", fmt.Errorf("error: %w - %s", err, out)
+const (
+	// DefaultKubeVIPVersion is the default version of kube-vip to use.
+	// Should be automatically bumped by renovate as it uses this version to set the mage version to use in the generated manifest.
+	DefaultKubeVIPVersion = "v0.9.0"
+)
+
+// Generates the kube-vip manifest based on the command type.
+func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.Config) (string, error) {
+	// Comand can be "manifest" or "daemonset"
+	// iface is the interface name
+	// ip is the VIP address
+	var err error
+
+	// Set the kube-vip config based on the provider config and what we loaded from config files
+	applyKConfigToInitConfig(kConfig.KubeVIP, &initConfig)
+
+	// Now set the values coming from env vars
+	if err := kubevip.ParseEnvironment(&initConfig); err != nil {
+		return "", fmt.Errorf("parsing environment: %w", err)
 	}
 
-	return out, nil
+	// Now the manual ones that are hardcoded by us
+	initConfig.Interface = iface
+	initConfig.Address = ip
+	initConfig.EnableControlPlane = true
+	initConfig.EnableARP = true
+	initConfig.EnableLeaderElection = true
+	initConfig.LoadBalancers = append(initConfig.LoadBalancers, initLoadBalancer)
+
+	// The control plane has a requirement for a VIP being specified.
+	if initConfig.EnableControlPlane && (initConfig.VIP == "" && initConfig.Address == "" && !initConfig.DDNS) {
+		return "", fmt.Errorf("no address is specified for kube-vip to expose services on")
+	}
+
+	// Ensure there is an address to generate the CIDR from.
+	if initConfig.VIPSubnet == "" && initConfig.Address != "" {
+		initConfig.VIPSubnet, err = GenerateCidrRange(initConfig.Address)
+		if err != nil {
+			return "", fmt.Errorf("config parse: %w", err)
+		}
+	}
+	var kubeVipVersion string
+	if kConfig.KubeVIP.Version != "" {
+		kubeVipVersion = kConfig.KubeVIP.Version
+	} else {
+		kubeVipVersion = DefaultKubeVIPVersion
+	}
+
+	// Some fixes for the default values if they are empty.
+	if initConfig.LeaseDuration == 0 {
+		initConfig.LeaseDuration = 5
+	}
+	if initConfig.RenewDeadline == 0 {
+		initConfig.RenewDeadline = 3
+	}
+	if initConfig.RetryPeriod == 0 {
+		initConfig.RetryPeriod = 1
+	}
+	if initConfig.PrometheusHTTPServer == "" {
+		initConfig.PrometheusHTTPServer = ":2112"
+	}
+	if initConfig.Port == 0 {
+		initConfig.Port = 6443
+	}
+	switch strings.ToLower(command) {
+	case "daemonset":
+		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
+	case "pod":
+		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipVersion, true), nil
+	}
+	return "", fmt.Errorf("unknown manifest type %s", command)
+}
+
+// applyKConfigToInitConfig applies the KubeVIP configuration to the initConfig .
+// by iterating over the fields of the KubeVIP struct and setting the corresponding
+// fields in the initConfig struct. It uses reflection to access the fields dynamically.
+// This allows us to replicate the kubevip.Config struct in our provider config directly.
+func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevip.Config) {
+	kConfigValue := reflect.ValueOf(kConfig)
+	kConfigType := reflect.TypeOf(kConfig)
+	initConfigValue := reflect.ValueOf(initConfig).Elem()
+
+	for i := 0; i < kConfigType.NumField(); i++ {
+		kField := kConfigType.Field(i)
+		kValue := kConfigValue.Field(i)
+
+		// Check if the field exists in initConfig
+		initField := initConfigValue.FieldByName(kField.Name)
+		if initField.IsValid() && initField.Type() == kField.Type {
+			// Set the value from kConfig to initConfig
+			initField.Set(kValue)
+		}
+	}
 }
 
 func downloadFromURL(url, where string) error {
@@ -80,7 +172,7 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 		}
 	}
 
-	content, err := generateKubeVIP(command, iface, ip, pconfig.KubeVIP.Args)
+	content, err := generateKubeVIP(command, iface, ip, pconfig)
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
@@ -95,4 +187,28 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	}
 
 	return nil
+}
+
+func GenerateCidrRange(address string) (string, error) {
+	var cidrs []string
+
+	addresses := strings.Split(address, ",")
+	for _, a := range addresses {
+		ip := net.ParseIP(a)
+		if ip == nil {
+			ips, err := net.LookupIP(a)
+			if len(ips) == 0 || err != nil {
+				return "", fmt.Errorf("invalid IP address: %s from [%s], %v", a, address, err)
+			}
+			ip = ips[0]
+		}
+
+		if ip.To4() != nil {
+			cidrs = append(cidrs, "32")
+		} else {
+			cidrs = append(cidrs, "128")
+		}
+	}
+
+	return strings.Join(cidrs, ","), nil
 }
