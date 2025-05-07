@@ -22,7 +22,7 @@ var (
 const (
 	// DefaultKubeVIPVersion is the default version of kube-vip to use.
 	// Should be automatically bumped by renovate as it uses this version to set the mage version to use in the generated manifest.
-	DefaultKubeVIPVersion = "v0.9.0"
+	DefaultKubeVIPVersion = "v0.9.1"
 )
 
 // Generates the kube-vip manifest based on the command type.
