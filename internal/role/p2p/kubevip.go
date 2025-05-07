@@ -20,13 +20,12 @@ var (
 )
 
 const (
-	// DefaultKubeVIPVersion is the default version of kube-vip to use
-	// Should be automatically bumped by renovate as it uses this version to set the 
-	// image version to use in the generated manifest
+	// DefaultKubeVIPVersion is the default version of kube-vip to use.
+	// Should be automatically bumped by renovate as it uses this version to set the mage version to use in the generated manifest.
 	DefaultKubeVIPVersion = "v0.9.0"
 )
 
-// Generates the kube-vip manifest based on the command type
+// Generates the kube-vip manifest based on the command type.
 func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.Config) (string, error) {
 	// Comand can be "manifest" or "daemonset"
 	// iface is the interface name
@@ -49,12 +48,12 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 	initConfig.EnableLeaderElection = true
 	initConfig.LoadBalancers = append(initConfig.LoadBalancers, initLoadBalancer)
 
-	// The control plane has a requirement for a VIP being specified
+	// The control plane has a requirement for a VIP being specified.
 	if initConfig.EnableControlPlane && (initConfig.VIP == "" && initConfig.Address == "" && !initConfig.DDNS) {
 		return "", fmt.Errorf("no address is specified for kube-vip to expose services on")
 	}
 
-	// Ensure there is an address to generate the CIDR from
+	// Ensure there is an address to generate the CIDR from.
 	if initConfig.VIPSubnet == "" && initConfig.Address != "" {
 		initConfig.VIPSubnet, err = GenerateCidrRange(initConfig.Address)
 		if err != nil {
@@ -68,7 +67,7 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 		kubeVipVersion = DefaultKubeVIPVersion
 	}
 
-	// Some fixes for the default values if they are emtpy
+	// Some fixes for the default values if they are empty.
 	if initConfig.LeaseDuration == 0 {
 		initConfig.LeaseDuration = 5
 	}
@@ -93,10 +92,10 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 	return "", fmt.Errorf("unknown manifest type %s", command)
 }
 
-// applyKConfigToInitConfig applies the KubeVIP configuration to the initConfig
+// applyKConfigToInitConfig applies the KubeVIP configuration to the initConfig .
 // by iterating over the fields of the KubeVIP struct and setting the corresponding
 // fields in the initConfig struct. It uses reflection to access the fields dynamically.
-// This allows us to replicate the kubevip.Config struct in our provider config directly
+// This allows us to replicate the kubevip.Config struct in our provider config directly.
 func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevip.Config) {
 	kConfigValue := reflect.ValueOf(kConfig)
 	kConfigType := reflect.TypeOf(kConfig)
