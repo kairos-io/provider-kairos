@@ -23,7 +23,7 @@ builds:
     goarch:
       - amd64
     binary: "provider-kairos"
-    id: provider-kairos-amd64-cli
+    id: provider-kairos-fips-amd64
     main: ./main.go
     ldflags:
       - -w -s -X "github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION={{.Tag}}"
