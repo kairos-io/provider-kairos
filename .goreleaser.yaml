@@ -9,8 +9,8 @@ builds:
     goarch:
       - amd64
       - arm64
-    binary: "kairos-cli"
-    id: default-cli
+    binary: "provider-kairos"
+    id: provider-kairos
     main: ./main.go
     ldflags:
       - -w -s -X "github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION={{.Tag}}"
@@ -22,8 +22,8 @@ builds:
       - linux
     goarch:
       - amd64
-    binary: "kairos-cli"
-    id: fips-amd64-cli
+    binary: "provider-kairos"
+    id: provider-kairos-amd64-cli
     main: ./main.go
     ldflags:
       - -w -s -X "github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION={{.Tag}}"
@@ -39,8 +39,8 @@ builds:
       - linux
     goarch:
       - arm64
-    binary: "kairos-cli"
-    id: fips-arm64-cli
+    binary: "provider-kairos"
+    id: provider-kairos-fips-arm64
     main: ./main.go
     ldflags:
       - -w -s -X "github.com/kairos-io/provider-kairos/v2/internal/cli.VERSION={{.Tag}}"
@@ -66,13 +66,13 @@ source:
 archives:
   - id: default-archive-cli
     ids:
-      - default-cli
-    name_template: 'kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}-{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}'
+      - provider-kairos
+    name_template: 'provider-kairos-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}-{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}'
   - id: fips-archive
     ids:
-      - fips-arm64-cli
-      - fips-amd64-cli
-    name_template: 'kairos-cli-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}-{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}-fips'
+      - provider-kairos-fips-arm64
+      - provider-kairos-fips-amd64
+    name_template: 'provider-kairos-{{ .Tag }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}-{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}-fips'
   - id: default-archive-ctl
     ids:
       - default-ctl
