@@ -11,7 +11,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/ipfs/go-log/v2 v2.6.0
 	github.com/kairos-io/go-nodepair v0.3.0
-	github.com/kairos-io/kairos-agent/v2 v2.21.1
+	github.com/kairos-io/kairos-agent/v2 v2.21.4
 	github.com/kairos-io/kairos-sdk v0.9.3
 	github.com/kube-vip/kube-vip v0.9.1
 	github.com/mudler/edgevpn v0.30.2
@@ -205,7 +205,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mudler/entities v0.8.2 // indirect
 	github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 // indirect
-	github.com/mudler/yip v1.16.1 // indirect
+	github.com/mudler/yip v1.16.2 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.15.0 // indirect
