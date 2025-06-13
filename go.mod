@@ -1,8 +1,6 @@
 module github.com/kairos-io/provider-kairos/v2
 
-go 1.24.2
-
-toolchain go1.24.4
+go 1.24.4
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
@@ -11,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/ipfs/go-log/v2 v2.6.0
 	github.com/kairos-io/go-nodepair v0.3.0
-	github.com/kairos-io/kairos-agent/v2 v2.21.6
+	github.com/kairos-io/kairos-agent/v2 v2.21.7
 	github.com/kairos-io/kairos-sdk v0.9.4
 	github.com/kube-vip/kube-vip v0.9.1
 	github.com/mudler/edgevpn v0.30.2
@@ -49,7 +47,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9 // indirect
-	github.com/cloudflare/circl v1.6.0 // indirect
+	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/containerd/cgroups v1.1.0 // indirect
 	github.com/containerd/cgroups/v3 v3.0.5 // indirect
 	github.com/containerd/console v1.0.5 // indirect
@@ -205,7 +203,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mudler/entities v0.8.2 // indirect
 	github.com/mudler/water v0.0.0-20221010214108-8c7313014ce0 // indirect
-	github.com/mudler/yip v1.16.2 // indirect
+	github.com/mudler/yip v1.16.3 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.15.0 // indirect
@@ -325,11 +323,11 @@ require (
 	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/image v0.20.0 // indirect
 	golang.org/x/mod v0.25.0 // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
