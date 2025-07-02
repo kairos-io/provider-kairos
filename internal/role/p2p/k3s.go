@@ -189,7 +189,7 @@ func (k *K3sNode) PropagateData() error {
 func (k *K3sNode) WorkerArgs() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
+	if pconfig.K3sAgent.Enabled != nil && *pconfig.K3sAgent.Enabled {
 		k3sConfig = pconfig.K3sAgent
 	}
 
@@ -227,7 +227,7 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 	nodeToken = strings.TrimRight(nodeToken, "\n")
 
 	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
+	if pconfig.K3sAgent.Enabled != nil && *pconfig.K3sAgent.Enabled {
 		k3sConfig = pconfig.K3sAgent
 	}
 
