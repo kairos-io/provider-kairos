@@ -34,6 +34,8 @@ github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJ
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/Masterminds/semver/v3 v3.3.1 h1:QtNSWtVZ3nBfk8mAOu/B6v7FMJ+NHTIgUPi7rj+4nv4=
 github.com/Masterminds/semver/v3 v3.3.1/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
+github.com/Masterminds/semver/v3 v3.4.0 h1:Zog+i5UMtVoCU8oKka5P7i9q9HgrJeGzI9SA1Xbatp0=
+github.com/Masterminds/semver/v3 v3.4.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/Masterminds/sprig/v3 v3.3.0 h1:mQh0Yrg1XPo6vjYXgtf5OtijNAKJRNcTdOOGZe3tPhs=
 github.com/Masterminds/sprig/v3 v3.3.0/go.mod h1:Zy1iXRYNqNLUolqCpL4uhk6SHUMAOSCzdgBfDb35Lz0=
 github.com/Microsoft/go-winio v0.5.2/go.mod h1:WpS1mjBmmwHBEWmogvA2mj8546UReBk4v8QkMxJ6pZY=
@@ -456,6 +458,8 @@ github.com/kairos-io/kairos-agent/v2 v2.21.7 h1:kiC+GZ5QnlK1jyazWeyBiYyQ8mdTexQh
 github.com/kairos-io/kairos-agent/v2 v2.21.7/go.mod h1:ZJFXsNzZEEzSNbypw0viYjw68CeIDfOoaCMMwzsvvvA=
 github.com/kairos-io/kairos-agent/v2 v2.21.8 h1:bZJuIqS4rfGRTAzg8CbJxpnueVeovWOxzFRShI7vPeI=
 github.com/kairos-io/kairos-agent/v2 v2.21.8/go.mod h1:RhC6DEnfhEyEfn4r9qSuRJLZ5y7rbgMpLs5N2aJgkZw=
+github.com/kairos-io/kairos-agent/v2 v2.22.1 h1:bUEwoZpV9YTBnGssPpitcOf64PMBUMv9f3oS5yABTo4=
+github.com/kairos-io/kairos-agent/v2 v2.22.1/go.mod h1:dQwPYrJFj4918FDtfgdan5yZRg8oht4+IrWdX0E9eSE=
 github.com/kairos-io/kairos-sdk v0.9.1 h1:5MagNf3ghNsQaH6sVXXLVSjClrDQ9UZrxjHYRghk26Q=
 github.com/kairos-io/kairos-sdk v0.9.1/go.mod h1:O3si3aCkYsOyjjLF2jKKTKUYW9948WcB7xR0ivKbB6M=
 github.com/kairos-io/kairos-sdk v0.9.2 h1:A/9rbRpjZsBWniXSPzvT7I2dbbukgveUjrvk9iXH4AE=
@@ -889,6 +893,8 @@ github.com/shurcooL/webdavfs v0.0.0-20170829043945-18c3829fa133/go.mod h1:hKmq5k
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/sirupsen/logrus v1.9.4-0.20241118143825-d1e633264448 h1:4T/wluVIsyQ0Kqamo3he0Q0FhZG7CBd5LJgb4KOmftM=
 github.com/sirupsen/logrus v1.9.4-0.20241118143825-d1e633264448/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
+github.com/sirupsen/logrus v1.9.4-0.20250620175740-70b809335b84 h1:/yEVyz1i461qtBUR6Qpwf48rWhKJ5A6DlROJIq70gI4=
+github.com/sirupsen/logrus v1.9.4-0.20250620175740-70b809335b84/go.mod h1:ftWc9WdOfJ0a92nsE2jF5u5ZwH8Bv2zdeOC42RjbV2g=
 github.com/skeema/knownhosts v1.3.1 h1:X2osQ+RAjK76shCbvhHHHVl3ZlgDm8apHEHFqRjnBY8=
 github.com/skeema/knownhosts v1.3.1/go.mod h1:r7KTdC8l4uxWRyK2TpQZ/1o5HaSzh06ePQNxPwTcfiY=
 github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e h1:MRM5ITcdelLK2j1vwZ3Je0FKVCfqOLp5zO6trqMLYs0=
@@ -1434,6 +1440,8 @@ k8s.io/mount-utils v0.32.3 h1:ZPXXHblfBhYP89OnaozpFg9Ojl6HhDfxBLcdWNkaxW8=
 k8s.io/mount-utils v0.32.3/go.mod h1:Kun5c2svjAPx0nnvJKYQWhfeNW+O0EpzHgRhDcYoSY0=
 k8s.io/mount-utils v0.33.1 h1:hodPhfyoK+gG0SgnYwx1iPrlnpaESZiJ9GFzF5V/imE=
 k8s.io/mount-utils v0.33.1/go.mod h1:1JR4rKymg8B8bCPo618hpSAdrpO6XLh0Acqok/xVwPE=
+k8s.io/mount-utils v0.33.2 h1:mZAFhoGs/MwJziVlUpA072vqMhXRc0LGl/W3wybLP20=
+k8s.io/mount-utils v0.33.2/go.mod h1:1JR4rKymg8B8bCPo618hpSAdrpO6XLh0Acqok/xVwPE=
 k8s.io/utils v0.0.0-20241210054802-24370beab758 h1:sdbE21q2nlQtFh65saZY+rRM6x6aJJI8IUa1AmH/qa0=
 k8s.io/utils v0.0.0-20241210054802-24370beab758/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
 lukechampine.com/blake3 v1.4.0 h1:xDbKOZCVbnZsfzM6mHSYcGRHZ3YrLDzqz8XnV4uaD5w=
