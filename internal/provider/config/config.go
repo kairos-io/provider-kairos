@@ -86,7 +86,7 @@ type K3s struct {
 	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
 	Args             []string          `yaml:"args,omitempty"`
-	Enabled          bool              `yaml:"enabled,omitempty"`
+	Enabled          *bool             `yaml:"enabled,omitempty"`
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
 }
 
@@ -95,5 +95,5 @@ type K0s struct {
 	ReplaceEnv  bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
 	Args        []string          `yaml:"args,omitempty"`
-	Enabled     bool              `yaml:"enabled,omitempty"`
+	Enabled     *bool             `yaml:"enabled,omitempty"`
 }
