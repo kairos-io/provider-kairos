@@ -284,12 +284,20 @@ func (k *K3sNode) Args() []string {
 	var args []string
 
 	if k.IsWorker() {
-		args = c.K3sAgent.Args
+		if c.K3sAgent.Enabled != nil && !*c.K3sAgent.Enabled {
+			args = []string{}
+		} else {
+			args = c.K3sAgent.Args
+		}
 	} else {
-		args = c.K3s.Args
-		// Add embedded registry flag if enabled (for non-p2p mode, server only)
-		if c.K3s.EmbeddedRegistry {
-			args = append(args, "--embedded-registry")
+		if c.K3s.Enabled != nil && !*c.K3s.Enabled {
+			args = []string{}
+		} else {
+			args = c.K3s.Args
+			// Add embedded registry flag if enabled (for non-p2p mode, server only)
+			if c.K3s.EmbeddedRegistry {
+				args = append(args, "--embedded-registry")
+			}
 		}
 	}
 
