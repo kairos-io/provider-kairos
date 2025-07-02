@@ -134,7 +134,7 @@ func downloadFromURL(url, where string) error {
 
 func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	manifestDirectory := "/var/lib/rancher/k3s/server/manifests/"
-	if pconfig.K3sAgent.Enabled {
+	if pconfig.K3sAgent.IsEnabled() {
 		manifestDirectory = "/var/lib/rancher/k3s/agent/pod-manifests/"
 	}
 	if err := os.MkdirAll(manifestDirectory, 0650); err != nil {

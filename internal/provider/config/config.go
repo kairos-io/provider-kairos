@@ -22,6 +22,10 @@ type P2P struct {
 	DynamicRoles bool `yaml:"dynamic_roles,omitempty"`
 }
 
+func (p P2P) IsAutoEnabled() bool {
+	return p.Auto.Enable != nil && *p.Auto.Enable || p.NetworkToken != ""
+}
+
 type VPN struct {
 	Create *bool             `yaml:"create,omitempty"`
 	Use    *bool             `yaml:"use,omitempty"`
@@ -46,6 +50,14 @@ type Config struct {
 	KubeVIP   KubeVIP `yaml:"kubevip,omitempty"`
 	K0sWorker K0s     `yaml:"k0s-worker,omitempty"`
 	K0s       K0s     `yaml:"k0s,omitempty"`
+}
+
+func (c *Config) IsP2PConfigured() bool {
+	return c.P2P != nil
+}
+
+func (c *Config) IsKubernetesConfigured() bool {
+	return c.K3s.IsEnabled() || c.K3sAgent.IsEnabled() || c.K0s.IsEnabled() || c.K0sWorker.IsEnabled()
 }
 
 type KubeVIP struct {
@@ -86,8 +98,12 @@ type K3s struct {
 	ReplaceEnv       bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs      bool              `yaml:"replace_args,omitempty"`
 	Args             []string          `yaml:"args,omitempty"`
-	Enabled          bool              `yaml:"enabled,omitempty"`
+	Enabled          *bool             `yaml:"enabled,omitempty"`
 	EmbeddedRegistry bool              `yaml:"embedded_registry,omitempty"`
+}
+
+func (k K3s) IsEnabled() bool {
+	return k.Enabled != nil && *k.Enabled
 }
 
 type K0s struct {
@@ -95,5 +111,9 @@ type K0s struct {
 	ReplaceEnv  bool              `yaml:"replace_env,omitempty"`
 	ReplaceArgs bool              `yaml:"replace_args,omitempty"`
 	Args        []string          `yaml:"args,omitempty"`
-	Enabled     bool              `yaml:"enabled,omitempty"`
+	Enabled     *bool             `yaml:"enabled,omitempty"`
+}
+
+func (k K0s) IsEnabled() bool {
+	return k.Enabled != nil && *k.Enabled
 }
