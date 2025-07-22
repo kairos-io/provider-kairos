@@ -1,6 +1,6 @@
 module github.com/kairos-io/provider-kairos/v2
 
-go 1.24.4
+go 1.24.5
 
 replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.20220502202347-34be910bdaaf
 
@@ -10,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.6.0
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.22.1
-	github.com/kairos-io/kairos-sdk v0.9.4
+	github.com/kairos-io/kairos-sdk v0.9.5
 	github.com/kube-vip/kube-vip v0.9.2
 	github.com/mudler/edgevpn v0.30.2
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -20,7 +20,6 @@ require (
 	github.com/pterm/pterm v0.12.81
 	github.com/samber/lo v1.51.0
 	github.com/urfave/cli/v2 v2.27.7
-	github.com/urfave/cli/v3 v3.3.8
 	gopkg.in/yaml.v3 v3.0.1
 )
 
