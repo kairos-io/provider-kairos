@@ -27,5 +27,9 @@ func Start() error {
 
 	factory.Add(bus.EventInteractiveInstall, InteractiveInstall)
 
+	// Init build related events
+	factory.Add(bus.InitProviderInstall, BuildEvent)
+	factory.Add(bus.InitProviderInfo, InfoEvent)
+
 	return factory.Run(pluggable.EventType(os.Args[1]), os.Stdin, os.Stdout)
 }
