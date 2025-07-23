@@ -426,8 +426,6 @@ github.com/kairos-io/go-nodepair v0.3.0 h1:JIMBAtbNhIAsx89aP61mQDGMuGFoIQH/woK2t
 github.com/kairos-io/go-nodepair v0.3.0/go.mod h1:7i905W/KmR9DAcMSVJr/Wdb84E5Yyu9YLgj7chwX1xs=
 github.com/kairos-io/kairos-agent/v2 v2.22.1 h1:bUEwoZpV9YTBnGssPpitcOf64PMBUMv9f3oS5yABTo4=
 github.com/kairos-io/kairos-agent/v2 v2.22.1/go.mod h1:dQwPYrJFj4918FDtfgdan5yZRg8oht4+IrWdX0E9eSE=
-github.com/kairos-io/kairos-sdk v0.9.5 h1:paqx4FLdm4WDaCNDjps4xA+IYnYBAzruOgQt3/gd8dQ=
-github.com/kairos-io/kairos-sdk v0.9.5/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
 github.com/kairos-io/kairos-agent/v2 v2.23.0 h1:MHhXU8ETUJQN0ExtrDneDfLUVwUwLDYWgMF3LfB2crU=
 github.com/kairos-io/kairos-agent/v2 v2.23.0/go.mod h1:OGlMVbfFWq6tlN/v6a4/c4KrrJttoE1Cq4z9D7dF9GI=
 github.com/kairos-io/kairos-sdk v0.9.1 h1:5MagNf3ghNsQaH6sVXXLVSjClrDQ9UZrxjHYRghk26Q=
@@ -438,6 +436,13 @@ github.com/kairos-io/kairos-sdk v0.9.3 h1:je3Q0mfm1p4y3jO3k0P/SUp4NEax8IwLveDlnZ
 github.com/kairos-io/kairos-sdk v0.9.3/go.mod h1:O3si3aCkYsOyjjLF2jKKTKUYW9948WcB7xR0ivKbB6M=
 github.com/kairos-io/kairos-sdk v0.9.4 h1:cN4IVEPzNFHbu2/cTyX5CDtL+IGJdw7wSNLTrWwB4mU=
 github.com/kairos-io/kairos-sdk v0.9.4/go.mod h1:O3si3aCkYsOyjjLF2jKKTKUYW9948WcB7xR0ivKbB6M=
+github.com/kairos-io/kairos-sdk v0.9.5 h1:paqx4FLdm4WDaCNDjps4xA+IYnYBAzruOgQt3/gd8dQ=
+github.com/kairos-io/kairos-sdk v0.9.5/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
+github.com/kairos-io/kairos-sdk v0.9.6 h1:jdTKjvIInhW08KqwyRVFW6UNROo3WDISvcexLb0J7mE=
+github.com/kairos-io/kairos-sdk v0.9.6/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
+github.com/kairos-io/kairos-sdk v0.9.7-0.20250723105456-585885eb6ab9 h1:gZDHb8Mcwgk7HbdUqWHBXuoMJZQMw1HNxG7lAdCGW/E=
+github.com/kairos-io/kairos-sdk v0.9.7-0.20250723105456-585885eb6ab9/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
+github.com/kairos-io/kairos-sdk v0.9.7/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237/go.mod h1:e7qQlOY68wOz4b82D7n+DdaptZAi+SHW0+yKiWZzEYE=
 github.com/kendru/darwin/go/depgraph v0.0.0-20230809052043-4d1c7e9d1767 h1:Ds6xHRvL0yjG4kZD05leRKt70mM18Fjt0+B5gIqqe1g=
@@ -1354,6 +1359,8 @@ k8s.io/utils v0.0.0-20241210054802-24370beab758 h1:sdbE21q2nlQtFh65saZY+rRM6x6aJ
 k8s.io/utils v0.0.0-20241210054802-24370beab758/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
 lukechampine.com/blake3 v1.4.0 h1:xDbKOZCVbnZsfzM6mHSYcGRHZ3YrLDzqz8XnV4uaD5w=
 lukechampine.com/blake3 v1.4.0/go.mod h1:MQJNQCTnR+kwOP/JEZSxj3MaQjp80FOFSNMMHXcSeX0=
+lukechampine.com/blake3 v1.4.1 h1:I3Smz7gso8w4/TunLKec6K2fn+kyKtDxr/xcQEN84Wg=
+lukechampine.com/blake3 v1.4.1/go.mod h1:QFosUxmjB8mnrWFSNwKmvxHpfY72bmD2tQ0kBMM3kwo=
 pault.ag/go/modprobe v0.2.0 h1:VF04w/Lez7qFHZX9QUZo2jVyTZINvYZG9dfvgZVXwXU=
 pault.ag/go/modprobe v0.2.0/go.mod h1:GDTMW6GviL6BFKkaYuzIPUCaPizqO1XD7Uf9pnNO6sg=
 pault.ag/go/topsort v0.1.1 h1:L0QnhUly6LmTv0e3DEzbN2q6/FGgAcQvaEw65S53Bg4=

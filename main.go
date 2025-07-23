@@ -17,7 +17,7 @@ func checkErr(err error) {
 }
 
 func main() {
-	if len(os.Args) >= 2 && bus.IsEventDefined(os.Args[1]) {
+	if len(os.Args) >= 2 && bus.IsEventDefined(os.Args[1], "init.provider.info") {
 		checkErr(provider.Start())
 	}
 
