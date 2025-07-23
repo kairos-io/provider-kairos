@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/kairos-io/kairos-sdk/bus"
 	"github.com/kairos-io/provider-kairos/v2/internal/cli"
 	"github.com/kairos-io/provider-kairos/v2/internal/provider"
-	"os"
 )
 
 func checkErr(err error) {
