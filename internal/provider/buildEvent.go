@@ -47,9 +47,10 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 	l.Logger.Debug().Interface("payload", p).Msg("Payload details")
 	// Download the installer script for the provider
 	var url string
-	if p.Provider == K3s {
+	switch p.Provider {
+	case K3s:
 		url = "https://get.k3s.io"
-	} else if p.Provider == K0s {
+	case K0s:
 		url = "https://get.k0s.sh"
 	}
 
