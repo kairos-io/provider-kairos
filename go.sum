@@ -410,8 +410,8 @@ github.com/kairos-io/go-nodepair v0.3.0 h1:JIMBAtbNhIAsx89aP61mQDGMuGFoIQH/woK2t
 github.com/kairos-io/go-nodepair v0.3.0/go.mod h1:7i905W/KmR9DAcMSVJr/Wdb84E5Yyu9YLgj7chwX1xs=
 github.com/kairos-io/kairos-agent/v2 v2.24.1 h1:uYtV/7oORErEUVDgyzC6/Mc1MgM2k2Fr8kxBIjWAQug=
 github.com/kairos-io/kairos-agent/v2 v2.24.1/go.mod h1:UlJitcLZ5l5bwKWZPnV8SVagipae+OX71M5kXc8GAkw=
-github.com/kairos-io/kairos-sdk v0.9.5 h1:paqx4FLdm4WDaCNDjps4xA+IYnYBAzruOgQt3/gd8dQ=
-github.com/kairos-io/kairos-sdk v0.9.5/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
+github.com/kairos-io/kairos-sdk v0.9.7 h1:xYv2dOjFJ2xtNFXp2zrgb/ZfWeTqzE+qgwxIIFtl9n0=
+github.com/kairos-io/kairos-sdk v0.9.7/go.mod h1:5PPun5B24uafoMBR3lDnot9GbsffFBATYdPfngh1n2Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237/go.mod h1:e7qQlOY68wOz4b82D7n+DdaptZAi+SHW0+yKiWZzEYE=
 github.com/kendru/darwin/go/depgraph v0.0.0-20230809052043-4d1c7e9d1767 h1:Ds6xHRvL0yjG4kZD05leRKt70mM18Fjt0+B5gIqqe1g=
