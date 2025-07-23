@@ -3,16 +3,22 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kairos-io/kairos-sdk/bus"
-	"github.com/kairos-io/kairos-sdk/types"
-	"github.com/kairos-io/kairos-sdk/utils"
-	"github.com/kairos-io/provider-kairos/v2/internal/services"
-	"github.com/mudler/go-pluggable"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/kairos-io/kairos-sdk/bus"
+	"github.com/kairos-io/kairos-sdk/types"
+	"github.com/kairos-io/kairos-sdk/utils"
+	"github.com/kairos-io/provider-kairos/v2/internal/services"
+	"github.com/mudler/go-pluggable"
+)
+
+const (
+	K3s = "k3s"
+	K0s = "k0s"
 )
 
 // BuildEvent handles the buildtime event for the provider. Called by kairos-init during the build process.
@@ -41,9 +47,9 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 	l.Logger.Debug().Interface("payload", p).Msg("Payload details")
 	// Download the installer script for the provider
 	var url string
-	if p.Provider == "k3s" {
+	if p.Provider == K3s {
 		url = "https://get.k3s.io"
-	} else if p.Provider == "k0s" {
+	} else if p.Provider == K0s {
 		url = "https://get.k0s.sh"
 	}
 
@@ -51,7 +57,7 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 
 	// Download the installer script
 	switch p.Provider {
-	case "k3s", "k0s":
+	case K3s, K0s:
 		l.Logger.Info().Msgf("Downloading installer script for %s from %s", p.Provider, url)
 		// TODO: Do it with golang instead of needing curl?
 		out, err := exec.Command("curl", "-sfL", url, "-o", installerFile).CombinedOutput()
@@ -68,13 +74,18 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 		return returnData
 	}
 	// Make the installer script executable
-	os.Chmod(installerFile, 0755)
+	err := os.Chmod(installerFile, 0755)
+	if err != nil {
+		l.Logger.Error().Err(err).Msgf("Failed to make installer script executable: %s", installerFile)
+		returnData.Error = fmt.Sprintf("Failed to make installer script executable: %s", err)
+		returnData.State = bus.EventResponseError
+		return returnData
+	}
 
 	// Install the binaries
 	var out []byte
-	var err error
 	switch p.Provider {
-	case "k3s":
+	case K3s:
 		// Prepare environment variables
 		env := os.Environ()
 		env = append(env, "INSTALL_K3S_BIN_DIR=/usr/bin", "INSTALL_K3S_SKIP_ENABLE=true", "INSTALL_K3S_SKIP_SELINUX_RPM=true")
@@ -104,7 +115,7 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 			return returnData
 		}
 		out = append(out, out2...)
-	case "k0s":
+	case K0s:
 		env := os.Environ()
 		if p.Version != "" {
 			env = append(env, fmt.Sprintf("K0S_VERSION=%s", p.Version))
@@ -156,12 +167,12 @@ func InfoEvent(e *pluggable.Event) pluggable.EventResponse {
 	infoData := bus.ProviderInstalledVersionPayload{}
 
 	if k3s := utils.K3sBin(); k3s != "" {
-		infoData.Provider = "k3s"
+		infoData.Provider = K3s
 		infoData.Version = k3sVersion(l)
 
 	}
 	if k0s := utils.K0sBin(); k0s != "" {
-		infoData.Provider = "k0s"
+		infoData.Provider = K0s
 		infoData.Version = k0sVersion(l)
 	}
 
@@ -211,15 +222,14 @@ func k3sVersion(logger types.KairosLogger) string {
 	if re.MatchString(string(out)) {
 		match := re.FindStringSubmatch(string(out))
 		return match[1]
-	} else {
-		logger.Logger.Error().Msgf("Failed to parse the k3s version: %s", string(out))
-		return ""
 	}
+	logger.Logger.Error().Msgf("Failed to parse the k3s version: %s", string(out))
+	return ""
 }
 
 // k0sVersion retrieves the version of k0s installed on the system.
 func k0sVersion(logger types.KairosLogger) string {
-	out, err := exec.Command("k0s", "version").CombinedOutput()
+	out, err := exec.Command(utils.K0sBin(), "version").CombinedOutput()
 	if err != nil {
 		logger.Logger.Error().Msgf("Failed to get the k0s version: %s", err)
 		return ""
