@@ -281,11 +281,19 @@ func (k *K3sNode) Env() map[string]string {
 
 func (k *K3sNode) Args() []string {
 	c := k.ProviderConfig()
+	var args []string
+
 	if k.IsWorker() {
-		return c.K3sAgent.Args
+		args = c.K3sAgent.Args
+	} else {
+		args = c.K3s.Args
+		// Add embedded registry flag if enabled (for non-p2p mode, server only)
+		if c.K3s.EmbeddedRegistry {
+			args = append(args, "--embedded-registry")
+		}
 	}
 
-	return c.K3s.Args
+	return args
 }
 
 func (k *K3sNode) EnvFile() string {
