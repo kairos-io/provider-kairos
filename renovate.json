@@ -15,11 +15,19 @@
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "matchDepNames": [
+        "github.com/urfave/cli/v3"
+      ],
+      "enabled": false
     }
   ],
   "regexManagers": [
     {
-      "fileMatch": ["^internal/role/p2p/kubevip\\.go$"],
+      "fileMatch": [
+        "^internal/role/p2p/kubevip\\.go$"
+      ],
       "matchStrings": [
         "DefaultKubeVIPVersion\\s*=\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
       ],
