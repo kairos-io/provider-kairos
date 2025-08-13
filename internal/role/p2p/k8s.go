@@ -53,13 +53,13 @@ func NewK8sNode(c *providerConfig.Config) (K8sNode, error) {
 		return &K0sNode{providerConfig: c}, nil
 	// User specifically disabled k8s
 	case c.K3s.Enabled != nil && !*c.K3s.Enabled && utils.K3sBin() != "":
-		return &K3sNode{}, nil
+		return &K3sNode{providerConfig: &providerConfig.Config{}}, nil
 	case c.K3sAgent.Enabled != nil && !*c.K3sAgent.Enabled && utils.K3sBin() != "":
-		return &K3sNode{}, nil
+		return &K3sNode{providerConfig: &providerConfig.Config{}}, nil
 	case c.K0s.Enabled != nil && !*c.K0s.Enabled && utils.K0sBin() != "":
-		return &K0sNode{}, nil
+		return &K0sNode{providerConfig: &providerConfig.Config{}}, nil
 	case c.K0sWorker.Enabled != nil && !*c.K0sWorker.Enabled && utils.K0sBin() != "":
-		return &K0sNode{}, nil
+		return &K0sNode{providerConfig: &providerConfig.Config{}}, nil
 	}
 
 	return nil, errors.New("no k8s distro found")
