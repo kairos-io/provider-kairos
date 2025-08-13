@@ -37,7 +37,7 @@ func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nol
 
 		node, err := NewK8sNode(pconfig)
 		if err != nil {
-			return fmt.Errorf("Stopping Worker: %s", err.Error())
+			return fmt.Errorf("stopping Worker: %s", err.Error())
 		}
 
 		ip := guessIP(pconfig)
