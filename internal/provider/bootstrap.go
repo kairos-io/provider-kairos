@@ -70,7 +70,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
 	if (tokenNotDefined && node != nil) || skipAuto {
-		err := oneTimeBootstrap(logger, prvConfig, func() error {
+		err := oneTimeBootstrap(logger, prvConfig, node, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
 		if err != nil {
@@ -159,7 +159,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, node p2p.K8sNode, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
@@ -171,9 +171,8 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath, args string
 	var svcEnv map[string]string
 
-	node, err := p2p.NewK8sNode(c)
-	if err != nil {
-		l.Info("Stopping bootstrap: %s", err.Error())
+	if node == nil {
+		l.Info("No k8s node configured, skipping one-time bootstrap")
 		return nil
 	}
 
