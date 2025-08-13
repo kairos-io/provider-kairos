@@ -48,9 +48,9 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	node, _ := p2p.NewK8sNode(prvConfig)
-	if prvConfig.P2P == nil && node == nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
+	node, err := p2p.NewK8sNode(prvConfig)
+	if err != nil {
+		return pluggable.EventResponse{State: fmt.Sprintf("Stopping Bootstrap: %s", err.Error())}
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -171,7 +171,7 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 
 	node, err := p2p.NewK8sNode(c)
 	if err != nil {
-		l.Info("No Kubernetes configuration found, skipping bootstrap.")
+		l.Info("Stopping bootstrap: %s", err.Error())
 		return nil
 	}
 

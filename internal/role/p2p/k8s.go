@@ -39,6 +39,16 @@ type K8sNode interface {
 
 func NewK8sNode(c *providerConfig.Config) (K8sNode, error) {
 	switch {
+	// User specifically disabled k8s
+	case c.K3s.Enabled != nil && !*c.K3s.Enabled:
+		return nil, errors.New("k3s is disabled")
+	case c.K3sAgent.Enabled != nil && !*c.K3sAgent.Enabled && utils.K3sBin() != "":
+		return nil, errors.New("k3s-agent is disabled")
+	case c.K0s.Enabled != nil && !*c.K0s.Enabled && utils.K0sBin() != "":
+		return nil, errors.New("k0s is disabled")
+	case c.K0sWorker.Enabled != nil && !*c.K0sWorker.Enabled && utils.K0sBin() != "":
+		return nil, errors.New("k0s-worker is disabled")
+	// User specifically enabled k8s
 	case c.K3s.Enabled != nil && *c.K3s.Enabled:
 		return &K3sNode{providerConfig: c, role: "master"}, nil
 	case c.K3sAgent.Enabled != nil && *c.K3sAgent.Enabled:
@@ -47,19 +57,11 @@ func NewK8sNode(c *providerConfig.Config) (K8sNode, error) {
 		return &K0sNode{providerConfig: c, role: "master"}, nil
 	case c.K0sWorker.Enabled != nil && *c.K0sWorker.Enabled:
 		return &K0sNode{providerConfig: c, role: "worker"}, nil
+	// User did not specify k8s but the default is to have it enabled
 	case c.K3s.Enabled == nil && utils.K3sBin() != "":
 		return &K3sNode{providerConfig: c}, nil
 	case c.K0s.Enabled == nil && utils.K0sBin() != "":
 		return &K0sNode{providerConfig: c}, nil
-	// User specifically disabled k8s
-	case c.K3s.Enabled != nil && !*c.K3s.Enabled && utils.K3sBin() != "":
-		return &K3sNode{providerConfig: &providerConfig.Config{}}, nil
-	case c.K3sAgent.Enabled != nil && !*c.K3sAgent.Enabled && utils.K3sBin() != "":
-		return &K3sNode{providerConfig: &providerConfig.Config{}}, nil
-	case c.K0s.Enabled != nil && !*c.K0s.Enabled && utils.K0sBin() != "":
-		return &K0sNode{providerConfig: &providerConfig.Config{}}, nil
-	case c.K0sWorker.Enabled != nil && !*c.K0sWorker.Enabled && utils.K0sBin() != "":
-		return &K0sNode{providerConfig: &providerConfig.Config{}}, nil
 	}
 
 	return nil, errors.New("no k8s distro found")
