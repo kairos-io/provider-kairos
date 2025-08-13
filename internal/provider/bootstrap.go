@@ -49,8 +49,10 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
 	node, err := p2p.NewK8sNode(prvConfig)
-	if err != nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("Stopping Bootstrap: %s", err.Error())}
+	if prvConfig.P2P != nil && err != nil {
+		if !strings.HasPrefix(err.Error(), "p2p is configured but no k8s component is explicitly enabled") {
+			return pluggable.EventResponse{State: fmt.Sprintf("Stopping Bootstrap: %s", err.Error())}
+		}
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
