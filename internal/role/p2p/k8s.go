@@ -37,8 +37,8 @@ type K8sNode interface {
 	Distro() string
 }
 
-// configState holds the parsed configuration state.
-type configState struct {
+// configExplicitState holds the parsed configuration state.
+type configExplicitState struct {
 	k3sEnabled        bool
 	k3sAgentEnabled   bool
 	k0sEnabled        bool
@@ -55,8 +55,8 @@ type configState struct {
 }
 
 // parseConfigState extracts and validates configuration state.
-func parseConfigState(c *providerConfig.Config) (*configState, error) {
-	state := &configState{
+func parseConfigExplicitState(c *providerConfig.Config) (*configExplicitState, error) {
+	state := &configExplicitState{
 		// Check if any k8s distro is explicitly enabled
 		k3sEnabled:       c.K3s.Enabled != nil && *c.K3s.Enabled,
 		k3sAgentEnabled:  c.K3sAgent.Enabled != nil && *c.K3sAgent.Enabled,
@@ -88,26 +88,25 @@ func parseConfigState(c *providerConfig.Config) (*configState, error) {
 }
 
 // checkExplicitDisables validates if any k8s components are explicitly disabled.
-func checkExplicitDisables(state *configState) error {
-	if state.k3sDisabled || state.k3sAgentDisabled || state.k0sDisabled || state.k0sWorkerDisabled {
-		if state.k3sDisabled {
-			return errors.New("k3s is explicitly disabled")
-		}
-		if state.k3sAgentDisabled {
-			return errors.New("k3s-agent is explicitly disabled")
-		}
-		if state.k0sDisabled {
-			return errors.New("k0s is explicitly disabled")
-		}
-		if state.k0sWorkerDisabled {
-			return errors.New("k0s-worker is explicitly disabled")
-		}
+func checkExplicitDisables(state *configExplicitState) error {
+	if state.k3sDisabled {
+		return errors.New("k3s is explicitly disabled")
 	}
+	if state.k3sAgentDisabled {
+		return errors.New("k3s-agent is explicitly disabled")
+	}
+	if state.k0sDisabled {
+		return errors.New("k0s is explicitly disabled")
+	}
+	if state.k0sWorkerDisabled {
+		return errors.New("k0s-worker is explicitly disabled")
+	}
+
 	return nil
 }
 
 // handleExplicitEnables handles cases where specific k8s components are explicitly enabled.
-func handleExplicitEnables(c *providerConfig.Config, state *configState) (K8sNode, error) {
+func handleExplicitEnables(c *providerConfig.Config, state *configExplicitState) (K8sNode, error) {
 	if state.k3sEnabled {
 		if !state.k3sBinAvailable {
 			return nil, errors.New("k3s is enabled but k3s binary is not available")
@@ -136,7 +135,7 @@ func handleExplicitEnables(c *providerConfig.Config, state *configState) (K8sNod
 }
 
 // handleP2PRole handles cases where P2P is configured with a specific role.
-func handleP2PRole(c *providerConfig.Config, state *configState) (K8sNode, error) {
+func handleP2PRole(c *providerConfig.Config, state *configExplicitState) (K8sNode, error) {
 	if !state.p2pRoleSpecified {
 		return nil, nil
 	}
@@ -164,7 +163,7 @@ func handleP2PRole(c *providerConfig.Config, state *configState) (K8sNode, error
 }
 
 // handleP2PAuto handles cases where P2P is configured with auto mode.
-func handleP2PAuto(c *providerConfig.Config, state *configState) (K8sNode, error) {
+func handleP2PAuto(c *providerConfig.Config, state *configExplicitState) (K8sNode, error) {
 	if !state.p2pAutoEnabled {
 		return nil, nil
 	}
@@ -179,7 +178,7 @@ func handleP2PAuto(c *providerConfig.Config, state *configState) (K8sNode, error
 }
 
 // handleP2PConfigured handles cases where P2P is configured but no role or auto mode specified.
-func handleP2PConfigured(state *configState) error {
+func handleP2PConfigured(state *configExplicitState) error {
 	if !state.p2pConfigured {
 		return nil
 	}
@@ -188,7 +187,7 @@ func handleP2PConfigured(state *configState) error {
 
 func NewK8sNode(c *providerConfig.Config) (K8sNode, error) {
 	// Parse and validate configuration state
-	state, err := parseConfigState(c)
+	state, err := parseConfigExplicitState(c)
 	if err != nil {
 		return nil, err
 	}
