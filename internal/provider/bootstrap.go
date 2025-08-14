@@ -48,9 +48,11 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	node, _ := p2p.NewK8sNode(prvConfig)
-	if prvConfig.P2P == nil && node == nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
+	node, err := p2p.NewK8sNode(prvConfig)
+	if prvConfig.P2P != nil && err != nil {
+		if !strings.HasPrefix(err.Error(), "p2p is configured but no k8s component is explicitly enabled") {
+			return pluggable.EventResponse{State: fmt.Sprintf("Stopping Bootstrap: %s", err.Error())}
+		}
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -68,7 +70,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
 	if (tokenNotDefined && node != nil) || skipAuto {
-		err := oneTimeBootstrap(logger, prvConfig, func() error {
+		err := oneTimeBootstrap(logger, prvConfig, node, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
 		if err != nil {
@@ -157,7 +159,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, node p2p.K8sNode, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
@@ -169,9 +171,8 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 	var svcName, svcRole, envFile, binPath, args string
 	var svcEnv map[string]string
 
-	node, err := p2p.NewK8sNode(c)
-	if err != nil {
-		l.Info("No Kubernetes configuration found, skipping bootstrap.")
+	if node == nil {
+		l.Info("No k8s node configured, skipping one-time bootstrap")
 		return nil
 	}
 

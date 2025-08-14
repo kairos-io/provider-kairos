@@ -101,7 +101,7 @@ func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) 
 		c.Logger.Info("Determining K8s distro")
 		node, err := NewK8sNode(pconfig)
 		if err != nil {
-			return fmt.Errorf("failed to determine k8s distro: %w", err)
+			return fmt.Errorf("stopping Master: %s", err.Error())
 		}
 
 		node.SetRole(roleName)

@@ -304,7 +304,15 @@ func (k *K0sNode) Env() map[string]string {
 func (k *K0sNode) Args() []string {
 	c := k.ProviderConfig()
 	if k.IsWorker() {
+		if c.K0sWorker.Enabled != nil && !*c.K0sWorker.Enabled {
+			return []string{}
+		}
+
 		return c.K0sWorker.Args
+	}
+
+	if c.K0s.Enabled != nil && !*c.K0s.Enabled {
+		return []string{}
 	}
 
 	return c.K0s.Args
