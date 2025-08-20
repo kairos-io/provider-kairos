@@ -48,9 +48,8 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	tokenNotDefined := (p2pBlockDefined && prvConfig.P2P.NetworkToken == "") || !p2pBlockDefined
 	skipAuto := p2pBlockDefined && !prvConfig.P2P.Auto.IsEnabled()
 
-	node, _ := p2p.NewK8sNode(prvConfig)
-	if prvConfig.P2P == nil && node == nil {
-		return pluggable.EventResponse{State: fmt.Sprintf("no kubernetes distribution configuration. nothing to do: %s", cfg.Config)}
+	if !prvConfig.IsP2PConfigured() && !prvConfig.IsKubernetesConfigured() {
+		return pluggable.EventResponse{State: "no P2P or kubernetes configured"}
 	}
 
 	utils.SH("kairos-agent run-stage kairos-agent.bootstrap") //nolint:errcheck
@@ -67,7 +66,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
-	if (tokenNotDefined && node != nil) || skipAuto {
+	if (tokenNotDefined && prvConfig.IsKubernetesConfigured()) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
 			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
 		})
@@ -138,6 +137,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	// Optionally set up a specific node role if the user has defined so
 	if prvConfig.P2P.Role != "" {
+		logger.Info("Setting default role from configuration: ", prvConfig.P2P.Role)
 		nodeOpts = append(nodeOpts, service.WithDefaultRoles(prvConfig.P2P.Role))
 	}
 
@@ -171,8 +171,8 @@ func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN
 
 	node, err := p2p.NewK8sNode(c)
 	if err != nil {
-		l.Info("No Kubernetes configuration found, skipping bootstrap.")
-		return nil
+		l.Errorf("failed on one-time bootstrap: %s", err.Error())
+		return err
 	}
 
 	svcName = node.ServiceName()

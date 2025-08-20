@@ -3,6 +3,7 @@ package role
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/kairos-io/kairos-agent/v2/pkg/config"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
@@ -12,6 +13,12 @@ import (
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
 func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error { //nolint:revive
+	// From the golang docs: https://pkg.go.dev/math/rand#example-package-Rand
+	// Create and seed the generator.
+	// Typically a non-fixed seed should be used, such as time.Now().UnixNano().
+	// Using a fixed seed will produce the same output on every run.
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	// Assign roles to nodes
 	unassignedNodes, currentRoles := getRoles(c.Client, nodes)
 	c.Logger.Infof("I'm the leader. My UUID is: %s.\n Current assigned roles: %+v", c.UUID, currentRoles)
@@ -69,10 +76,14 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pco
 		}
 
 		// select one node without roles to become master
-		if len(toSelect) == 1 {
+		if len(toSelect) == 0 {
+			// No nodes available for selection (all filtered out)
+			c.Logger.Warnf("No nodes available for master selection after filtering")
+			return nil
+		} else if len(toSelect) == 1 {
 			selected = toSelect[0]
 		} else {
-			selected = toSelect[rand.Intn(len(toSelect)-1)]
+			selected = toSelect[r.Intn(len(toSelect))]
 		}
 
 		if err := c.Client.Set("role", selected, masterRole); err != nil {

@@ -9,9 +9,10 @@ import (
 var _ = Describe("K3sNode Args", func() {
 	Context("embedded registry flag", func() {
 		It("should include --embedded-registry flag for master when enabled", func() {
+			enabled := true
 			config := &providerConfig.Config{
 				K3s: providerConfig.K3s{
-					Enabled:          true,
+					Enabled:          &enabled,
 					EmbeddedRegistry: true,
 					Args:             []string{"--existing-arg"},
 				},
@@ -29,14 +30,15 @@ var _ = Describe("K3sNode Args", func() {
 		})
 
 		It("should not include --embedded-registry flag for worker when enabled", func() {
+			enabled := true
 			config := &providerConfig.Config{
 				K3s: providerConfig.K3s{
-					Enabled:          true,
+					Enabled:          &enabled,
 					EmbeddedRegistry: true,
 					Args:             []string{"--existing-arg"},
 				},
 				K3sAgent: providerConfig.K3s{
-					Enabled: true,
+					Enabled: &enabled,
 					Args:    []string{"--worker-arg"},
 				},
 			}
@@ -53,9 +55,10 @@ var _ = Describe("K3sNode Args", func() {
 		})
 
 		It("should not include --embedded-registry flag when disabled", func() {
+			enabled := true
 			config := &providerConfig.Config{
 				K3s: providerConfig.K3s{
-					Enabled:          true,
+					Enabled:          &enabled,
 					EmbeddedRegistry: false,
 					Args:             []string{"--existing-arg"},
 				},
@@ -73,9 +76,10 @@ var _ = Describe("K3sNode Args", func() {
 		})
 
 		It("should preserve existing args when embedded registry is enabled", func() {
+			enabled := true
 			config := &providerConfig.Config{
 				K3s: providerConfig.K3s{
-					Enabled:          true,
+					Enabled:          &enabled,
 					EmbeddedRegistry: true,
 					Args:             []string{"--arg1", "--arg2"},
 				},

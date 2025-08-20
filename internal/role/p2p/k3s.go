@@ -189,7 +189,7 @@ func (k *K3sNode) PropagateData() error {
 func (k *K3sNode) WorkerArgs() ([]string, error) {
 	pconfig := k.ProviderConfig()
 	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
+	if pconfig.K3sAgent.IsEnabled() {
 		k3sConfig = pconfig.K3sAgent
 	}
 
@@ -227,7 +227,7 @@ func (k *K3sNode) SetupWorker(masterIP, nodeToken string) error {
 	nodeToken = strings.TrimRight(nodeToken, "\n")
 
 	k3sConfig := providerConfig.K3s{}
-	if pconfig.K3sAgent.Enabled {
+	if pconfig.K3sAgent.IsEnabled() {
 		k3sConfig = pconfig.K3sAgent
 	}
 
@@ -283,14 +283,18 @@ func (k *K3sNode) Args() []string {
 	c := k.ProviderConfig()
 	var args []string
 
+	if !c.K3sAgent.IsEnabled() && !c.K3s.IsEnabled() {
+		return []string{}
+	}
+
 	if k.IsWorker() {
-		args = c.K3sAgent.Args
-	} else {
-		args = c.K3s.Args
-		// Add embedded registry flag if enabled (for non-p2p mode, server only)
-		if c.K3s.EmbeddedRegistry {
-			args = append(args, "--embedded-registry")
-		}
+		return c.K3sAgent.Args
+	}
+
+	args = c.K3s.Args
+	// Add embedded registry flag if enabled (for non-p2p mode, server only)
+	if c.K3s.EmbeddedRegistry {
+		args = append(args, "--embedded-registry")
 	}
 
 	return args
