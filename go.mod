@@ -9,8 +9,8 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/ipfs/go-log/v2 v2.7.0
 	github.com/kairos-io/go-nodepair v0.3.0
-	github.com/kairos-io/kairos-agent/v2 v2.24.3
-	github.com/kairos-io/kairos-sdk v0.10.1
+	github.com/kairos-io/kairos-agent/v2 v2.25.0
+	github.com/kairos-io/kairos-sdk v0.11.0
 	github.com/kube-vip/kube-vip v1.0.0
 	github.com/mudler/edgevpn v0.31.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -80,7 +80,7 @@ require (
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/edsrzf/mmap-go v1.2.0 // indirect
 	github.com/eliukblau/pixterm v1.3.2 // indirect
-	github.com/elliotwutingfeng/asciiset v0.0.0-20230602022725-51bbb787efab // indirect
+	github.com/elliotwutingfeng/asciiset v0.0.0-20250912055424-93680c478db2 // indirect
 	github.com/emicklei/go-restful/v3 v3.12.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -242,7 +242,7 @@ require (
 	github.com/pion/webrtc/v4 v4.1.2 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pkg/xattr v0.4.9 // indirect
+	github.com/pkg/xattr v0.4.12 // indirect
 	github.com/polydawn/refmt v0.89.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/prometheus/client_golang v1.22.0 // indirect
@@ -256,7 +256,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/saferwall/pe v1.5.6 // indirect
+	github.com/saferwall/pe v1.5.7 // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sanity-io/litter v1.5.8 // indirect
