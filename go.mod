@@ -18,7 +18,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.26.0
 	github.com/onsi/gomega v1.38.2
 	github.com/pterm/pterm v0.12.81
-	github.com/samber/lo v1.51.0
+	github.com/samber/lo v1.52.0
 	github.com/urfave/cli/v2 v2.27.7
 	gopkg.in/yaml.v3 v3.0.1
 )
