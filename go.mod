@@ -7,7 +7,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 require (
 	github.com/creack/pty v1.1.24
 	github.com/gliderlabs/ssh v0.3.8
-	github.com/ipfs/go-log/v2 v2.7.0
+	github.com/ipfs/go-log/v2 v2.8.2
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.25.0
 	github.com/kairos-io/kairos-sdk v0.11.0
