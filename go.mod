@@ -9,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/ipfs/go-log/v2 v2.8.2
 	github.com/kairos-io/go-nodepair v0.3.0
-	github.com/kairos-io/kairos-agent/v2 v2.25.0
+	github.com/kairos-io/kairos-agent/v2 v2.25.1
 	github.com/kairos-io/kairos-sdk v0.11.0
 	github.com/kube-vip/kube-vip v1.0.0
 	github.com/mudler/edgevpn v0.31.1
@@ -198,7 +198,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mudler/entities v0.8.2 // indirect
 	github.com/mudler/water v0.0.0-20250808092830-dd90dcf09025 // indirect
-	github.com/mudler/yip v1.18.0 // indirect
+	github.com/mudler/yip v1.18.1 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.16.0 // indirect
@@ -317,18 +317,19 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
 	golang.org/x/image v0.25.0 // indirect
-	golang.org/x/mod v0.27.0 // indirect
-	golang.org/x/net v0.44.0 // indirect
-	golang.org/x/oauth2 v0.31.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
+	golang.org/x/oauth2 v0.32.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/term v0.35.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/telemetry v0.0.0-20250908211612-aef8a434d053 // indirect
+	golang.org/x/term v0.36.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	golang.org/x/tools v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
