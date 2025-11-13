@@ -83,6 +83,7 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 	if initConfig.Port == 0 {
 		initConfig.Port = 6443
 	}
+
 	switch strings.ToLower(command) {
 	case "daemonset":
 		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
@@ -198,7 +199,6 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	}
 
 	content, err := generateKubeVIP(command, iface, ip, pconfig)
-	fmt.Println(content)
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
