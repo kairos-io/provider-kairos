@@ -105,11 +105,36 @@ func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevi
 		kField := kConfigType.Field(i)
 		kValue := kConfigValue.Field(i)
 
+		// Skip unexported fields
+		if !kValue.CanInterface() {
+			continue
+		}
+
 		// Check if the field exists in initConfig
 		initField := initConfigValue.FieldByName(kField.Name)
 		if initField.IsValid() && initField.Type() == kField.Type {
 			// Set the value from kConfig to initConfig
 			initField.Set(kValue)
+		}
+	}
+
+	// Also copy embedded struct fields from the embedded kubevip.Config
+	kConfigEmbedded := kConfigValue.FieldByName("Config")
+	if kConfigEmbedded.IsValid() {
+		embeddedType := kConfigEmbedded.Type()
+		for i := 0; i < embeddedType.NumField(); i++ {
+			field := embeddedType.Field(i)
+			value := kConfigEmbedded.Field(i)
+
+			if !value.CanInterface() {
+				continue
+			}
+
+			initField := initConfigValue.FieldByName(field.Name)
+			if initField.IsValid() && initField.Type() == field.Type {
+				// Set the value from embedded config to initConfig
+				initField.Set(value)
+			}
 		}
 	}
 }
@@ -173,6 +198,7 @@ func deployKubeVIP(iface, ip string, pconfig *providerConfig.Config) error {
 	}
 
 	content, err := generateKubeVIP(command, iface, ip, pconfig)
+	fmt.Println(content)
 	if err != nil {
 		return fmt.Errorf("could not generate kubevip %s", err.Error())
 	}
