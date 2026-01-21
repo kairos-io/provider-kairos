@@ -83,6 +83,7 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 	if initConfig.Port == 0 {
 		initConfig.Port = 6443
 	}
+
 	switch strings.ToLower(command) {
 	case "daemonset":
 		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
@@ -105,11 +106,36 @@ func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevi
 		kField := kConfigType.Field(i)
 		kValue := kConfigValue.Field(i)
 
+		// Skip unexported fields
+		if !kValue.CanInterface() {
+			continue
+		}
+
 		// Check if the field exists in initConfig
 		initField := initConfigValue.FieldByName(kField.Name)
 		if initField.IsValid() && initField.Type() == kField.Type {
 			// Set the value from kConfig to initConfig
 			initField.Set(kValue)
+		}
+	}
+
+	// Also copy embedded struct fields from the embedded kubevip.Config
+	kConfigEmbedded := kConfigValue.FieldByName("Config")
+	if kConfigEmbedded.IsValid() {
+		embeddedType := kConfigEmbedded.Type()
+		for i := 0; i < embeddedType.NumField(); i++ {
+			field := embeddedType.Field(i)
+			value := kConfigEmbedded.Field(i)
+
+			if !value.CanInterface() {
+				continue
+			}
+
+			initField := initConfigValue.FieldByName(field.Name)
+			if initField.IsValid() && initField.Type() == field.Type {
+				// Set the value from embedded config to initConfig
+				initField.Set(value)
+			}
 		}
 	}
 }
