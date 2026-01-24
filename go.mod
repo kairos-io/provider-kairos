@@ -7,7 +7,7 @@ replace github.com/elastic/gosigar => github.com/mudler/gosigar v0.14.3-0.202205
 require (
 	github.com/creack/pty v1.1.24
 	github.com/gliderlabs/ssh v0.3.8
-	github.com/ipfs/go-log/v2 v2.9.0
+	github.com/ipfs/go-log/v2 v2.9.1
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.25.5
 	github.com/kairos-io/kairos-sdk v0.13.0
@@ -315,7 +315,7 @@ require (
 	go.uber.org/fx v1.24.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap v1.27.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
