@@ -9,7 +9,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.8
 	github.com/ipfs/go-log/v2 v2.9.1
 	github.com/kairos-io/go-nodepair v0.3.0
-	github.com/kairos-io/kairos-agent/v2 v2.25.5
+	github.com/kairos-io/kairos-agent/v2 v2.26.0
 	github.com/kairos-io/kairos-sdk v0.13.0
 	github.com/kube-vip/kube-vip v1.0.0
 	github.com/mudler/edgevpn v0.31.1
