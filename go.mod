@@ -15,7 +15,7 @@ require (
 	github.com/mudler/edgevpn v0.31.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.1.0
-	github.com/onsi/ginkgo/v2 v2.28.0
+	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
 	github.com/pterm/pterm v0.12.82
 	github.com/samber/lo v1.52.0
