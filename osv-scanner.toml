@@ -5,3 +5,7 @@ reason = "No impact since we don't work with TIFF image files"
 [[IgnoredVulns]]
 id = "GO-2024-3218"
 reason = "We dont use the ipfs to serve content, so not vulnerable"
+
+[[IgnoredVulns]]
+id = "GO-2026-4479"
+reason = "pion/dtls/v2 is unmaintained with no fix available; only used by optional WebRTC transport in libp2p"
