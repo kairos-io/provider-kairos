@@ -107,7 +107,7 @@ func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevi
 		kValue := kConfigValue.Field(i)
 
 		// Skip unexported fields
-		if !kValue.CanInterface() {
+		if !kField.IsExported() {
 			continue
 		}
 
@@ -127,12 +127,12 @@ func applyKConfigToInitConfig(kConfig providerConfig.KubeVIP, initConfig *kubevi
 			field := embeddedType.Field(i)
 			value := kConfigEmbedded.Field(i)
 
-			if !value.CanInterface() {
+			if !field.IsExported() {
 				continue
 			}
 
 			initField := initConfigValue.FieldByName(field.Name)
-			if initField.IsValid() && initField.Type() == field.Type {
+			if initField.IsValid() && initField.CanSet() && initField.Type() == field.Type {
 				// Set the value from embedded config to initConfig
 				initField.Set(value)
 			}
