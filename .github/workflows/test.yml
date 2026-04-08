@@ -32,7 +32,7 @@ jobs:
       - name: Generate version
         run: echo "VERSION=$(git describe --always --tags --dirty)" >> $GITHUB_ENV
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: latest
           args: --snapshot --clean
