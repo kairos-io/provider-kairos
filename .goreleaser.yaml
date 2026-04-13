@@ -9,6 +9,7 @@ builds:
     goarch:
       - amd64
       - arm64
+      - riscv64
     binary: "provider-kairos"
     id: provider-kairos
     main: ./main.go
