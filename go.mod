@@ -12,7 +12,7 @@ require (
 	github.com/kairos-io/kairos-agent/v2 v2.25.5
 	github.com/kairos-io/kairos-sdk v0.13.0
 	github.com/kube-vip/kube-vip v1.0.0
-	github.com/mudler/edgevpn v0.32.1
+	github.com/mudler/edgevpn v0.32.2
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.1.0
 	github.com/onsi/ginkgo/v2 v2.28.1
