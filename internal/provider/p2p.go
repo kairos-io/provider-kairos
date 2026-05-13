@@ -2,7 +2,6 @@ package provider
 
 import (
 	"fmt"
-	"io/ioutil" // nolint
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,8 +15,10 @@ import (
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 )
 
+const enabledValue = "true"
+
 func SaveCloudConfig(name string, c []byte) error {
-	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
+	return os.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
 }
 
 func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
@@ -84,9 +85,9 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 	apiAddress = strings.ReplaceAll(apiAddress, "http://", "")
 
 	vpnOpts := map[string]string{
-		"API":          "true",
+		"API":          enabledValue,
 		"APILISTEN":    apiAddress,
-		"DHCP":         "true",
+		"DHCP":         enabledValue,
 		"DHCPLEASEDIR": "/usr/local/.kairos/lease",
 	}
 	if token != "" {
@@ -104,7 +105,7 @@ func SetupVPN(instance, apiAddress, rootDir string, start bool, c *providerConfi
 
 	if c.P2P.DNS {
 		vpnOpts["DNSADDRESS"] = "127.0.0.1:53"
-		vpnOpts["DNSFORWARD"] = "true"
+		vpnOpts["DNSFORWARD"] = enabledValue
 
 		_ = machine.ExecuteInlineCloudConfig(assets.LocalDNS, "initramfs")
 		if !utils.IsOpenRCBased() {
