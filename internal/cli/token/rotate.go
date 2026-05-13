@@ -3,7 +3,6 @@ package token
 import (
 	"errors"
 	"fmt"
-	"io/ioutil" // nolint
 	"os"
 	"path/filepath"
 
@@ -104,7 +103,7 @@ func ReplaceToken(dir []string, token string) (err error) {
 			return err
 		}
 
-		if err := ioutil.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm()); err != nil {
+		if err := os.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm()); err != nil {
 			return err
 		}
 	}

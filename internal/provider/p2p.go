@@ -2,7 +2,6 @@ package provider
 
 import (
 	"fmt"
-	"io/ioutil" // nolint
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +16,7 @@ import (
 )
 
 func SaveCloudConfig(name string, c []byte) error {
-	return ioutil.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
+	return os.WriteFile(filepath.Join("oem", fmt.Sprintf("%s.yaml", name)), c, 0700)
 }
 
 func SetupAPI(apiAddress, rootDir string, start bool, c *providerConfig.Config) error {
