@@ -23,6 +23,7 @@ const (
 	// DefaultKubeVIPVersion is the default version of kube-vip to use.
 	// Should be automatically bumped by renovate as it uses this version to set the mage version to use in the generated manifest.
 	DefaultKubeVIPVersion = "v1.1.2"
+	DefaultKubeVIPImage   = "ghcr.io/kube-vip/kube-vip"
 )
 
 // Generates the kube-vip manifest based on the command type.
@@ -67,6 +68,11 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 		kubeVipVersion = DefaultKubeVIPVersion
 	}
 
+	kubeVipImage := kConfig.KubeVIP.Image
+	if kubeVipImage == "" {
+		kubeVipImage = DefaultKubeVIPImage
+	}
+
 	// Some fixes for the default values if they are empty.
 	if initConfig.LeaseDuration == 0 {
 		initConfig.LeaseDuration = 5
@@ -86,9 +92,9 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 
 	switch strings.ToLower(command) {
 	case "daemonset":
-		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipVersion, true, true), nil
+		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipImage, kubeVipVersion, true, true)
 	case "pod":
-		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipVersion, true), nil
+		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipImage, kubeVipVersion, true)
 	}
 	return "", fmt.Errorf("unknown manifest type %s", command)
 }
