@@ -3,7 +3,7 @@ package services
 import (
 	"github.com/kairos-io/kairos-sdk/machine/openrc"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
-	"github.com/kairos-io/kairos-sdk/types"
+	loggerpkg "github.com/kairos-io/kairos-sdk/types/logger"
 	"github.com/kairos-io/kairos-sdk/utils"
 )
 
@@ -14,8 +14,8 @@ Description=k0s - Zero Friction Kubernetes
 Documentation=https://docs.k0sproject.io
 ConditionFileIsExecutable=/usr/bin/k0s
 
-After=network-online.target 
-Wants=network-online.target 
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 StartLimitInterval=5
@@ -39,8 +39,8 @@ Description=k0s - Zero Friction Kubernetes
 Documentation=https://docs.k0sproject.io
 ConditionFileIsExecutable=/usr/bin/k0s
 
-After=network-online.target 
-Wants=network-online.target 
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 StartLimitInterval=5
@@ -68,10 +68,10 @@ name=$(basename $(readlink -f $command))
 supervise_daemon_args="--stdout /var/log/${name}.log --stderr /var/log/${name}.err"
 
 : "${rc_ulimit=-n 1048576 -u unlimited}"
-depend() { 
-	need cgroups 
-	need net 
-	use dns 
+depend() {
+	need cgroups
+	need net
+	use dns
 	after firewall
 }`
 
@@ -84,17 +84,17 @@ name=$(basename $(readlink -f $command))
 supervise_daemon_args="--stdout /var/log/${name}.log --stderr /var/log/${name}.err"
 
 : "${rc_ulimit=-n 1048576 -u unlimited}"
-depend() { 
-	need cgroups 
-	need net 
-	use dns 
+depend() {
+	need cgroups
+	need net
+	use dns
 	after firewall
 }`
 
 // K0s Services end here
 
 // K0sServices creates the k0s controller and worker services for openrc or systemd based systems.
-func K0sServices(logger types.KairosLogger) error {
+func K0sServices(logger loggerpkg.KairosLogger) error {
 	if utils.IsOpenRCBased() {
 		controller, err := openrc.NewService(
 			openrc.WithName("k0scontroller"),

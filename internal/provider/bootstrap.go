@@ -10,7 +10,7 @@ import (
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/machine/openrc"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
-	"github.com/kairos-io/kairos-sdk/types"
+	loggerpkg "github.com/kairos-io/kairos-sdk/types/logger"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
@@ -61,7 +61,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		logLevel = prvConfig.P2P.LogLevel
 	}
 
-	logger := types.NewKairosLogger("provider", logLevel, false)
+	logger := loggerpkg.NewKairosLogger("provider", logLevel, false)
 
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
@@ -157,7 +157,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+func oneTimeBootstrap(l loggerpkg.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")
