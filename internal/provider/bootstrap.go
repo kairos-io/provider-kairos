@@ -10,16 +10,17 @@ import (
 	"github.com/kairos-io/kairos-sdk/machine"
 	"github.com/kairos-io/kairos-sdk/machine/openrc"
 	"github.com/kairos-io/kairos-sdk/machine/systemd"
-	"github.com/kairos-io/kairos-sdk/types"
+	loggerpkg "github.com/kairos-io/kairos-sdk/types/logger"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
+	"gopkg.in/yaml.v3"
 
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
+	sdkConfig "github.com/kairos-io/kairos-sdk/types/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/mudler/go-pluggable"
 )
@@ -31,14 +32,14 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), e.Data)
 	}
 
-	c := &config.Config{}
+	c := &sdkConfig.Config{}
 	prvConfig := &providerConfig.Config{}
-	err = config.FromString(cfg.Config, c)
+	err = yaml.Unmarshal([]byte(cfg.Config), c)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
 
-	err = config.FromString(cfg.Config, prvConfig)
+	err = yaml.Unmarshal([]byte(cfg.Config), prvConfig)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
@@ -61,7 +62,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		logLevel = prvConfig.P2P.LogLevel
 	}
 
-	logger := types.NewKairosLogger("provider", logLevel, false)
+	logger := loggerpkg.NewKairosLogger("provider", logLevel, false)
 
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
@@ -157,7 +158,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	}
 }
 
-func oneTimeBootstrap(l types.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
+func oneTimeBootstrap(l loggerpkg.KairosLogger, c *providerConfig.Config, vpnSetupFN func() error) error {
 	var err error
 	if role.SentinelExist() {
 		l.Info("Sentinel exists, nothing to do. exiting.")

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/kairos-io/kairos-sdk/utils"
+	strutils "github.com/kairos-io/kairos-sdk/utils/strings"
 
 	nodepair "github.com/kairos-io/go-nodepair"
 	"github.com/mudler/go-pluggable"
@@ -20,8 +21,8 @@ func Recovery(e *pluggable.Event) pluggable.EventResponse { //nolint:revive
 
 	tk := nodepair.GenerateToken()
 
-	serviceUUID := utils.RandStringRunes(10)
-	generatedPassword := utils.RandStringRunes(7)
+	serviceUUID := strutils.RandStringRunes(10)
+	generatedPassword := strutils.RandStringRunes(7)
 	resp.Data = utils.EncodeRecoveryToken(tk, serviceUUID, generatedPassword)
 	resp.State = fmt.Sprintf(
 		"starting ssh server on '%s', password: '%s' service: '%s' ", recoveryAddr, generatedPassword, serviceUUID)

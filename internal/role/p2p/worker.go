@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
+	sdkConfig "github.com/kairos-io/kairos-sdk/types/config"
 	"github.com/kairos-io/kairos-sdk/utils"
 
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
@@ -12,7 +12,7 @@ import (
 	service "github.com/mudler/edgevpn/api/client/service"
 )
 
-func Worker(cc *config.Config, pconfig *providerConfig.Config) role.Role { //nolint:revive
+func Worker(cc *sdkConfig.Config, pconfig *providerConfig.Config) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 		c.Logger.Info("Starting Worker")
 

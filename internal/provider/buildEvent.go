@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/kairos-io/kairos-sdk/bus"
-	"github.com/kairos-io/kairos-sdk/types"
+	loggerpkg "github.com/kairos-io/kairos-sdk/types/logger"
 	"github.com/kairos-io/kairos-sdk/utils"
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 	"github.com/mudler/go-pluggable"
@@ -28,7 +28,7 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 		Data:  "",
 		Error: "",
 	}
-	l := types.NewKairosLogger("provider-kairos-build", "info", true)
+	l := loggerpkg.NewKairosLogger("provider-kairos-build", "info", true)
 	l.Logger.Info().Msg("Buildtime event received")
 	l.Logger.Debug().Interface("event", e).Msg("Event details")
 	// unmarshal the event data if needed
@@ -161,7 +161,7 @@ func BuildEvent(e *pluggable.Event) pluggable.EventResponse {
 // InfoEvent handles the info event for the provider. Called by kairos-init during the build process.
 // It returns the installed version of the provider if available.
 func InfoEvent(e *pluggable.Event) pluggable.EventResponse {
-	l := types.NewKairosLogger("provider-kairos-info", "info", true)
+	l := loggerpkg.NewKairosLogger("provider-kairos-info", "info", true)
 	l.Logger.Info().Msg("Info event received")
 	l.Logger.Debug().Interface("event", e).Msg("Event details")
 
@@ -209,7 +209,7 @@ func InfoEvent(e *pluggable.Event) pluggable.EventResponse {
 }
 
 // k3sVersion retrieves the version of k3s installed on the system.
-func k3sVersion(logger types.KairosLogger) string {
+func k3sVersion(logger loggerpkg.KairosLogger) string {
 	out, err := exec.Command(utils.K3sBin(), "--version").CombinedOutput()
 	if err != nil {
 		logger.Logger.Error().Msgf("Failed to get the k3s version: %s", err)
@@ -229,7 +229,7 @@ func k3sVersion(logger types.KairosLogger) string {
 }
 
 // k0sVersion retrieves the version of k0s installed on the system.
-func k0sVersion(logger types.KairosLogger) string {
+func k0sVersion(logger loggerpkg.KairosLogger) string {
 	out, err := exec.Command(utils.K0sBin(), "version").CombinedOutput()
 	if err != nil {
 		logger.Logger.Error().Msgf("Failed to get the k0s version: %s", err)

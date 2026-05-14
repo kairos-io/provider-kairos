@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
+	sdkConfig "github.com/kairos-io/kairos-sdk/types/config"
 	"github.com/kairos-io/kairos-sdk/utils"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
@@ -74,7 +74,7 @@ func waitForMasterHAInfo(m K8sNode) bool {
 	return false
 }
 
-func Master(cc *config.Config, pconfig *providerConfig.Config, roleName string) role.Role { //nolint:revive
+func Master(cc *sdkConfig.Config, pconfig *providerConfig.Config, roleName string) role.Role { //nolint:revive
 	return func(c *service.RoleConfig) error {
 		c.Logger.Info(fmt.Sprintf("Starting Master(%s)", roleName))
 
