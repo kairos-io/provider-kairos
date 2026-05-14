@@ -5,14 +5,14 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
+	sdkConfig "github.com/kairos-io/kairos-sdk/types/config"
 	providerConfig "github.com/kairos-io/provider-kairos/v2/internal/provider/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/samber/lo"
 )
 
 // scheduleRoles assigns roles to nodes. Meant to be called only by leaders.
-func scheduleRoles(nodes []string, c *service.RoleConfig, cc *config.Config, pconfig *providerConfig.Config) error { //nolint:revive
+func scheduleRoles(nodes []string, c *service.RoleConfig, cc *sdkConfig.Config, pconfig *providerConfig.Config) error { //nolint:revive
 	// From the golang docs: https://pkg.go.dev/math/rand#example-package-Rand
 	// Create and seed the generator.
 	// Typically a non-fixed seed should be used, such as time.Now().UnixNano().

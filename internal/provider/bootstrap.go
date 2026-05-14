@@ -16,10 +16,11 @@ import (
 	"github.com/kairos-io/provider-kairos/v2/internal/role"
 	p2p "github.com/kairos-io/provider-kairos/v2/internal/role/p2p"
 	edgeVPNClient "github.com/mudler/edgevpn/api/client"
+	"gopkg.in/yaml.v3"
 
 	"github.com/kairos-io/provider-kairos/v2/internal/services"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
+	sdkConfig "github.com/kairos-io/kairos-sdk/types/config"
 	"github.com/mudler/edgevpn/api/client/service"
 	"github.com/mudler/go-pluggable"
 )
@@ -31,14 +32,14 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), e.Data)
 	}
 
-	c := &config.Config{}
+	c := &sdkConfig.Config{}
 	prvConfig := &providerConfig.Config{}
-	err = config.FromString(cfg.Config, c)
+	err = yaml.Unmarshal([]byte(cfg.Config), c)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
 
-	err = config.FromString(cfg.Config, prvConfig)
+	err = yaml.Unmarshal([]byte(cfg.Config), prvConfig)
 	if err != nil {
 		return ErrorEvent("Failed reading JSON input: %s input '%s'", err.Error(), cfg.Config)
 	}
