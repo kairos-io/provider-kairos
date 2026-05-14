@@ -62,38 +62,19 @@ func ReplaceToken(dir []string, token string) (err error) {
 		dat, err := os.ReadFile(f)
 		if err != nil {
 			fmt.Printf("warning: could not read %s '%s'\n", f, err.Error())
+			continue
 		}
 
-		header := config.DefaultHeader
-		if hasHeader, head := config.HasHeader(string(dat), ""); hasHeader {
-			header = head
-		}
-		content := map[interface{}]interface{}{}
-
-		if err := yaml.Unmarshal(dat, &content); err != nil {
+		var doc yaml.Node
+		if err := yaml.Unmarshal(dat, &doc); err != nil {
 			return err
 		}
 
-		section, exists := content["p2p"]
-		if !exists {
-			return errors.New("no p2p section in config file")
-		}
-
-		dd, err := yaml.Marshal(section)
-		if err != nil {
+		if err := setNetworkToken(&doc, token); err != nil {
 			return err
 		}
 
-		piece := map[string]interface{}{}
-
-		if err := yaml.Unmarshal(dd, &piece); err != nil {
-			return err
-		}
-
-		piece["network_token"] = token
-		content["p2p"] = piece
-
-		d, err := yaml.Marshal(content)
+		out, err := yaml.Marshal(&doc)
 		if err != nil {
 			return err
 		}
@@ -103,11 +84,49 @@ func ReplaceToken(dir []string, token string) (err error) {
 			return err
 		}
 
-		if err := os.WriteFile(f, []byte(config.AddHeader(header, string(d))), fi.Mode().Perm()); err != nil {
+		if err := os.WriteFile(f, out, fi.Mode().Perm()); err != nil {
 			return err
 		}
 	}
 
+	return nil
+}
+
+func setNetworkToken(doc *yaml.Node, token string) error {
+	if doc.Kind != yaml.DocumentNode || len(doc.Content) == 0 {
+		return errors.New("invalid YAML document")
+	}
+	root := doc.Content[0]
+	if root.Kind != yaml.MappingNode {
+		return errors.New("root of config is not a YAML mapping")
+	}
+
+	p2p := mappingValue(root, "p2p")
+	if p2p == nil {
+		return errors.New("no p2p section in config file")
+	}
+	if p2p.Kind != yaml.MappingNode {
+		return errors.New("p2p section is not a YAML mapping")
+	}
+
+	if t := mappingValue(p2p, "network_token"); t != nil {
+		t.Value = token
+		return nil
+	}
+
+	p2p.Content = append(p2p.Content,
+		&yaml.Node{Kind: yaml.ScalarNode, Value: "network_token"},
+		&yaml.Node{Kind: yaml.ScalarNode, Value: token, Style: yaml.DoubleQuotedStyle},
+	)
+	return nil
+}
+
+func mappingValue(m *yaml.Node, key string) *yaml.Node {
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			return m.Content[i+1]
+		}
+	}
 	return nil
 }
 

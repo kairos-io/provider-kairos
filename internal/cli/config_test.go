@@ -1,11 +1,10 @@
 package cli_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/kairos-io/kairos-agent/v2/pkg/config"
 	. "github.com/kairos-io/provider-kairos/v2/internal/cli/token"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -28,15 +27,15 @@ var _ = Describe("Get config", func() {
 p2p:
   network_token: "foo"
 
-bb: 
+bb:
   nothing: "foo"
 `
-			d, _ := ioutil.TempDir("", "xxxx")
+			d, _ := os.MkdirTemp("", "xxxx")
 			defer os.RemoveAll(d)
 
-			err := ioutil.WriteFile(filepath.Join(d, "test"), []byte(cc), os.ModePerm)
+			err := os.WriteFile(filepath.Join(d, "test"), []byte(cc), os.ModePerm)
 			Expect(err).ToNot(HaveOccurred())
-			err = ioutil.WriteFile(filepath.Join(d, "b"), []byte(`
+			err = os.WriteFile(filepath.Join(d, "b"), []byte(`
 fooz: "bar"
 			`), os.ModePerm)
 			Expect(err).ToNot(HaveOccurred())
@@ -44,7 +43,7 @@ fooz: "bar"
 			err = ReplaceToken([]string{d, "/doesnotexist"}, "baz")
 			Expect(err).ToNot(HaveOccurred())
 
-			content, err := ioutil.ReadFile(filepath.Join(d, "test"))
+			content, err := os.ReadFile(filepath.Join(d, "test"))
 			Expect(err).ToNot(HaveOccurred())
 
 			res := map[interface{}]interface{}{}
@@ -55,8 +54,41 @@ fooz: "bar"
 			Expect(res["p2p"]).To(Equal(map[string]interface{}{"network_token": "baz"}))
 			Expect(res["bb"]).To(Equal(map[string]interface{}{"nothing": "foo"}))
 
-			hasHeader, _ := config.HasHeader(string(content), "#node-config")
-			Expect(hasHeader).To(BeTrue(), string(content))
+			Expect(strings.HasPrefix(string(content), "#node-config")).To(BeTrue(), string(content))
+		})
+
+		It("preserves comments and key order on token rotation", func() {
+			var cc string = `#cloud-config
+# Top-level comment explaining the config
+
+p2p:
+  network_token: "foo" # the token to be rotated
+  auto:
+    enable: true
+
+# Comment between top-level sections
+bb:
+  zzz: "first"
+  aaa: "last"
+`
+			d, _ := os.MkdirTemp("", "preserve")
+			defer os.RemoveAll(d)
+
+			err := os.WriteFile(filepath.Join(d, "test.yaml"), []byte(cc), os.ModePerm)
+			Expect(err).ToNot(HaveOccurred())
+
+			err = ReplaceToken([]string{d}, "baz")
+			Expect(err).ToNot(HaveOccurred())
+
+			out, err := os.ReadFile(filepath.Join(d, "test.yaml"))
+			Expect(err).ToNot(HaveOccurred())
+			s := string(out)
+
+			Expect(s).To(ContainSubstring(`network_token: "baz"`), s)
+			Expect(s).To(ContainSubstring("Top-level comment explaining the config"), s)
+			Expect(s).To(ContainSubstring("the token to be rotated"), s)
+			Expect(s).To(ContainSubstring("Comment between top-level sections"), s)
+			Expect(strings.Index(s, "zzz")).To(BeNumerically("<", strings.Index(s, "aaa")), s)
 		})
 	})
 })
