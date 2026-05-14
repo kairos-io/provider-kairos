@@ -68,6 +68,11 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 		kubeVipVersion = DefaultKubeVIPVersion
 	}
 
+	kubeVipImage := kConfig.KubeVIP.Image
+	if kubeVipImage == "" {
+		kubeVipImage = DefaultKubeVIPImage
+	}
+
 	// Some fixes for the default values if they are empty.
 	if initConfig.LeaseDuration == 0 {
 		initConfig.LeaseDuration = 5
@@ -87,9 +92,9 @@ func generateKubeVIP(command string, iface, ip string, kConfig *providerConfig.C
 
 	switch strings.ToLower(command) {
 	case "daemonset":
-		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, DefaultKubeVIPImage, kubeVipVersion, true, true)
+		return kubevip.GenerateDaemonsetManifestFromConfig(&initConfig, kubeVipImage, kubeVipVersion, true, true)
 	case "pod":
-		return kubevip.GeneratePodManifestFromConfig(&initConfig, DefaultKubeVIPImage, kubeVipVersion, true)
+		return kubevip.GeneratePodManifestFromConfig(&initConfig, kubeVipImage, kubeVipVersion, true)
 	}
 	return "", fmt.Errorf("unknown manifest type %s", command)
 }
