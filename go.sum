@@ -194,6 +194,8 @@ github.com/diskfs/go-diskfs v1.9.1 h1:g/UCTC5jZFomhtH4DyF9fG1eRHGgDIjSd1hSjEErXn
 github.com/diskfs/go-diskfs v1.9.1/go.mod h1:rW9+4MPN1tbMpQqRZlcM3YQsh3Ucc+Q1k1iIqzzmZcg=
 github.com/diskfs/go-diskfs v1.9.2 h1:HAN2DmAEtG2Dp/3BZ+10DvhtRDC10IwufPUOnnbwDfc=
 github.com/diskfs/go-diskfs v1.9.2/go.mod h1:TePJORO83Adh5pb2SqsxAwaP0fofFxKLkxctiS/9OQc=
+github.com/diskfs/go-diskfs v1.9.3 h1:cLciNCeZ4QAXVxyPJDr1ZJ9N9CCG3rQlQ/z/Cs/cNDM=
+github.com/diskfs/go-diskfs v1.9.3/go.mod h1:TePJORO83Adh5pb2SqsxAwaP0fofFxKLkxctiS/9OQc=
 github.com/distribution/reference v0.6.0 h1:0IXCQ5g4/QMHHkarYzh5l+u8T3t73zM5QvfrDyIgxBk=
 github.com/distribution/reference v0.6.0/go.mod h1:BbU0aIcezP1/5jX/8MP0YiH4SdvB5Y4f/wlDRiLyi3E=
 github.com/djherbis/times v1.6.0 h1:w2ctJ92J8fBvWPxugmXIv7Nz7Q3iDMKNx9v5ocVH20c=
@@ -527,6 +529,8 @@ github.com/kairos-io/kairos-agent/v2 v2.29.1 h1:oZ7Yrwm2VVYxXJjvfmnrnjdxhiJnG+5K
 github.com/kairos-io/kairos-agent/v2 v2.29.1/go.mod h1:tI36LGYvGTQ86iGBgBnwX+NANlq3nvWrsiEHn1WQv8c=
 github.com/kairos-io/kairos-sdk v0.20.0 h1:/Mafx3VmIxOfqROtgPPQen6CvOqh4OxkpXOlmKQKqJc=
 github.com/kairos-io/kairos-sdk v0.20.0/go.mod h1:O4adBvvajALEZDRJeiKcDsF7CvP2DH7KW7KUL09mte4=
+github.com/kairos-io/kairos-sdk v0.20.1 h1:rwut/j8sZv27HeoDM2kPFjjc2mugNDqtmSF+8XhuAfM=
+github.com/kairos-io/kairos-sdk v0.20.1/go.mod h1:o7h0hDNpRcf9ljID+Hpa7GuuG2rRdCi343hkhfVBEJw=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 h1:YOp8St+CM/AQ9Vp4XYm4272E77MptJDHkwypQHIRl9Q=
 github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237/go.mod h1:e7qQlOY68wOz4b82D7n+DdaptZAi+SHW0+yKiWZzEYE=
 github.com/kendru/darwin/go/depgraph v0.0.0-20230809052043-4d1c7e9d1767 h1:Ds6xHRvL0yjG4kZD05leRKt70mM18Fjt0+B5gIqqe1g=
@@ -1145,6 +1149,8 @@ golang.org/x/mod v0.15.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
 golang.org/x/mod v0.17.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
 golang.org/x/mod v0.35.0 h1:Ww1D637e6Pg+Zb2KrWfHQUnH2dQRLBQyAtpr/haaJeM=
 golang.org/x/mod v0.35.0/go.mod h1:+GwiRhIInF8wPm+4AoT6L0FA1QWAad3OMdTRx4tFYlU=
+golang.org/x/mod v0.36.0 h1:JJjpVx6myfUsUdAzZuOSTTmRE0PfZeNWzzvKrP7amb4=
+golang.org/x/mod v0.36.0/go.mod h1:moc6ELqsWcOw5Ef3xVprK5ul/MvtVvkIXLziUOICjUQ=
 golang.org/x/net v0.0.0-20180724234803-3673e40ba225/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180826012351-8a410e7b638d/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=

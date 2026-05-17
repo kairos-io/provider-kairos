@@ -10,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.9.2
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.29.1
-	github.com/kairos-io/kairos-sdk v0.20.0
+	github.com/kairos-io/kairos-sdk v0.20.1
 	github.com/kube-vip/kube-vip v1.1.2
 	github.com/mudler/edgevpn v0.32.2
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -69,7 +69,7 @@ require (
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/dgryski/go-farm v0.0.0-20240924180020-3414d57e47da // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/diskfs/go-diskfs v1.9.2 // indirect
+	github.com/diskfs/go-diskfs v1.9.3 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/docker/cli v29.4.0+incompatible // indirect
@@ -309,7 +309,7 @@ require (
 	golang.org/x/crypto v0.51.0 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
 	golang.org/x/image v0.39.0 // indirect
-	golang.org/x/mod v0.35.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
 	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
