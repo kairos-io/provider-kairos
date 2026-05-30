@@ -12,7 +12,7 @@ require (
 	github.com/kairos-io/kairos-agent/v2 v2.29.2
 	github.com/kairos-io/kairos-sdk v0.21.0
 	github.com/kube-vip/kube-vip v1.2.0
-	github.com/mudler/edgevpn v0.33.0
+	github.com/mudler/edgevpn v0.33.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.1.1
 	github.com/onsi/ginkgo/v2 v2.29.0
@@ -150,7 +150,7 @@ require (
 	github.com/libp2p/go-libp2p-asn-util v0.4.1 // indirect
 	github.com/libp2p/go-libp2p-kad-dht v0.40.0 // indirect
 	github.com/libp2p/go-libp2p-kbucket v0.8.0 // indirect
-	github.com/libp2p/go-libp2p-pubsub v0.15.0 // indirect
+	github.com/libp2p/go-libp2p-pubsub v0.16.0 // indirect
 	github.com/libp2p/go-libp2p-record v0.3.1 // indirect
 	github.com/libp2p/go-libp2p-routing-helpers v0.7.5 // indirect
 	github.com/libp2p/go-msgio v0.3.0 // indirect
