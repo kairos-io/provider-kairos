@@ -32,7 +32,14 @@ func Auto(cc *sdkConfig.Config, pconfig *providerConfig.Config) Role { //nolint:
 		c.Logger.Info("Advertizing nodes:", advertizing)
 
 		if len(advertizing) < minimumNodes {
-			c.Logger.Info("Not enough nodes")
+			// Log counts + the actual peer list so a stuck cluster is
+			// diagnosable from the kairos-agent journal alone. Previously this
+			// printed only "Not enough nodes", which made it impossible to tell
+			// whether the underlying ledger view was missing peers (asymmetric
+			// pubsub delivery, mesh churn) versus configuration disagreement on
+			// minimumNodes.
+			c.Logger.Infof("Waiting for nodes: have %d, need %d (advertizing=%v active=%v)",
+				len(advertizing), minimumNodes, advertizing, actives)
 			return nil
 		}
 

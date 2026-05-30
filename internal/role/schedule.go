@@ -91,9 +91,14 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *sdkConfig.Config, 
 		}
 		c.Logger.Infof("-> Set %s to %s", masterRole, selected)
 		currentRoles[selected] = masterRole
-		// Return here, so next time we get called
-		// makes sure master is set.
-		return nil
+		// Drop the freshly-assigned master from unassignedNodes so the worker
+		// loop below doesn't immediately reassign the same UUID. Previously this
+		// branch returned early and relied on a subsequent tick to assign
+		// workers — that meant role coordination needed ≥2 successful ledger
+		// round-trips end-to-end, and a single lost gossipsub message between
+		// the master-write and the worker-write would strand the worker.
+		unassignedNodes = lo.Filter(unassignedNodes, func(u string, _ int) bool { return u != selected })
+		existsMaster = true
 	}
 
 	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.MasterNodes != nil && *pconfig.P2P.Auto.HA.MasterNodes != mastersHA {
@@ -115,6 +120,20 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *sdkConfig.Config, 
 			return err
 		}
 		c.Logger.Infof("-> Set %s to %s", workerRole, uuid)
+		currentRoles[uuid] = workerRole
+	}
+
+	// Durability: re-publish worker assignments each tick so a one-time
+	// gossipsub message loss doesn't permanently strand a worker waiting on
+	// `role/<UUID>`. Masters already self-affirm their role from
+	// propagateMasterData, so we only need to re-publish worker entries here.
+	for uuid, r := range currentRoles {
+		if r == "" || r == masterRole || r == masterHA {
+			continue
+		}
+		if err := c.Client.Set("role", uuid, r); err != nil {
+			c.Logger.Warnf("re-publish of role %s for %s failed: %v", r, uuid, err)
+		}
 	}
 
 	c.Logger.Info("Done scheduling")
