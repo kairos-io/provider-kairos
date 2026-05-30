@@ -541,6 +541,8 @@ github.com/libp2p/go-libp2p-kbucket v0.8.0 h1:QAK7RzKJpYe+EuSEATAaaHYMYLkPDGC18m
 github.com/libp2p/go-libp2p-kbucket v0.8.0/go.mod h1:JMlxqcEyKwO6ox716eyC0hmiduSWZZl6JY93mGaaqc4=
 github.com/libp2p/go-libp2p-pubsub v0.15.0 h1:cG7Cng2BT82WttmPFMi50gDNV+58K626m/wR00vGL1o=
 github.com/libp2p/go-libp2p-pubsub v0.15.0/go.mod h1:lr4oE8bFgQaifRcoc2uWhWWiK6tPdOEKpUuR408GFN4=
+github.com/libp2p/go-libp2p-pubsub v0.16.0 h1:j7G2C8kJwkcAQqYR7Wmq3d75d3Sgw/N0Hhiv0dVx7OY=
+github.com/libp2p/go-libp2p-pubsub v0.16.0/go.mod h1:lr4oE8bFgQaifRcoc2uWhWWiK6tPdOEKpUuR408GFN4=
 github.com/libp2p/go-libp2p-record v0.3.1 h1:cly48Xi5GjNw5Wq+7gmjfBiG9HCzQVkiZOUZ8kUl+Fg=
 github.com/libp2p/go-libp2p-record v0.3.1/go.mod h1:T8itUkLcWQLCYMqtX7Th6r7SexyUJpIyPgks757td/E=
 github.com/libp2p/go-libp2p-routing-helpers v0.7.5 h1:HdwZj9NKovMx0vqq6YNPTh6aaNzey5zHD7HeLJtq6fI=
@@ -644,6 +646,8 @@ github.com/mudler/edgevpn v0.32.3 h1:H3t5FesUvg7yyhKWj7Z9TG4nZnx/LmAU0wYl+rS8awc
 github.com/mudler/edgevpn v0.32.3/go.mod h1:UaMc8MORbcRsAjuO5gVJj9Bn3Nq2AP5U9NTb6epVyv8=
 github.com/mudler/edgevpn v0.33.0 h1:MEG7LTsB7IsEDrcjzU90cVmFaWWTByzo9M+NFMKFmps=
 github.com/mudler/edgevpn v0.33.0/go.mod h1:Qh8PYXnbkjzUuzy/xG7E0mTBioMKUIFvvdshmhlhF3k=
+github.com/mudler/edgevpn v0.33.1 h1:lNdeIuNREKCSyE3khg8lak2fsqfAFW91dprbM+qSFno=
+github.com/mudler/edgevpn v0.33.1/go.mod h1:1xiZygbKU6bNOtsFsovUp+3Cur4xUtTjDMQQ/yWutqk=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9 h1:mxyMW50020PhFGRQgscAER7F+VuwBa2uTG2c/rxusZc=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9/go.mod h1:eoEj6XAvAsSnj/32dLPOThZTsEA8OetY7nr7RyHxoR4=
 github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5 h1:FaZD86+A9mVt7lh9glAryzQblMsbJYU2VnrdZ8yHlTs=
