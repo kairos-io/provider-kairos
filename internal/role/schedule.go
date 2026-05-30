@@ -97,8 +97,9 @@ func scheduleRoles(nodes []string, c *service.RoleConfig, cc *sdkConfig.Config, 
 		// workers — that meant role coordination needed ≥2 successful ledger
 		// round-trips end-to-end, and a single lost gossipsub message between
 		// the master-write and the worker-write would strand the worker.
+		// No need to flip existsMaster here — the HA branch below checks
+		// mastersHA and the worker loop iterates the now-filtered slice.
 		unassignedNodes = lo.Filter(unassignedNodes, func(u string, _ int) bool { return u != selected })
-		existsMaster = true
 	}
 
 	if pconfig.P2P.Auto.HA.IsEnabled() && pconfig.P2P.Auto.HA.MasterNodes != nil && *pconfig.P2P.Auto.HA.MasterNodes != mastersHA {
