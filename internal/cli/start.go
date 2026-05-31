@@ -22,14 +22,18 @@ var Author = "Ettore Di Giacinto"
 
 var networkAPI = []cli.Flag{
 	&cli.StringFlag{
-		Name:  "api",
-		Usage: "API Address",
-		Value: "http://localhost:8080",
+		Name: "api",
+		Usage: "Edgevpn API endpoint. Accepts a TCP URL (e.g. http://127.0.0.1:8080) " +
+			"or a unix socket path with the 'unix://' prefix (e.g. unix:///run/edgevpn.sock). " +
+			"Match this to whatever the local edgevpn daemon's APILISTEN is set to.",
+		Value:   "http://localhost:8080",
+		EnvVars: []string{"EDGEVPN_API"},
 	},
 	&cli.StringFlag{
-		Name:  "network-id",
-		Value: "kairos",
-		Usage: "Kubernetes Network Deployment ID",
+		Name:    "network-id",
+		Value:   "kairos",
+		Usage:   "Kubernetes Network Deployment ID",
+		EnvVars: []string{"EDGEVPN_NETWORK_ID"},
 	},
 }
 
