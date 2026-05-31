@@ -626,6 +626,8 @@ github.com/mudler/edgevpn v0.33.0 h1:MEG7LTsB7IsEDrcjzU90cVmFaWWTByzo9M+NFMKFmps
 github.com/mudler/edgevpn v0.33.0/go.mod h1:Qh8PYXnbkjzUuzy/xG7E0mTBioMKUIFvvdshmhlhF3k=
 github.com/mudler/edgevpn v0.33.1 h1:lNdeIuNREKCSyE3khg8lak2fsqfAFW91dprbM+qSFno=
 github.com/mudler/edgevpn v0.33.1/go.mod h1:1xiZygbKU6bNOtsFsovUp+3Cur4xUtTjDMQQ/yWutqk=
+github.com/mudler/edgevpn v0.33.2 h1:ucgusgeTDMY8yKcbuZ0FL6jdYuEIiNCO2uhvhgCdQDg=
+github.com/mudler/edgevpn v0.33.2/go.mod h1:yki7uMi5LR9gSMrw8PdPieuxsrk8BLV2Ui7VBEmbbIA=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9 h1:mxyMW50020PhFGRQgscAER7F+VuwBa2uTG2c/rxusZc=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9/go.mod h1:eoEj6XAvAsSnj/32dLPOThZTsEA8OetY7nr7RyHxoR4=
 github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5 h1:FaZD86+A9mVt7lh9glAryzQblMsbJYU2VnrdZ8yHlTs=
@@ -1323,6 +1325,8 @@ golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb h1:whnFRlWMcXI9d+Z
 golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb/go.mod h1:rpwXGsirqLqN2L0JDJQlwOboGHmptD5ZD6T2VmcqhTw=
 golang.zx2c4.com/wireguard/windows v0.5.3 h1:On6j2Rpn3OEMXqBq00QEDC7bWSZrPIHKIus8eIuExIE=
 golang.zx2c4.com/wireguard/windows v0.5.3/go.mod h1:9TEe8TJmtwyQebdFwAkEWOPr3prrtqm+REGFifP60hI=
+golang.zx2c4.com/wireguard/windows v0.6.1 h1:XMaKojH1Hs/raMrmnir4n35nTvzvWj7NmSYzHn2F4qU=
+golang.zx2c4.com/wireguard/windows v0.6.1/go.mod h1:04aqInu5GYuTFvMuDw/rKBAF7mHrltW/3rekpfbbZDM=
 gonum.org/v1/gonum v0.17.0 h1:VbpOemQlsSMrYmn7T2OUvQ4dqxQXU+ouZFQsZOx50z4=
 gonum.org/v1/gonum v0.17.0/go.mod h1:El3tOrEuMpv2UdMrbNlKEh9vd86bmQ6vqIcDwxEOc1E=
 google.golang.org/api v0.4.0/go.mod h1:8k5glujaEP+g9n7WNsDg8QP6cUVNI86fCNMcbazEtwE=
