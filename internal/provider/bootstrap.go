@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/kairos-io/kairos-sdk/bus"
@@ -64,12 +65,30 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	logger := loggerpkg.NewKairosLogger("provider", logLevel, false)
 
+	// Let operators override the edgevpn API endpoint via EDGEVPN_API so the
+	// bootstrap path can target a unix socket (or any non-default listener)
+	// without rebuilding the binary or threading a flag through kairos-sdk's
+	// bus payload. Without this, cfg.APIAddress flows in with the kairos-agent
+	// default (http://localhost:8080) and the role-coordination client sits
+	// at "Active nodes:[]" forever whenever the daemon has been moved off
+	// that address (e.g. APILISTEN=unix:///run/edgevpn-kairos.sock under a
+	// hardened systemd-managed deployment). The same value also flows into
+	// the SetupVPN/SetupAPI calls below — those write APILISTEN into the
+	// edgevpn daemon env file as a fallback default, which keeps daemon and
+	// client in agreement out of the box (cloud-config p2p.vpn.env still
+	// wins when an operator wants daemon-vs-client asymmetry).
+	apiAddress := cfg.APIAddress
+	if v := os.Getenv("EDGEVPN_API"); v != "" {
+		logger.Info("Overriding edgevpn API endpoint from EDGEVPN_API env: ", v)
+		apiAddress = v
+	}
+
 	// Do onetimebootstrap if a Kubernetes distribution is enabled.
 	// Those blocks are not required to be enabled in case of a kairos
 	// full automated setup. Otherwise, they must be explicitly enabled.
 	if (tokenNotDefined && prvConfig.IsKubernetesConfigured()) || skipAuto {
 		err := oneTimeBootstrap(logger, prvConfig, func() error {
-			return SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig)
+			return SetupVPN(services.EdgeVPNDefaultInstance, apiAddress, "/", true, prvConfig)
 		})
 		if err != nil {
 			return ErrorEvent("Failed setup: %s", err.Error())
@@ -84,12 +103,12 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 	// We might still want a VPN, but not to route traffic into
 	if prvConfig.P2P.VPNNeedsCreation() {
 		logger.Info("Configuring VPN")
-		if err := SetupVPN(services.EdgeVPNDefaultInstance, cfg.APIAddress, "/", true, prvConfig); err != nil {
+		if err := SetupVPN(services.EdgeVPNDefaultInstance, apiAddress, "/", true, prvConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
 	} else { // We need at least the API to co-ordinate
 		logger.Info("Configuring API")
-		if err := SetupAPI(cfg.APIAddress, "/", true, prvConfig); err != nil {
+		if err := SetupAPI(apiAddress, "/", true, prvConfig); err != nil {
 			return ErrorEvent("Failed setup VPN: %s", err.Error())
 		}
 	}
@@ -102,7 +121,7 @@ func Bootstrap(e *pluggable.Event) pluggable.EventResponse {
 
 	cc := service.NewClient(
 		networkID,
-		edgeVPNClient.NewClient(edgeVPNClient.WithHost(cfg.APIAddress)))
+		edgeVPNClient.NewClient(edgeVPNClient.WithHost(apiAddress)))
 
 	nodeOpts := []service.Option{
 		service.WithMinNodes(prvConfig.P2P.MinimumNodes),
