@@ -10,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.9.2
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.29.4
-	github.com/kairos-io/kairos-sdk v0.21.0
+	github.com/kairos-io/kairos-sdk v0.22.0
 	github.com/kube-vip/kube-vip v1.2.0
 	github.com/mudler/edgevpn v0.35.0
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -238,7 +238,7 @@ require (
 	github.com/quic-go/webtransport-go v0.10.0 // indirect
 	github.com/rs/zerolog v1.35.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/saferwall/pe v1.6.4 // indirect
+	github.com/saferwall/pe v1.6.5 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
 	github.com/sanity-io/litter v1.5.8 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
