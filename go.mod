@@ -10,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.9.2
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.29.4
-	github.com/kairos-io/kairos-sdk v0.22.0
+	github.com/kairos-io/kairos-sdk v0.22.1
 	github.com/kube-vip/kube-vip v1.2.0
 	github.com/mudler/edgevpn v0.35.1
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -293,7 +293,7 @@ require (
 	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
 	golang.org/x/image v0.41.0 // indirect
-	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
