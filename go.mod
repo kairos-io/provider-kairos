@@ -11,7 +11,7 @@ require (
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.30.0
 	github.com/kairos-io/kairos-sdk v0.23.0
-	github.com/kube-vip/kube-vip v1.2.0
+	github.com/kube-vip/kube-vip v1.2.1
 	github.com/mudler/edgevpn v0.35.2
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.1.1
@@ -201,6 +201,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/osrg/gobgp/v3 v3.37.0 // indirect
+	github.com/osrg/gobgp/v4 v4.6.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
@@ -316,8 +317,8 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	howett.net/plist v1.0.2-0.20250314012144-ee69052608d9 // indirect
-	k8s.io/api v0.36.1 // indirect
-	k8s.io/apimachinery v0.36.1 // indirect
+	k8s.io/api v0.36.2 // indirect
+	k8s.io/apimachinery v0.36.2 // indirect
 	k8s.io/client-go v0.36.1 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260317180543-43fb72c5454a // indirect
