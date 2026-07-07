@@ -173,6 +173,8 @@ github.com/creachadair/mds v0.21.3 h1:RRgEAPIb52cU0q7UxGyN+13QlCVTZIL4slRr0cYYQf
 github.com/creachadair/mds v0.21.3/go.mod h1:1ltMWZd9yXhaHEoZwBialMaviWVUpRPvMwVP7saFAzM=
 github.com/creachadair/otp v0.5.0 h1:q3Th7CXm2zlmCdBjw5tEPFOj4oWJMnVL5HXlq0sNKS0=
 github.com/creachadair/otp v0.5.0/go.mod h1:0kceI87EnYFNYSTL121goJVAnk3eJhaed9H0nMuJUkA=
+github.com/creachadair/otp v0.5.4 h1:v5LnqQGPPcX1K+mfU8xscKt157Kzh10cDQYEAeLGujk=
+github.com/creachadair/otp v0.5.4/go.mod h1:Ps6nENtdec8LepzmCHB2QbSIf7te4/5GlvoegNkYlgc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.24 h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=
 github.com/creack/pty v1.1.24/go.mod h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=
@@ -567,6 +569,8 @@ github.com/libp2p/go-libp2p-asn-util v0.4.1 h1:xqL7++IKD9TBFMgnLPZR6/6iYhawHKHl9
 github.com/libp2p/go-libp2p-asn-util v0.4.1/go.mod h1:d/NI6XZ9qxw67b4e+NgpQexCIiFYJjErASrYW4PFDN8=
 github.com/libp2p/go-libp2p-kad-dht v0.40.0 h1:as8U7Y1RX9CTKCBiFBHWKZ6tSS+rE+6WNz+H1+M+wbo=
 github.com/libp2p/go-libp2p-kad-dht v0.40.0/go.mod h1:iLUjII47u3/HjxyhucI2lhsl29lrzlAs/ym16+H40jE=
+github.com/libp2p/go-libp2p-kad-dht v0.41.0 h1:sDigz5SgV20Crj8ItJmJpEAM+eJrzC/SaiBweg0gDRw=
+github.com/libp2p/go-libp2p-kad-dht v0.41.0/go.mod h1:2qc4QGLvmIdznYbNg++FF76vp4q2SaBZyr76jHV8xgs=
 github.com/libp2p/go-libp2p-kbucket v0.8.0 h1:QAK7RzKJpYe+EuSEATAaaHYMYLkPDGC18m9jxPLnU8s=
 github.com/libp2p/go-libp2p-kbucket v0.8.0/go.mod h1:JMlxqcEyKwO6ox716eyC0hmiduSWZZl6JY93mGaaqc4=
 github.com/libp2p/go-libp2p-pubsub v0.16.0 h1:j7G2C8kJwkcAQqYR7Wmq3d75d3Sgw/N0Hhiv0dVx7OY=
@@ -680,6 +684,8 @@ github.com/mudler/edgevpn v0.35.1 h1:whNT7E/C20tL5verNW5X1KHFfrIWAvvmeZ0Tj6wHx8o
 github.com/mudler/edgevpn v0.35.1/go.mod h1:mmvh52IJT5T9TfOfXx/TTlnHl6wWGNbIEu7Bu3Kw/uQ=
 github.com/mudler/edgevpn v0.35.2 h1:COv6ZXnmHUVN02f9wRz2CGsRy1j65pA5/g+0LjXDvmo=
 github.com/mudler/edgevpn v0.35.2/go.mod h1:xbfuA+Dpck4LOoKAOIHTWuAElBp0aV77Z5HCvKKrmUU=
+github.com/mudler/edgevpn v0.35.3 h1:to7ozBMcVCjSGwx/wmazIZNLT5Zp8XMcTvrjvm2W0AI=
+github.com/mudler/edgevpn v0.35.3/go.mod h1:zBaJxkRVxHWTx0t6ZQCDu3XLNN+xaS4qIxHZFC1B2sE=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9 h1:mxyMW50020PhFGRQgscAER7F+VuwBa2uTG2c/rxusZc=
 github.com/mudler/entities v0.8.3-0.20260109121712-af3b96567af9/go.mod h1:eoEj6XAvAsSnj/32dLPOThZTsEA8OetY7nr7RyHxoR4=
 github.com/mudler/entities v0.8.3 h1:ByzKC/G2M9qdSpd0S8C6Q4kHcXhCX/9xWL6+vGpBVrs=
