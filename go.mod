@@ -52,7 +52,6 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/containerd/cgroups/v3 v3.1.3 // indirect
 	github.com/containerd/console v1.0.5 // indirect
-	github.com/containerd/containerd v1.7.33 // indirect
 	github.com/containerd/containerd/v2 v2.3.2 // indirect
 	github.com/containerd/continuity v0.5.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
@@ -201,8 +200,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/osrg/gobgp/v3 v3.37.0 // indirect
-	github.com/osrg/gobgp/v4 v4.6.0 // indirect
+	github.com/osrg/gobgp/v4 v4.7.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml/v2 v2.3.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
