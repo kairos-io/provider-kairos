@@ -10,7 +10,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.9.2
 	github.com/kairos-io/go-nodepair v0.3.0
 	github.com/kairos-io/kairos-agent/v2 v2.30.2
-	github.com/kairos-io/kairos-sdk v0.23.4
+	github.com/kairos-io/kairos-sdk v0.24.0
 	github.com/kube-vip/kube-vip v1.2.1
 	github.com/mudler/edgevpn v0.35.3
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
@@ -67,7 +67,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/diskfs/go-diskfs v1.9.3 // indirect
+	github.com/diskfs/go-diskfs v1.9.4 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/docker/cli v29.5.3+incompatible // indirect
@@ -184,7 +184,7 @@ require (
 	github.com/mr-tron/base58 v1.3.0 // indirect
 	github.com/mudler/entities v0.8.3 // indirect
 	github.com/mudler/water v0.0.0-20250808092830-dd90dcf09025 // indirect
-	github.com/mudler/yip v1.25.0 // indirect
+	github.com/mudler/yip v1.25.1 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr v0.16.1 // indirect
@@ -308,8 +308,8 @@ require (
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
 	golang.zx2c4.com/wireguard/windows v1.0.1 // indirect
 	gonum.org/v1/gonum v0.17.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260406210006-6f92a3bedf2d // indirect
-	google.golang.org/grpc v1.81.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
+	google.golang.org/grpc v1.82.1 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.3 // indirect
