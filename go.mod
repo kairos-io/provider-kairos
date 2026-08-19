@@ -13,7 +13,7 @@ require (
 	github.com/kairos-io/kairos-agent/v2 v2.31.4
 	github.com/kairos-io/kairos-sdk v0.25.3
 	github.com/kube-vip/kube-vip v1.2.3
-	github.com/mudler/edgevpn v0.35.3
+	github.com/mudler/edgevpn v0.35.4
 	github.com/mudler/go-pluggable v0.0.0-20230126220627-7710299a0ae5
 	github.com/mudler/go-processmanager v0.1.1
 	github.com/onsi/ginkgo/v2 v2.32.1
@@ -140,7 +140,7 @@ require (
 	github.com/klauspost/compress v1.19.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/koron/go-ssdp v0.0.6 // indirect
-	github.com/labstack/echo/v4 v4.15.2 // indirect
+	github.com/labstack/echo/v4 v4.15.4 // indirect
 	github.com/labstack/gommon v0.5.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
@@ -163,7 +163,7 @@ require (
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/makiuchi-d/gozxing v0.1.1 // indirect
 	github.com/marten-seemann/tcp v0.0.0-20210406111302-dfbc87cc63fd // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
+	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/mauromorales/xpasswd v0.4.8 // indirect
