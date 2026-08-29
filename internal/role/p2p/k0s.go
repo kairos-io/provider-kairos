@@ -48,73 +48,22 @@ func (k *K0sNode) DeployKubeVIP() error {
 func (k *K0sNode) GenArgs() ([]string, error) {
 	var args []string
 
-	// Generate a new k0s config
-	_, err := utils.SH("k0s config create > /etc/k0s/k0s.yaml")
+	defaultConfig, err := utils.SH("k0s config create")
 	if err != nil {
 		return args, err
 	}
 	args = append(args, "--config /etc/k0s/k0s.yaml")
 
-	data, err := os.ReadFile("/etc/k0s/k0s.yaml")
-	if err != nil {
+	userConfig, err := os.ReadFile("/etc/k0s/k0s.yaml")
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
 	}
 
-	var k0sConfig map[any]any
-	err = yaml.Unmarshal(data, &k0sConfig)
+	data, err := buildK0sConfig([]byte(defaultConfig), userConfig, k.IP())
 	if err != nil {
 		return args, err
 	}
 
-	// check if the k0s config has an api address
-	spec, ok := k0sConfig["spec"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a spec")
-	}
-	api, ok := spec["api"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have an api")
-	}
-	// by default k0s uses the first IP address of the machine as the api address, but we want to use the edgevpn IP
-	api["address"] = k.IP()
-
-	spec["api"] = api
-
-	network, ok := spec["network"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a network")
-	}
-	kubeRouter, ok := network["kuberouter"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a kuberouter")
-	}
-
-	// by default k0s uses the port 8080 for the metrics but this conflicts with the edgevpn API port
-	kubeRouter["metricsPort"] = 9090
-	network["kuberouter"] = kubeRouter
-	spec["network"] = network
-
-	storage, ok := spec["storage"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a storage")
-	}
-	etcd, ok := storage["etcd"].(map[any]any)
-	if !ok {
-		return args, errors.New("k0s config does not have a etcd")
-	}
-	// just like the api address, we want to use the edgevpn IP for the etcd peer address
-	etcd["peerAddress"] = k.IP()
-
-	storage["etcd"] = etcd
-	spec["storage"] = storage
-
-	k0sConfig["spec"] = spec
-
-	// write the k0s config back to the file
-	data, err = yaml.Marshal(k0sConfig)
-	if err != nil {
-		return args, err
-	}
 	err = os.WriteFile("/etc/k0s/k0s.yaml", data, 0644)
 	if err != nil {
 		return args, err
@@ -142,6 +91,65 @@ func (k *K0sNode) GenArgs() ([]string, error) {
 	// function understands if it needs to append or replace the args
 
 	return args, nil
+}
+
+func buildK0sConfig(defaultData, userData []byte, ip string) ([]byte, error) {
+	var k0sConfig map[string]any
+	if err := yaml.Unmarshal(defaultData, &k0sConfig); err != nil {
+		return nil, err
+	}
+
+	if len(userData) > 0 {
+		var userConfig map[string]any
+		if err := yaml.Unmarshal(userData, &userConfig); err != nil {
+			return nil, err
+		}
+		mergeK0sConfig(k0sConfig, userConfig)
+	}
+
+	spec, ok := k0sConfig["spec"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have a spec")
+	}
+	api, ok := spec["api"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have an api")
+	}
+	api["address"] = ip
+
+	network, ok := spec["network"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have a network")
+	}
+	kubeRouter, ok := network["kuberouter"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have a kuberouter")
+	}
+	kubeRouter["metricsPort"] = 9090
+
+	storage, ok := spec["storage"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have a storage")
+	}
+	etcd, ok := storage["etcd"].(map[string]any)
+	if !ok {
+		return nil, errors.New("k0s config does not have a etcd")
+	}
+	etcd["peerAddress"] = ip
+
+	return yaml.Marshal(k0sConfig)
+}
+
+func mergeK0sConfig(defaults, user map[string]any) {
+	for key, userValue := range user {
+		userMap, userIsMap := userValue.(map[string]any)
+		defaultMap, defaultIsMap := defaults[key].(map[string]any)
+		if userIsMap && defaultIsMap {
+			mergeK0sConfig(defaultMap, userMap)
+			continue
+		}
+		defaults[key] = userValue
+	}
 }
 
 func (k *K0sNode) EnvUnit() string {
